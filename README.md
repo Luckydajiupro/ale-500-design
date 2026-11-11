@@ -30,6 +30,10 @@
 
 再 `git branch -D <分支名>`。这里用大写 `-D`，不用 `-d`。squash 合并产生的提交不是原分支的祖先，`-d` 只在你本地还留着 `origin/<分支名>` 时才会放行。远端分支既然合并时就删了，下一次 `git fetch --prune` 之后那个 ref 就没了，`-d` 随即报未合并。2026-11-11 在临时仓库里复现过这两种状态，`-d` 在 tracking ref 还在时通过并给出警告，被 prune 后直接失败。
 
+`-D` 删 ref 时顺带把 `.git/config` 里那段 `[branch "<分支名>"]` 一起去掉。这一步写失败时，git 打印 `error: could not write config file .git/config: Operation not permitted` 和一条 warning，分支照样删掉，退出码 0，那段配置留在原地。2026-11-11 在本机 agent 沙箱里碰到过一次。普通终端下 `-D` 会把配置清干净，我另建临时仓库对过。
+
+残留什么时候有影响。没有同名分支时它不起作用。再建一个同名分支，git 就当它是上游，`git status` 立刻报 `[gone]`，`git push` 不带参数也会建出同名远端分支，2026-11-11 在临时仓库里对过。要清掉跑 `git config --remove-section "branch.<分支名>"`。
+
 合并命令不要加 `--delete-branch`，2026-11-11 实测它会在删本地分支那一步挂住不返回，合并本身早已完成。
 
 服务端保护目前在免费私有仓库上开不了。GitHub 对私有仓库的分支保护和规则集要求 Pro 或以上，免费计划只对公开仓库开放。所以保护落在三处。一处是 `.githooks/pre-push`，直推 `main` 会被拒绝，克隆后执行一次 `git config core.hooksPath .githooks` 生效。一处是 GitHub Actions 在每次 PR 上跑六条检查，任何一条不过就不合并。还有一处是约定，任何人都不直推。
