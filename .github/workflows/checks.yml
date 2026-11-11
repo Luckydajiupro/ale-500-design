@@ -1,0 +1,39 @@
+name: checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 文档写作规则
+        run: python3 tools/check_docs.py
+
+      - name: 文档数字与表格一致
+        run: python3 tools/check_numbers.py
+
+      - name: 阶段 2 出口检查器自检
+        run: python3 tools/exit/selftest_phase2_gate.py
+
+      - name: 阶段 0 校验和
+        working-directory: stages/s0-baseline
+        run: |
+          if command -v sha256sum >/dev/null 2>&1; then
+            sha256sum -c FINAL_CHECKSUMS.sha256
+          else
+            shasum -a 256 -c FINAL_CHECKSUMS.sha256
+          fi
+
+      - name: 阶段 1 校验器
+        working-directory: stages/s1-research
+        run: |
+          python3 -B scripts/35_validate_s1_02c.py
+          python3 -B scripts/36_validate_s1_02c_c16.py
