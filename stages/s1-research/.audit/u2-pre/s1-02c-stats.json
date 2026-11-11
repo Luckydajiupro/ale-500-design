@@ -1,0 +1,597 @@
+{
+  "total_candidates": 174,
+  "by_batch": {
+    "A": 51,
+    "B1": 57,
+    "B2": 39,
+    "B3": 27
+  },
+  "evidence_level": {
+    "E1": 83,
+    "E3": 87,
+    "E4": 4
+  },
+  "evidence_class": {
+    "2": 57,
+    "4": 72,
+    "6": 4,
+    "1": 14,
+    "3": 12,
+    "5": 15
+  },
+  "source_support_mode": {
+    "not_recorded_in_batch": 108,
+    "recorded_full_support": 14,
+    "recorded_partial_support": 25,
+    "judgment_support": 1,
+    "unspecified_support": 1,
+    "name_reference_support": 2,
+    "uncited_support": 1,
+    "conditional_support": 22
+  },
+  "mode_status": {
+    "not_recorded_in_batch": 108,
+    "recorded": 61,
+    "corrected_by_erratum": 5
+  },
+  "families": 72,
+  "families_used": 72,
+  "family_size_distribution": {
+    "2": 30,
+    "1": 15,
+    "5": 3,
+    "3": 14,
+    "6": 1,
+    "4": 9
+  },
+  "singleton_families": [
+    "WF-THERMAL",
+    "WF-BUILDING-ENERGY",
+    "WF-RADIATION-PROT",
+    "WF-CHEM-REG",
+    "WF-CLIN-MICRO",
+    "WF-SYSTEMS-BIO",
+    "WF-COG-MODEL",
+    "WF-EVIDENCE-SYNTH",
+    "WF-HR-GOV",
+    "WF-PROJECT-MGMT",
+    "WF-INVEST-COMPLIANCE",
+    "WF-DATA-LICENSING",
+    "WF-TRADE-COMPLIANCE",
+    "WF-SUPPLY-CHAIN",
+    "WF-AV-ARCHIVE"
+  ],
+  "cross_batch_families": [
+    {
+      "family": "WF-METRO-QUALITY",
+      "batches": "A;B1",
+      "primary_counts": [
+        4,
+        1,
+        0,
+        0
+      ],
+      "secondary_candidates": ""
+    },
+    {
+      "family": "WF-NUCLEAR-SAFETY",
+      "batches": "A;B1",
+      "primary_counts": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "secondary_candidates": ""
+    },
+    {
+      "family": "WF-RESEARCH-DATA",
+      "batches": "B1;B2",
+      "primary_counts": [
+        0,
+        2,
+        0,
+        0
+      ],
+      "secondary_candidates": "psy_comp_wf01"
+    }
+  ],
+  "ecgs": 50,
+  "ecgs_used": 50,
+  "auth_groups": {
+    "AUTH-01": 27,
+    "AUTH-02": 45,
+    "AUTH-03": 96,
+    "AUTH-04": 40,
+    "AUTH-05": 40,
+    "AUTH-06": 101,
+    "AUTH-07": 14,
+    "AUTH-08": 16,
+    "AUTH-09": 1
+  },
+  "eng_groups": {
+    "ENG-01": 174,
+    "ENG-02": 94,
+    "ENG-03": 30,
+    "ENG-04": 14,
+    "ENG-05": 16,
+    "ENG-06": 83,
+    "ENG-07": 33
+  },
+  "flags": {
+    "linux_not_verified": 174,
+    "engineering_pending": 83,
+    "uncovered_official": 22,
+    "padding_risk": 27,
+    "padding_risk_high": 9,
+    "expert_endorsement_required": 45,
+    "expert_pending": 9
+  },
+  "engineering_pending_by_batch": {
+    "A": 21,
+    "B1": 25,
+    "B2": 15,
+    "B3": 22
+  },
+  "uncovered_candidates": [
+    "ag_precision_wf01",
+    "ag_precision_wf02",
+    "ag_precision_wf03",
+    "ag_precision_wf04",
+    "ag_precision_wf05",
+    "eng_chemproc_wf01",
+    "eng_chemproc_wf02",
+    "eng_chemproc_wf03",
+    "eng_mining_wf01",
+    "eng_mining_wf02",
+    "eng_mining_wf03",
+    "eng_mining_wf04",
+    "eng_mining_wf05",
+    "edu_edt_wf01",
+    "edu_edt_wf02",
+    "edu_edt_wf03",
+    "ts_avi_wf01",
+    "ts_avi_wf02",
+    "ts_avi_wf03",
+    "ts_mar_wf01",
+    "ts_mar_wf02",
+    "ts_mar_wf03"
+  ],
+  "uncovered_by_subdomain": {
+    "precision_agriculture": 5,
+    "chemical_process": 3,
+    "mining_petroleum": 5,
+    "educational_technology": 3,
+    "aviation": 3,
+    "maritime_port": 3
+  },
+  "padding_by_batch": {
+    "B3": 27
+  },
+  "auth_field_coverage": {
+    "usage_permissions_only": 51,
+    "four_authorization_fields": 123
+  },
+  "b2_empty_original_family": 34,
+  "b2_registered_original_family": 32,
+  "claim_map_status": {
+    "match": 174
+  },
+  "duplicate_pairs": [
+    {
+      "pair_id": "DP-A-01",
+      "batch": "A",
+      "title": "HEC-RAS floodplain (civil_geo vs env_water)",
+      "candidates": [
+        "eng_civilgeo_wf02",
+        "ag_envwater_wf03"
+      ],
+      "verdict": "yes",
+      "primary": "ag_envwater_wf03"
+    },
+    {
+      "pair_id": "DP-A-02",
+      "batch": "A",
+      "title": "EPANET distribution (civil_geo vs env_water)",
+      "candidates": [
+        "eng_civilgeo_wf03",
+        "ag_envwater_wf04"
+      ],
+      "verdict": "yes",
+      "primary": "ag_envwater_wf04"
+    },
+    {
+      "pair_id": "DP-A-03",
+      "batch": "A",
+      "title": "DFT scan/ATPG (electronics vs semiconductor)",
+      "candidates": [
+        "eng_electronics_wf02",
+        "eng_semiconductor_wf03"
+      ],
+      "verdict": "yes",
+      "primary": "eng_semiconductor_wf03"
+    },
+    {
+      "pair_id": "DP-B1-01",
+      "batch": "B1",
+      "title": "phys_phys_wf04|eng_energypower_wf04",
+      "candidates": [
+        "phys_phys_wf04",
+        "eng_energypower_wf04"
+      ],
+      "verdict": "no",
+      "primary": ""
+    },
+    {
+      "pair_id": "DP-B1-02",
+      "batch": "B1",
+      "title": "phys_earth_wf01|ag_envwater_wf03",
+      "candidates": [
+        "phys_earth_wf01",
+        "ag_envwater_wf03"
+      ],
+      "verdict": "no",
+      "primary": ""
+    },
+    {
+      "pair_id": "DP-B1-03",
+      "batch": "B1",
+      "title": "phys_phys_wf01|med_onco_wf01",
+      "candidates": [
+        "phys_phys_wf01",
+        "med_onco_wf01"
+      ],
+      "verdict": "no",
+      "primary": ""
+    },
+    {
+      "pair_id": "DP-B1-04",
+      "batch": "B1",
+      "title": "life_sysmic_wf05|med_pubhealth_wf02",
+      "candidates": [
+        "life_sysmic_wf05",
+        "med_pubhealth_wf02"
+      ],
+      "verdict": "no",
+      "primary": ""
+    },
+    {
+      "pair_id": "DP-B1-05",
+      "batch": "B1",
+      "title": "phys_chem_wf03|life_biomol_wf04",
+      "candidates": [
+        "phys_chem_wf03",
+        "life_biomol_wf04"
+      ],
+      "verdict": "no",
+      "primary": ""
+    },
+    {
+      "pair_id": "DP-B2-01",
+      "batch": "B2",
+      "title": "biz_cmp_wf02|legal_research_wf03",
+      "candidates": [
+        "biz_cmp_wf02",
+        "legal_research_wf03"
+      ],
+      "verdict": "no",
+      "primary": ""
+    },
+    {
+      "pair_id": "DP-B2-02",
+      "batch": "B2",
+      "title": "biz_ana_wf02|soc_econ_wf02",
+      "candidates": [
+        "biz_ana_wf02",
+        "soc_econ_wf02"
+      ],
+      "verdict": "no",
+      "primary": ""
+    },
+    {
+      "pair_id": "DP-B2-03",
+      "batch": "B2",
+      "title": "biz_ana_wf02|biz_sup_wf02",
+      "candidates": [
+        "biz_ana_wf02",
+        "biz_sup_wf02"
+      ],
+      "verdict": "no",
+      "primary": ""
+    },
+    {
+      "pair_id": "DP-B2-04",
+      "batch": "B2",
+      "title": "psy_exp_wf01|med_trials_wf01",
+      "candidates": [
+        "psy_exp_wf01",
+        "med_trials_wf01"
+      ],
+      "verdict": "no",
+      "primary": ""
+    },
+    {
+      "pair_id": "DP-B2-05",
+      "batch": "B2",
+      "title": "psy_exp_wf03|med_diag_wf01",
+      "candidates": [
+        "psy_exp_wf03",
+        "med_diag_wf01"
+      ],
+      "verdict": "no",
+      "primary": ""
+    },
+    {
+      "pair_id": "DP-B2-06",
+      "batch": "B2",
+      "title": "soc_econ_wf01|med_pubhealth_wf04",
+      "candidates": [
+        "soc_econ_wf01",
+        "med_pubhealth_wf04"
+      ],
+      "verdict": "no",
+      "primary": ""
+    },
+    {
+      "pair_id": "DP-B2-07",
+      "batch": "B2",
+      "title": "soc_econ_wf02|med_inform_wf03",
+      "candidates": [
+        "soc_econ_wf02",
+        "med_inform_wf03"
+      ],
+      "verdict": "no",
+      "primary": ""
+    },
+    {
+      "pair_id": "DP-B3-01",
+      "batch": "B3",
+      "title": "vm_anim_wf01|vm_aud_wf02",
+      "candidates": [
+        "vm_anim_wf01",
+        "vm_aud_wf02"
+      ],
+      "verdict": "no",
+      "primary": ""
+    },
+    {
+      "pair_id": "DP-B3-02",
+      "batch": "B3",
+      "title": "vm_gra_wf03|edu_edt_wf03",
+      "candidates": [
+        "vm_gra_wf03",
+        "edu_edt_wf03"
+      ],
+      "verdict": "no",
+      "primary": ""
+    },
+    {
+      "pair_id": "DP-B3-03",
+      "batch": "B3",
+      "title": "vm_aud_wf03|edu_lib_wf03",
+      "candidates": [
+        "vm_aud_wf03",
+        "edu_lib_wf03"
+      ],
+      "verdict": "no",
+      "primary": ""
+    },
+    {
+      "pair_id": "DP-B3-04",
+      "batch": "B3",
+      "title": "ts_mar_wf03|eng_urban_wf01",
+      "candidates": [
+        "ts_mar_wf03",
+        "eng_urban_wf01"
+      ],
+      "verdict": "no",
+      "primary": ""
+    },
+    {
+      "pair_id": "DP-B3-05",
+      "batch": "B3",
+      "title": "ts_fir_wf02|eng_chemproc_wf02",
+      "candidates": [
+        "ts_fir_wf02",
+        "eng_chemproc_wf02"
+      ],
+      "verdict": "no",
+      "primary": ""
+    },
+    {
+      "pair_id": "DP-B3-06",
+      "batch": "B3",
+      "title": "ts_fir_wf03|eng_civilgeo_wf03",
+      "candidates": [
+        "ts_fir_wf03",
+        "eng_civilgeo_wf03"
+      ],
+      "verdict": "no",
+      "primary": ""
+    },
+    {
+      "pair_id": "DP-B3-07",
+      "batch": "B3",
+      "title": "ts_fir_wf01|eng_civilgeo_wf04",
+      "candidates": [
+        "ts_fir_wf01",
+        "eng_civilgeo_wf04"
+      ],
+      "verdict": "no",
+      "primary": ""
+    },
+    {
+      "pair_id": "DP-B3-08",
+      "batch": "B3",
+      "title": "ts_avi_wf01|eng_aerospace_wf02",
+      "candidates": [
+        "ts_avi_wf01",
+        "eng_aerospace_wf02"
+      ],
+      "verdict": "no",
+      "primary": ""
+    },
+    {
+      "pair_id": "DP-B3-09",
+      "batch": "B3",
+      "title": "edu_lib_wf01|psy_comp_wf01",
+      "candidates": [
+        "edu_lib_wf01",
+        "psy_comp_wf01"
+      ],
+      "verdict": "no",
+      "primary": ""
+    },
+    {
+      "pair_id": "DP-B3-10",
+      "batch": "B3",
+      "title": "edu_lib_wf03|med_inform_wf04",
+      "candidates": [
+        "edu_lib_wf03",
+        "med_inform_wf04"
+      ],
+      "verdict": "no",
+      "primary": ""
+    }
+  ],
+  "duplicate_pair_count": 25,
+  "duplicate_pair_slots": 50,
+  "distinct_candidates_in_pairs": 45,
+  "duplicate_yes": 3,
+  "duplicate_no": 22,
+  "clusters": [
+    {
+      "cluster_id": "DC-HYD-FLOOD",
+      "members": [
+        "eng_civilgeo_wf02",
+        "ag_envwater_wf03"
+      ],
+      "primary": "ag_envwater_wf03",
+      "status": "substantively_duplicate_yes_primary_assigned_by_batch_A",
+      "note": "同一 HEC-RAS 洪泛区建模工作；civil_geo 侧按 A 批次裁定改为桥梁/涵洞/堤防冲刷与回水的水力设计。"
+    },
+    {
+      "cluster_id": "DC-HYD-DIST",
+      "members": [
+        "eng_civilgeo_wf03",
+        "ag_envwater_wf04"
+      ],
+      "primary": "ag_envwater_wf04",
+      "status": "substantively_duplicate_yes_high_near_duplicate_merge_undecided",
+      "note": "同一 EPANET 配水管网建模工作；A 批次自评 HIGH 近似重复，合并或按“设计 vs 运行”拆分仍待专家裁定。"
+    },
+    {
+      "cluster_id": "DC-DFT-ATPG",
+      "members": [
+        "eng_electronics_wf02",
+        "eng_semiconductor_wf03"
+      ],
+      "primary": "eng_semiconductor_wf03",
+      "status": "substantively_duplicate_yes_primary_assigned_by_batch_A",
+      "note": "扫描链插入与 ATPG 属芯片级 DFT；electronics 侧应改归属半导体或改写为板级 JTAG 边界扫描。"
+    }
+  ],
+  "family_role_counts": {
+    "primary": 174
+  },
+  "secondary_memberships": [
+    [
+      "psy_comp_wf01",
+      "WF-RESEARCH-DATA"
+    ]
+  ],
+  "risk_levels_auth": {
+    "high": 109,
+    "low_medium": 41,
+    "none_screened": 9,
+    "medium": 15
+  },
+  "risk_levels_eng": {
+    "high": 174
+  },
+  "families_with_uncovered": [
+    "WF-PROCESS-ENG",
+    "WF-AVIATION",
+    "WF-MARITIME",
+    "WF-PETRO",
+    "WF-MINING",
+    "WF-PRECISION-AG",
+    "WF-A11Y",
+    "WF-INSTRUCTION"
+  ],
+  "families_with_padding": [
+    "WF-AVIATION",
+    "WF-MARITIME",
+    "WF-FIRE",
+    "WF-3D-ANIM",
+    "WF-PRINT",
+    "WF-A11Y",
+    "WF-AUDIO",
+    "WF-AV-ARCHIVE",
+    "WF-INSTRUCTION",
+    "WF-LIBRARY",
+    "WF-L10N"
+  ],
+  "b3_provenance": {
+    "trail_backfill": "S1_02B3 的 .audit/s1-02b3.tsv 末段 L21–L26 时间为收尾补记而非当时记录：补记的 19:16:30/19:16:40/19:17:00 exit-0 不可复现，因为 scripts/31_merge_b3.py:118 在输出已存在时抛 FileExistsError、scripts/29_b3_scope_matrix.py:218-220 返回 1、scripts/33_b3_overlap.py:86-87 抛 SystemExit；产物 mtime 为 S1_02B3_WORKFLOW_CANDIDATES.csv 19:06:04、S1_02B3_SCOPE_MATRIX.csv 19:06:49、.audit/b3_overlap_sweep.csv 19:13:01，时间线以 mtime 为准。",
+    "edu_rebuild": "edu 片段在 18:37 冻结门之后于 18:41 重建，evidence/s1_02b3_research/edu_cluster_candidates.csv mtime 为 19:05:29、sidecar 为 18:41，被门的原始字节已不可取回；当前文件通过 30_check_fragment_b3.py 14/14。",
+    "vm_rebuild": "vm 片段在冻结后按来源精度重建；重建前的字节与重建后不可逐字比对。"
+  },
+  "batch_subdomains": {
+    "A": [
+      "aerospace_mech",
+      "chemical_process",
+      "civil_geo",
+      "electronics",
+      "energy_power",
+      "env_water",
+      "legal_research",
+      "litigation",
+      "manufacturing",
+      "mining_petroleum",
+      "precision_agriculture",
+      "robotics",
+      "semiconductor",
+      "urban_planning"
+    ],
+    "B1": [
+      "astronomy",
+      "biomolecular",
+      "cell_imaging",
+      "chemistry_materials",
+      "clinical_diagnostics",
+      "clinical_informatics",
+      "clinical_trials",
+      "earth_atmo",
+      "genomics",
+      "physics",
+      "public_health",
+      "systems_microbial",
+      "therapeutic_oncology"
+    ],
+    "B2": [
+      "accounting",
+      "actuarial_risk",
+      "comp_neuro",
+      "compliance",
+      "economics",
+      "enterprise_analytics",
+      "exp_psychology",
+      "hr_pm",
+      "quant_finance",
+      "sales_marketing",
+      "supply_chain"
+    ],
+    "B3": [
+      "animation_3d",
+      "audio_music",
+      "aviation",
+      "educational_technology",
+      "fire_safety",
+      "graphic_design",
+      "library_info",
+      "maritime_port",
+      "translation"
+    ]
+  }
+}

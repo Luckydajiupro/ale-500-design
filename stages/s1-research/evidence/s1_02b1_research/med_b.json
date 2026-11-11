@@ -1,0 +1,22 @@
+{
+  "subdomains": [
+    {
+      "subdomain_code": "clinical_informatics",
+      "business_boundary": "Institutional and enterprise services that design, configure, operate, and govern clinical information systems and clinical data assets, turning patient-care data into decision support, quality measures, interoperability, and research-ready data. Distinct from clinical_diagnostics and therapeutic_oncology (patient-level interpretation and care delivery): informatics builds and maintains the systems and data layer those workflows run on.",
+      "occupations": "Clinical informaticist; Chief medical informatics officer; Informatics nurse; Health IT clinical analyst; Clinical data analyst; eCQM measure analyst or developer; Clinical decision support analyst; Interoperability/interface analyst",
+      "boundary_note": "Boundary drawn at the systems-and-data layer: workflows that design, govern, and operate clinical information systems and enterprise clinical data assets (CDS, quality measures, research data warehouses, interoperability). Excludes direct clinical interpretation (clinical_diagnostics in med_a) and cancer care delivery (therapeutic_oncology in med_a). Candidates chosen because a professional or regulatory body documents each workflow end to end: AMIA and the CMS or ONC eCQI program for CDS and eCQMs, the OHDSI community book for observational warehouse studies, and IHE for document exchange."
+    },
+    {
+      "subdomain_code": "public_health",
+      "business_boundary": "Governmental and institutional population-health services that collect, monitor, and analyze health data to detect, investigate, prevent, and control disease and injury across communities, producing surveillance products, outbreak investigations, and population estimates under public-health legal authority. Distinct from clinical_informatics: population-level surveillance and registry data with statutory authority, not institutional EHR systems or quality measurement.",
+      "occupations": "Field epidemiologist; Public health surveillance officer; Health department epidemiologist; Public health informatician; Syndromic surveillance analyst; Public health data analyst; Infection preventionist",
+      "boundary_note": "Boundary drawn at population-level governmental public-health practice: surveillance, outbreak investigation, and population estimates performed with public-health legal authority. Excludes clinical care delivery, enterprise EHR informatics (clinical_informatics), and biostatistical method development; candidates are operational epidemiology workflows documented by CDC and CSTE program manuals."
+    },
+    {
+      "subdomain_code": "clinical_trials",
+      "business_boundary": "Sponsor, CRO, site, and institution operations that plan, conduct, monitor, and close out regulated interventional and observational clinical research involving human subjects, producing verifiable trial data packages, safety reports, and disclosure records that support regulatory submissions. Distinct from public_health (population surveillance, not regulated product development); the boundary to biostatistics is drawn at study design and statistical inference, which this cluster does not re-emit.",
+      "occupations": "Clinical research associate (CRA); Clinical trial monitor; Clinical data manager; Drug safety associate; Clinical research coordinator; Clinical trial manager; Medical monitor; Trial disclosure and registry specialist",
+      "boundary_note": "Boundary drawn at regulated clinical research operations: monitoring, data management, safety reporting, and disclosure. Excludes statistical design and analysis (biostatistics) and clinical care (clinical_diagnostics and therapeutic_oncology in med_a); overlap is noted where a trial workflow consumes informatics or laboratory services. Candidates are anchored on ICH E6, 21 CFR, FDAAA 42 CFR Part 11, SCDM, and TransCelerate documentation."
+    }
+  ]
+}

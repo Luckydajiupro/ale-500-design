@@ -1,0 +1,9 @@
+case	injection	expected_ids	rc	expected_statuses	extra_non_pass	verdict
+c01	inputs traversal error (chmod-000 subdir, mock inputs)	in-01,in-02,in-03	1	{"in-01": "FAIL", "in-02": "FAIL", "in-03": "FAIL"}	bd-05,in-04,in-05	TRIGGERED
+c02	04 one data row removed (122 -> 121)	c04-rows	1	{"c04-rows": "FAIL"}	b-03,c-02,c04-census,c04-ids,c05-domains,c08-official,chk-01	TRIGGERED
+c03	evidence/source_hashes_round1_r1.tsv deleted	src-01,e-02	1	{"src-01": "ERROR", "e-02": "FAIL"}		TRIGGERED
+c04	sealed mode with wrong sha256 for 03 in manifest	m-02	1	{"m-02": "FAIL"}		TRIGGERED
+c05	unknown-gui row forced to bare low cells	d-01,d-02	1	{"d-01": "FAIL", "d-02": "FAIL"}		TRIGGERED
+c06	staged-local odoo OS cells swapped to Linux	c-02,chk-01	1	{"c-02": "FAIL", "chk-01": "FAIL"}	c04-census	TRIGGERED
+c07	08 other row name<->bytes swapped back	c08-e-other	1	{"c08-e-other": "FAIL"}		TRIGGERED
+c08	06 merge placeholder line restored	a-03	1	{"a-03": "FAIL"}		TRIGGERED

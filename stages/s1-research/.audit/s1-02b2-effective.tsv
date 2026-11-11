@@ -1,0 +1,17 @@
+ts	phase	decision	why	evidence	result
+2026-11-10T11:46:49+08:00	start	S1-02B2有效候选维护批次启动。目标：39条candidate_id原字段原值保留，新增4列，5条指定候选证据范围校正或拆分并入勘误，四类校验重跑，不覆盖任何历史文件，完成后停止不启动B3	用户m00524六项要求；上批次B2已冻结	请求已读，B2成品在盘	armed
+2026-11-10T11:46:49+08:00	column_design	四列语义定稿：source_support_mode=校正后整体来源支持模式，枚举native|partial_function_replacement|conditional，取各证据块最弱经验证态，未校正行原样复制software_adaptation；evidence_scope=分号连接证据块枚举(块名=模式_等级(验证状态))，未校正行为whole_workflow=as_recorded；workflow_family_id=逗号连接工作流族标识，未登记为空；process_incident=none或以inc:前缀引用轨迹事件	principle-model-the-domain + principle-encode-lessons-in-structure：校正以JSON spec为单一事实源，生成器26与校验器27同源消费，防经散文漂移	B2行内pending_confirmation/blocking_risks/source_reference自证缺口；5行WF+SC全文已调回	armed
+2026-11-10T11:46:49+08:00	analysis	五条勘误定性：psy_comp_wf01=split(BIDS与fMRIPrep两块有据，DICOM转换与QC零引用)；psy_exp_wf04=split(PRISMA报告层有据，meta方法层RoB2/GRADE/metafor未指明)；biz_cmp_wf03=narrow(申报说明覆盖填表提交，5318g/1020.320仅名称引用，调查叙述为专业判断)；biz_mkt_wf02=split(准则原则层落地页已验证，准则全文未核对+修订差异未比对，配额/预测试/QC运算规程准则未规定)；biz_quant_wf02=split(DSR论文已验证native，SEC206(4)-1被sec.gov 403阻断仅以规则精神表述)	principle-prove-it-works：先读原文再定性，每处缺口都引行内字段作为证据	WF CSV 5行全字段+SC映射5行已调回比对；缺口全部行内自证	armed
+2026-11-10T11:46:49+08:00	baseline	基线绿：scripts/24_validate_b2.py退出0，scripts/25_b2_overlap.py退出0；12个冻结文件sha256快照存.audit/s1-02b2-effective/baseline_sha256.txt；目录确认非git仓库	用户第5项要求先重跑既有校验；有意不重跑21/23/15，三者会重写冻结产出文件（即使字节相同也违反不覆盖原则）	exit codes; sha256sum 12行; git rev-parse fatal=not a repository	armed
+2026-11-10T12:01:48+08:00	generate	26_b2_effective_generate.py 退出0：写出 S1_02B2_EFFECTIVE_CANDIDATES.csv，39行x43列，前39列原值复制，后4列由 spec 填充，原子写入	principle-build-the-lever：改由生成器产出而非手工编辑，spec 是单一事实源	26 输出行数与列数；27 V2 逐字段字节一致	on disk
+2026-11-10T12:01:48+08:00	validator_fix	27 批内三次修正：1) V4 误用 candidates 列按|拆分，跨批次 A 侧 id（legal_research_wf03）被误判缺失，改为按 pair 列拆分且只校验 B2 侧 id；2) V12 改为空白归一化比较防勘误排版漂移；3) 负例探针初版只传 2 参数致 TypeError，改传 wh,wr,bad_eh,bad_er 四参	principle-prove-it-works + 上次批次的教训（编辑后必须 grep 验证落盘再运行；两次 edit 调用结果未达盘，全因运行前 grep 才被发现）	前缀失败 traceback 与修复后全绿输出；grep 验证	fixed
+2026-11-10T12:01:48+08:00	final_gate	最终闸门：27 退出0（V1-V12 + n1-n6 全翻转）；24 退出0；25 退出0；baseline sha256 12/12 OK；EFFECTIVE+勘误+26+27+spec 五文件在盘	sequence-verifiable-units：每个闸门只依赖已锁定单元，最终一次全量重跑	最终运行 exit codes；sha256sum -c 输出 12 行 OK	PASS
+2026-11-10T12:01:48+08:00	stop	S1-02B2-effective 批次交付完成即停止，不启动 B3；独立评审待办与本批未验证事项已登记于勘误	用户第6项要求；B2 与 B1 的独立评审待办保持不变	勘误《未验证事项登记》一节	done
+2026-11-10T14:02:51+08:00	repro	R2缺陷复现：EFFECTIVE 中 source_support_mode 与 software_adaptation 共用词汇，34 行盲复制，14 条 E3 行显示 native	probe 枚举 sm 值集合与 sa 完全相同；E3/20 行 sm=='native'	confirmed
+2026-11-10T14:02:51+08:00	root_cause	根因：26 未校正分支 sm=software_adaptation + 27 旧 V5 断言复制 + spec 词汇共用，三处锁定混淆	diff 三处代码	confirmed
+2026-11-10T14:02:51+08:00	vocab_split	设计：source_support_mode 改为独立证据支持词汇，与 software_adaptation 令牌不相交；字段名保留不改名	r2 spec 全量重写	applied
+2026-11-10T14:02:51+08:00	v10_added	27 新增真正 V10：语义分离校验（枚举不相交、逐行值不相等、最弱块映射、E3 禁 full）	6 处 edit + 负例 n7 n8 写入	applied
+2026-11-10T14:02:51+08:00	regenerate	26 重跑：EFFECTIVE 39x43；sm 分布 recorded_full=14/partial=20 + 5 个校正态各 1；E3 20/20 partial，0 行 sm==sa	26 exit 0 + Counter 探针	confirmed
+2026-11-10T14:02:51+08:00	v10_separator_fix	V10 块解析修复：; 同时是块分隔与括号内列表分隔，改 re.split(r'; (?=[a-z][a-z0-9_]*=)')（与 r1 V4 同类的分隔符过载缺陷）	首次 27 运行 IndexError line 164 → 修复后 V10 PASS	confirmed
+2026-11-10T14:02:51+08:00	final_gate_r2	R2 全闸门：27 exit 0 (V1–V10,V11,V12+n1–n8 Overall PASS)；24 exit 0；25 exit 0；sha256sum -c 基线 12/12 OK	四次运行输出	confirmed
+2026-11-10T14:02:51+08:00	stop	按用户 R2 要求停止，不启动 B3	goal 待 complete	confirmed

@@ -1,0 +1,19 @@
+{
+  "subdomains": [
+    {
+      "subdomain_code": "educational_technology",
+      "candidate_count": 3,
+      "coverage_notes": "3 rows: instructional design package with QM review; xAPI instrumentation and LRS conformance; WCAG 2.2 AA / Section 508 remediation. Seeds 1-3 used. Learning analytics dashboard (seed 4) and virtual lab (seed 5) not used because the three chosen rows each have their own artifact, review gate and objectively checkable standard; adding them would duplicate the data-governance and media-production content already covered."
+    },
+    {
+      "subdomain_code": "library_info",
+      "candidate_count": 3,
+      "coverage_notes": "3 rows: original cataloging to RDA/MARC 21 with PCC authority control; FADGI digitisation with METS/MODS and IIIF delivery; PREMIS-conformant preservation ingest. Seeds 1, 2 and 5 used. PRISMA systematic review (seed 4) deliberately excluded to avoid overlap with psy_exp_wf04; weeding/deselection (seed 3) excluded because its evidence base is a practitioner manual rather than a citable standard, and it would not add a distinct artifact class."
+    },
+    {
+      "subdomain_code": "translation",
+      "candidate_count": 3,
+      "coverage_notes": "3 rows: ISO 17100 TEP with TBX terminology; XLIFF 2.1 localisation with MQM QA; Netflix TTSG timed-text subtitling. Seeds 1-3 used. MT post-editing (seed 4) and certified/legal translation (seed 5) not used: ISO 18587 and sworn-translator rules are paywalled/no free clause access, so they could only be name-referenced, and they overlap the TEP row's revision gate."
+    }
+  ]
+}

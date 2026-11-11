@@ -1,0 +1,23 @@
+scope	item	bytes	mib	gib	file_count	note
+(a) archive/	03_ale-data/archive/ total	39173454217	37358.72	36.48	5	original archives frozen from release v1.1
+(a) archive/	03_ale-data/archive/ale-tasks-data.tar.gz	39155440558	37341.54	36.47	1	
+(a) archive/	03_ale-data/archive/selected-members.jsonl	18010742	17.18	0.02	1	
+(a) archive/	03_ale-data/archive/README.md	2277	0.00	0.00	1	
+(a) archive/	03_ale-data/archive/release-v1.1.json	435	0.00	0.00	1	
+(a) archive/	03_ale-data/archive/.gitattributes	205	0.00	0.00	1	
+(b) task-data-v1.1/	tree total	53327153701	50856.74	49.66	79065	unpacked tree, all domains
+(b) task-data-v1.1/	per-domain business_finance	1817537137	1733.34	1.69	571	per-domain logical bytes from FILE_SHA256SUMS.txt
+(b) task-data-v1.1/	per-domain computing_math	1475401155	1407.05	1.37	1484	per-domain logical bytes from FILE_SHA256SUMS.txt
+(b) task-data-v1.1/	per-domain education_info	575064	0.55	0.00	67	per-domain logical bytes from FILE_SHA256SUMS.txt
+(b) task-data-v1.1/	per-domain engineering	1527073733	1456.33	1.42	3922	per-domain logical bytes from FILE_SHA256SUMS.txt
+(b) task-data-v1.1/	per-domain health_medicine	17994750542	17161.13	16.76	9056	per-domain logical bytes from FILE_SHA256SUMS.txt
+(b) task-data-v1.1/	per-domain legal	1305680	1.25	0.00	31	per-domain logical bytes from FILE_SHA256SUMS.txt
+(b) task-data-v1.1/	per-domain life_sciences	15585631616	14863.62	14.52	50022	per-domain logical bytes from FILE_SHA256SUMS.txt
+(b) task-data-v1.1/	per-domain other	204029485	194.58	0.19	273	per-domain logical bytes from FILE_SHA256SUMS.txt
+(b) task-data-v1.1/	per-domain physical_sciences	1612335450	1537.64	1.50	12772	per-domain logical bytes from FILE_SHA256SUMS.txt
+(b) task-data-v1.1/	per-domain psychology_neuro	10278407258	9802.25	9.57	96	per-domain logical bytes from FILE_SHA256SUMS.txt
+(b) task-data-v1.1/	per-domain social_sciences	469325814	447.58	0.44	25	per-domain logical bytes from FILE_SHA256SUMS.txt
+(b) task-data-v1.1/	per-domain transport_safety	178376785	170.11	0.17	76	per-domain logical bytes from FILE_SHA256SUMS.txt
+(b) task-data-v1.1/	per-domain visual_media	2182403982	2081.30	2.03	670	per-domain logical bytes from FILE_SHA256SUMS.txt
+(c) 03_ale-data	total	92500607918	88215.45	86.15	79070	archive plus tree
+(d) inputs-readonly	total	94086734364	89728.10	87.63	108117	every regular file in FILE_SHA256SUMS.txt; symlinks excluded

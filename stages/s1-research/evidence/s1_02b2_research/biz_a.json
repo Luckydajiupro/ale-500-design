@@ -1,0 +1,24 @@
+{
+  "subdomains": [
+    {
+      "subdomain_code": "accounting",
+      "candidate_count": 4,
+      "coverage_notes": "4 条候选覆盖 XBRL/EDGAR 申报校验（E1，SEC Filer Manual）、风险导向外部审计（E1，ISA 准则）、公开财报分析（E3，CFA 准则+EDGAR 数据）与职业舞弊筛查（E3，ACFE Report to the Nations）。审计准则以 IAASB 为已验证主源：PCAOB 官网对脚本访问返回 403 未能验证，仅作名称引用并已写入 pending_confirmation。全部采用公开数据路径的流程可复现，非公开账本一律要求书面授权路径。"
+    },
+    {
+      "subdomain_code": "actuarial_risk",
+      "candidate_count": 4,
+      "coverage_notes": "4 条候选覆盖经验死亡率分析（E3，HMD 公开生命表+ASOP 25/56）、Solvency II 标准公式 SCR（E1，授权条例 2015/35）、IFRS 17 计量与 CSM 滚动（E1，采纳条例 2021/2036 附件）与产险链梯法准备金（E3，Mack 1993）。E1 行锚定 EUR-Lex 公开条例全文；公司保单与经验数据仅限书面授权或合成数据，已写授权路径。"
+    },
+    {
+      "subdomain_code": "enterprise_analytics",
+      "candidate_count": 3,
+      "coverage_notes": "3 条候选覆盖客户流失建模（E3，IBM 公开 CRISP-DM 文档）、经营时间序列预测（E3，FPP3 开放教科书经 Wayback 快照验证，原站 otexts.com 对脚本访问 403 已如实记录）与统计欺诈检测（E3，Bolton & Hand 综述）。库存与定价分析未成候选：权威方法文本为付费教材（Stanford University Press 页面连续 429 限流未能访问），仅厂商内容不足以支撑 E1/E3 级证据，故如实不列、不造 E4 项目提案凑数。真实客户与交易数据一律要求去标识化或授权。"
+    },
+    {
+      "subdomain_code": "compliance",
+      "candidate_count": 4,
+      "coverage_notes": "4 条候选覆盖 OFAC 制裁名单筛查（E1，OFAC 合规承诺框架 PDF+SDN 名单页）、AML 计划四支柱（E1，31 CFR 1010.210 经 LII 镜像）、SAR 编制与电子申报（E1，FinCEN 申报说明 PDF）与受益所有人 CDD（E1，31 CFR 1010.230 经 LII 镜像）。FATF 与 FFIEC 官网受反爬限制未直接访问，改以公开可验证的一手监管文本为锚并如实标记（eCFR 官方源跳转拦截页，采用 LII 镜像核对原文）。真实客户数据仅限法定目的与授权范围。"
+    }
+  ]
+}

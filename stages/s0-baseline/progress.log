@@ -1,0 +1,7 @@
+[2026-11-09 21:21:49 ] 最终基线整合开始。继承来源:第一轮/R1/R2 按磁盘哈希核定。
+[2026-11-09 21:21:49 ] 复制 10 份正式文件与 evidence 副本,重写 5 份文件的过时表述。
+[2026-11-09 22:41:00 +0800] 修正：22:34:00 条目中"FINAL_VALIDATION_REPORT.md 由 scripts/50_build_final_report.py 生成"当时未执行成功（脚本尚未落盘），该文件实际在封存序列中生成。本行仅追加说明，不改写旧行。
+[2026-11-09 22:41:00 +0800] 封存序列：manifest --final（仅要求 PHASE0_FINAL_REPORT.md）-> FINAL_VALIDATION_REPORT.md 生成 -> FINAL_CHECKSUMS.sha256 最后生成 -> 只读复验。progress.log 至此为最终内容。
+[2026-11-10T10:54:07 +0800] closeout amendment。四份只读预检全过(FINAL_CHECKSUMS 65/65 一致,归档三记录在场,analysis 只剩 phase0-final)。00/10/PHASE0_FINAL_REPORT 状态行改为 Phase 0 CLOSED。final_validate.py 来源校验切换至外部归档追溯(fv-13b/14/14b/15/16),fv-07 检查四个 CLOSED 短语,fv-08 新短语。build_manifest_final.py 来源根切换至 /Users/mac/Archives/ALE-Phase0-History-20261110,sources 增加 archive_rel,lifecycle 置 closed。50_build_final_report.py 结论与状态串更新。
+[2026-11-10T10:56:15 +0800] closeout amendment 冻结复验 TOTAL 41 PASS 40 FAIL 0 ERROR 0 SKIP 1(唯一 SKIP: fv-07 对旧 FINAL_VALIDATION_REPORT.md 的检查,报告在冻结后重生成)。结果写入 evidence/final_validate_results.json/.txt。Phase 0 CLOSED。
+[2026-11-10T10:59:28 +0800] closeout amendment 复查修正: fv-14b 与 fv-16 的证据串在 PASS 时曾显示固定词(mapping mismatch / entry missing),改为按判定显示(mapping ok / entry=ok),重新冻结复验 TOTAL 41 PASS 40 FAIL 0 ERROR 0 SKIP 1。Phase 0 CLOSED。

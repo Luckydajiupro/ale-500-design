@@ -1,0 +1,13 @@
+self-test: mutated copies under the system temp directory, never in the workspace
+PASS control (pristine copy) all 15 checks pass
+PASS duplicate candidate id             caught by C01, C02, C10, C15
+PASS missing candidate                  caught by C01, C02, C07, C08, C09, C10, C11, C15
+PASS family id not in registry          caught by C07
+PASS registry primary count mismatch    caught by C07
+PASS engineering_pending flag count     caught by C10
+PASS evidence risk class                caught by C05
+PASS tampered historical file           caught by C13
+PASS forbidden allocation word          caught by C14
+PASS expert group overlap               caught by C08
+PASS manifest self-reference            caught by C13
+self-test passed: 10 mutations caught, pristine control green

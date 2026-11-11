@@ -1,0 +1,21 @@
+root: /Users/mac/Workspaces/ale-研究设计/ale-500-category-research
+PASS C01  row counts and primary-key uniqueness  rows 174/72/50/9/7 for assignment/registry/matrix/auth/eng; all primary keys unique
+PASS C02  assignment covers the four source batches  A/B1/B2/B3 = 51/57/39/27; union 174 == assignment; source_file, subdomain_code and workflow_title match origin rows
+PASS C03  evidence level and kind equal the source  evidence_level/evidence_kind identical to source on 174 rows; levels E1=83, E3=87, E4=4
+PASS C04  source_support_mode and its status  A/B1 not_recorded_in_batch 108 rows; B2/B3 recorded 61 rows; corrected_by_erratum 5 rows (biz_cmp_wf03, biz_mkt_wf02, biz_quant_wf02, psy_comp_wf01, psy_exp_wf04)
+PASS C05  evidence_risk_class recomputed from (level, mode)  risk class recomputed from (level, mode) on 174 rows; 1=14, 2=57, 3=12, 4=72, 5=15, 6=4; independent_verification_present=no on all 174
+PASS C06  original family ids and registration status  A/B1 empty with column_absent 108 rows; B2 unregistered_empty 34 + registered 5; B3 registered 27
+PASS C07  workflow family registry  72 families; primary counts sum 174; secondary memberships 1; cross-batch families 3
+PASS C08  expert capability matrix  50 expert groups, 174 ids, no overlap, per-batch counts match
+PASS C09  authorization and engineering risk registers  AUTH 9 groups, ENG 7 groups; ENG-01 covers 174
+PASS C10  flags  linux_not_verified 174; engineering_pending 83 (21/25/15/22); uncovered_official 22 (A 13 + B3 9); padding 27 with 9 high; endorsement 45; expert_pending 9 (A)
+PASS C11  duplicate attribution  25 pairs (3 YES / 22 no), 50 slots, 45 distinct ids, 3 clusters
+PASS C12  primary_source_url against the claim maps  primary_source_url equal to claim-map source_url on 174 rows; source_reference_or_fragment non-empty on 174
+PASS C13  historical immutability against the baseline  61/61 entries hash-match; 0 unsatisfiable
+PASS C14  forbidden allocation language  no asserted allocation language in the five files; 2 citation/URL hit(s) exempt (biz_hr_wf01/primary_source_url/recruit, biz_hr_wf01/source_reference_or_fragment/recruit)
+PASS C15  level and mode distributions
+     authorization_risk_level: high=109, low_medium=41, medium=15, none_screened=9 (total 174)
+     engineering_risk_level: high=174 (total 174)
+     evidence_risk_class: 1=14, 2=57, 3=12, 4=72, 5=15, 6=4 (total 174)
+     source_support_mode: conditional_support=22, judgment_support=1, name_reference_support=2, not_recorded_in_batch=108, recorded_full_support=14, recorded_partial_support=25, uncited_support=1, unspecified_support=1 (total 174)
+15 checks, 0 failed

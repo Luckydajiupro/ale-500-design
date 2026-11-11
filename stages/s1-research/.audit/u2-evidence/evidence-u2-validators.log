@@ -1,0 +1,9 @@
+--- step7 35 + self ---
+15 checks, 0 failed
+self-test passed: 10 mutations caught, pristine control green
+--- step8 36 + self ---
+16 checks, 0 failed
+self-test passed: 13 mutations caught, pristine control green
+--- step10 repeatability ---
+second build exit: 0
+outputs identical across runs: True

@@ -1,0 +1,30 @@
+{
+  "S1_01_CATEGORY_MAPPING.csv": {
+    "sha256": "961ec1df305eed5b91048f4604692d2bc620dcf91884cd0422abd1af35784df1",
+    "size": 25144
+  },
+  "S1_02A_EFFECTIVE_CANDIDATES.csv": {
+    "sha256": "f71c4305e5efd38e980ec7483b7905e28322d10cd26ba6348a83637059987ac9",
+    "size": 64535
+  },
+  "S1_02B1_BASELINE_CONSISTENCY_REPORT.md": {
+    "sha256": "a9145a4e5159bbd4c3496f297833a6cb6d2282bfcccfc2e80c7f315a85352ea3",
+    "size": 2863
+  },
+  "S1_02B1_DUPLICATE_ATTRIBUTION.md": {
+    "sha256": "bb99c22e74af247ce75bb7a9b03c660928f3cc651978c6d2b6e36890b3fab63a",
+    "size": 4669
+  },
+  "S1_02B1_REVIEW_SUMMARY.md": {
+    "sha256": "a731ae071b0513d5a7a8b1d28c9301cd4f12c6dc31f528eed29dbbe404524292",
+    "size": 3370
+  },
+  "S1_02B1_SOURCE_CLAIM_MAP.csv": {
+    "sha256": "291949efe88cd3a9c3b9c8751c062a844bb7b2d99a1964f4b337bf00e2578365",
+    "size": 15995
+  },
+  "S1_02B1_WORKFLOW_CANDIDATES.csv": {
+    "sha256": "2c24f55a6c2a04d21f530df3e6d9b8a49b98be1772ae4b762bd59aa2f14c35c1",
+    "size": 358232
+  }
+}

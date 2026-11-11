@@ -1,0 +1,50 @@
+PASS inputs/in-01 | inputs-readonly write-permission bits | writable-bit violations=0 walk-errors=0 total-entries=115313
+PASS inputs/in-02 | inputs-readonly current-identity writable access | identity-writable=0 walk-errors=0
+PASS inputs/in-03 | inputs-readonly traversal completeness | walk-errors=0 first=none
+PASS inputs/in-04 | inputs-readonly symlink registry | links=25 registry-rows=25
+PASS inputs/in-05 | inputs-readonly frozen mtimes | post-freeze-mtimes=0
+PASS src/src-01 | round-1 and R1 source files unchanged | rows=64 mismatch=0 missing=0
+PASS csv/c04-rows | 04 data row count | data-rows=122
+PASS csv/c04-cols | 04 header and column uniformity | header=True uniform=True
+PASS csv/c04-ids | 04 unique task_id | unique=122
+PASS csv/c04-vocab | 04 controlled vocabularies | violations=0
+PASS csv/c04-census | 04 locked census numbers | gui={'no': 73, 'unknown': 9, 'yes': 40} ext={'none': 109, 'online-required': 6, 'staged-local': 5, 'public-ref': 2} cs={'false': 103, 'true': 19} lr={'allowlist': 78, 'none': 36, 'doc_exception': 8} win=36 lin=86
+PASS csv/c05-total | 05 TOTAL row | total-rows=1
+PASS csv/c05-domains | 05 per-domain counts vs 04 | domains=13
+PASS csv/c08-proposed | 08 quota sum and computing_math zero | proposed-sum=500
+PASS csv/c08-official | 08 official counts vs 04 | mismatches=0
+PASS csv/c08-sizes | 08 totals vs sizes_scopes.tsv | mismatches=0
+PASS csv/c08-e-other | E: other tasks paired by task_id | other asset_profile task-bytes pairing
+PASS csv/c08-e-social | E: social unique task paired by task_id | social/transport task-bytes pairing
+PASS csv/c04-e-attrib | E: 04 abm and atwood domains | abm=transport_safety atwood=social_sciences
+PASS fixes/a-01 | A: 03 input delivery row no artifacts | rows=1
+PASS fixes/a-02 | A: 03 output collection row present | rows=1
+PASS fixes/a-03 | B: 06 no merge placeholders | residues=none
+PASS fixes/b-01 | B: 06 three-class census phrases | missing=none
+PASS fixes/b-02 | B: 06 staged-local system split phrases | staged-local system split phrases
+PASS fixes/b-03 | B: 06 GUI census phrases | non-cs gui census={'no': 59, 'yes': 36, 'unknown': 8}
+PASS fixes/c-01 | C: 09 corrected phrases | 09 corrected staged-local and GPU claims
+PASS fixes/c-02 | C: 04 staged-local split 2 Linux 3 Windows | linux=['business_finance/bpmn_category_governance_restructuring_l3', 'business_finance/bpmn_supply_disruption_l3'] windows=['business_finance/metabase_bi_dashboard_01', 'business_finance/odoo', 'business_finance/taxform_4_1']
+PASS fixes/c-03 | C: 04 gpu rows 3 and all windows | gpu-n=3
+PASS fixes/d-01 | D: unknown rows never bare low | violations=0
+PASS fixes/d-02 | D: expected UNKNOWN cells exact | violations=0
+PASS fixes/d-03 | D: kept tiers carry the unknown-factor note | violations=0
+PASS sub/chk-01 | live 30_checker.py subprocess | rc=0 parsed=True summary=SUMMARY 11/11 pass stdout-tail='counts match sizes_scopes.tsv | proposed sum=500\nPASS sizes_scopes internal sums | tree=53327153701 dom_sum=53327153701 whole03=92500607918 arch+tree=92500607918 inputs=94086734364\nSUMMARY 11/11 pass' stderr-tail=''
+PASS req/e-01 | R2 deliverable files exist | missing=none
+PASS req/e-02 | R2 evidence files exist | missing=none
+PASS req/e-03 | R2 progress.log append format | entries=13 malformed=0
+PASS req/e-04 | R2 scripts exist | missing=none
+PASS man/m-01 | SOURCE_MANIFEST_R2.json parses | sections=hashed_at_post,hashed_at_pre,note,phase,r2_dir,r2_evidence,r2_outputs,r2_scripts,sources_tsv,stage,workspace
+PASS man/m-02 | manifest r2_outputs hashes match disk | section=r2_outputs mismatches=0 missing=0
+PASS man/m-03 | manifest r2_evidence hashes match disk | section=r2_evidence mismatches=0 missing=0
+PASS man/m-04 | manifest r2_scripts hashes match disk | section=r2_scripts mismatches=0 missing=0
+PASS boundary/bd-01 | R1 dir unchanged since R2 start | late=0
+PASS boundary/bd-02 | round-1 dir unchanged since R2 start | late=0
+PASS boundary/bd-03 | .audit unchanged since R2 start | late=0
+PASS boundary/bd-04 | DIRECTORY_SUMMARY_REPORT.md unchanged | late=0
+PASS boundary/bd-05 | inputs-readonly unchanged since R2 start | late=0
+PASS boundary/bd-06 | three git repos head and clean state | heads=['2e91edd3cd26baa35a38127c90c8e5241dfbe62f', '73517c2eb097abe7974e9ec4de9819a02cd0ee81', '492249a2ca4b9d74efd3584a90399473c2e928c7'] dirty-sets=[[], [], ['?? .DS_Store', '?? tasks/.DS_Store', '?? tasks/demo/.DS_Store', '?? tasks/example_task.zip', '?? tasks/example_task/.DS_Store']] rc=[0, 0, 0, 0, 0, 0]
+PASS boundary/bd-07 | ale-data file count unchanged | regular=79076 links=3 present=6/6 nondot-exact=0/0 missing=none
+PASS checksums/fc-01 | FINAL_CHECKSUMS.sha256 exists | exists
+SKIP checksums/fc-02 | every listed hash matches disk | checksum verification not requested
+SKIP checksums/fc-03 | checksum file excludes itself | checksum verification not requested

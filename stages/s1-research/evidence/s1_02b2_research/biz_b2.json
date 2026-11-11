@@ -1,0 +1,32 @@
+{
+  "subdomains": [
+    {
+      "subdomain_code": "quant_finance",
+      "candidate_count": 4,
+      "summary": "4 条候选：FRTB 交易台损益归因 PLA 检验（E1，BCBS 457 标准文本）、Deflated Sharpe Ratio 回测过拟合校正（E1，Bailey & López de Prado 论文 PDF）、GIPS 2020 composite 业绩构建与展示合规（E1，gipsstandards.org）、交易所市场数据许可合规盘点（E3，CME 政策页 403 已记录）。回避官方示例 american_option_pricing_ls。市场数据许可边界写入每条候选的 usage_permissions/blocking_risks（禁止无许可抓取与再分发即时行情）；回测披露在 wf02 的 success_criteria/reproducibility_assessment 落实（登记全部试验次数、样本内外划分、SEC 206(4)-1 营销规则精神）。",
+      "url_verification": [
+        "https://www.bis.org/bcbs/publ/d457.htm -> 200 OK（重定向至 bis.org/publications/201901-standards-minimum-capital-requirements-market-risk）",
+        "https://www.davidhbailey.com/dhbpapers/deflated-sharpe.pdf -> 200 OK（application/pdf，1,048,118 字节）",
+        "https://www.gipsstandards.org/ -> 200 OK",
+        "https://www.cmegroup.com/market-data/license-data/market-data-policy-education-center.html -> 403 Forbidden（脚本被拒；页面存在经搜索引擎收录确认，属任务明示的交易所分发行情政策页反爬情形，事实已写入该行 pending_confirmation）",
+        "https://www.sec.gov（营销规则 206(4)-1 页面）-> 未访问（sec.gov 已知对脚本 403，该行仅按规则精神表述，未引用条款文本）"
+      ],
+      "evidence_notes": "wf01/wf02/wf03 为 E1 单源权威记载；wf04 为 E3 多源拼合，证据链缺口（政策条款原文须人工从官方渠道取得）已写入 pending_confirmation。未设置 E4 候选（各工作流均有行业/监管权威锚点，不造仅专家提议项目）。"
+    },
+    {
+      "subdomain_code": "supply_chain",
+      "candidate_count": 3,
+      "summary": "3 条候选：基于 CBP CROSS 裁定先例的 HTS 归类比照与申报文件（E3，rulings.cbp.gov）、供应链 SKU 分层需求预测与 FVA 评估（E3，FPP3 作者 GitHub 仓为主源，原站 otexts.com 脚本连接重置、Wayback 429 已记录）、SCOR DS 过程映射与绩效基线（E3，scor.ascm.org，完整标准付费墙缺口已登记）。回避官方示例 odoo。供应商/客户敏感数据最小化与保密路径写入 wf01（仅收集归类必要属性）/wf02（聚合层级+数据许可）/wf03（编码替换+聚合后的不可识别性）；预测类候选 wf02 在 usage_permissions/data_usage_authorization 明写预测数据许可边界。",
+      "url_verification": [
+        "https://rulings.cbp.gov/home -> 200 OK",
+        "https://www.cbp.gov/trade/rulings -> 200 OK（支持性参考）",
+        "https://hts.usitc.gov/ -> 200 OK（支持性参考；带 www 前缀 SSL EOF，使用无 www 形式）",
+        "https://github.com/robjhyndman/fpp3 -> 200 OK",
+        "https://otexts.com/fpp3/ -> FAIL（RemoteDisconnected，连接重置；事实已写入该行 pending_confirmation）",
+        "https://scor.ascm.org/ -> 200 OK",
+        "https://www.ascm.org/corporate-solutions/standards-tools/scor-ds/ -> 200 OK（支持性参考）"
+      ],
+      "evidence_notes": "3 行均为 E3 多源拼合（agent_inferred_combination），缺口已逐行写入 pending_confirmation：wf01 官方界面检索加公开规则的拼合无单一权威全流程文档、CROSS API/批量能力未确认；wf02 教科书方法加 FVA 实务环节拼合，FVA 文献为名称引用；wf03 完整指标定义为 ASCM 付费墙内容。无短缺，无需 shortage_justification。"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+PASS C01  rows 174
+PASS C02  uncovered 22
+PASS C03
+PASS C04
+PASS C05  registry sum 22
+PASS C06  matrix sum 22
+PASS C07
+PASS C08  61/61 hash-match
+PASS C09
+PASS C10  families 72 groups 50 auth 9 eng 7
+PASS C11  padding 27
+PASS C12
+PASS C13  listed 174
+PASS C14  listed 174
+PASS C15
+PASS C16  174 rows compared
+16 checks, 0 failed

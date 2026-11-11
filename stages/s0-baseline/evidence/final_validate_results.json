@@ -1,0 +1,257 @@
+{
+ "results": [
+  {
+   "check_id": "fv-02a",
+   "object": "04_task_inventory.csv",
+   "verdict": "PASS",
+   "evidence": "rows=122 unique_ids=122"
+  },
+  {
+   "check_id": "fv-02b",
+   "object": "04_task_inventory.csv",
+   "verdict": "PASS",
+   "evidence": "header_cols=31 uniform=True"
+  },
+  {
+   "check_id": "fv-02c",
+   "object": "04_task_inventory.csv vocab",
+   "verdict": "PASS",
+   "evidence": "gui=['no', 'unknown', 'yes'] ext=['none', 'online-required', 'public-ref', 'staged-local'] lr=['allowlist', 'doc_exception', 'none'] run={'NOT_RUN'}"
+  },
+  {
+   "check_id": "fv-02d",
+   "object": "04_task_inventory.csv domains",
+   "verdict": "PASS",
+   "evidence": "domains=13 cs=19"
+  },
+  {
+   "check_id": "fv-03a",
+   "object": "05_task_category_summary.csv",
+   "verdict": "PASS",
+   "evidence": "total_rows=1 total=['TOTAL', '122', 'n/a', '103', '103 个非 CS 域任务 retained_for_500 口径；122 为官方 full.txt 任务总数。windows 总计=36；staged-local=5；gpu=3；docker_exception=8。']"
+  },
+  {
+   "check_id": "fv-03b",
+   "object": "05_task_category_summary.csv vs 04 census",
+   "verdict": "PASS",
+   "evidence": "05_domains=13 equal=True"
+  },
+  {
+   "check_id": "fv-04a",
+   "object": "08_coverage_matrix_draft.csv",
+   "verdict": "PASS",
+   "evidence": "non_cs_rows=12 sum=500"
+  },
+  {
+   "check_id": "fv-04b",
+   "object": "08_coverage_matrix_draft.csv",
+   "verdict": "PASS",
+   "evidence": "computing_math=0"
+  },
+  {
+   "check_id": "fv-04c",
+   "object": "08 official_count vs 05",
+   "verdict": "PASS",
+   "evidence": "08_domains=13 equal=True"
+  },
+  {
+   "check_id": "fv-05",
+   "object": "00_project_brief.md",
+   "verdict": "PASS",
+   "evidence": "banned_hits=[]"
+  },
+  {
+   "check_id": "fv-05",
+   "object": "02_repo_inventory.md",
+   "verdict": "PASS",
+   "evidence": "banned_hits=[]"
+  },
+  {
+   "check_id": "fv-05",
+   "object": "03_repo_structure_comparison.md",
+   "verdict": "PASS",
+   "evidence": "banned_hits=[]"
+  },
+  {
+   "check_id": "fv-05",
+   "object": "06_runtime_provider_matrix.md",
+   "verdict": "PASS",
+   "evidence": "banned_hits=[]"
+  },
+  {
+   "check_id": "fv-05",
+   "object": "07_old_new_format_comparison.md",
+   "verdict": "PASS",
+   "evidence": "banned_hits=[]"
+  },
+  {
+   "check_id": "fv-05",
+   "object": "09_unknowns_and_decisions.md",
+   "verdict": "PASS",
+   "evidence": "banned_hits=[]"
+  },
+  {
+   "check_id": "fv-05",
+   "object": "10_phase0_summary.md",
+   "verdict": "PASS",
+   "evidence": "banned_hits=[]"
+  },
+  {
+   "check_id": "fv-05",
+   "object": "PHASE0_FINAL_REPORT.md",
+   "verdict": "PASS",
+   "evidence": "banned_hits=[]"
+  },
+  {
+   "check_id": "fv-06",
+   "object": "00_project_brief.md",
+   "verdict": "PASS",
+   "evidence": "dangling=[]"
+  },
+  {
+   "check_id": "fv-06",
+   "object": "02_repo_inventory.md",
+   "verdict": "PASS",
+   "evidence": "dangling=[]"
+  },
+  {
+   "check_id": "fv-06",
+   "object": "03_repo_structure_comparison.md",
+   "verdict": "PASS",
+   "evidence": "dangling=[]"
+  },
+  {
+   "check_id": "fv-06",
+   "object": "06_runtime_provider_matrix.md",
+   "verdict": "PASS",
+   "evidence": "dangling=[]"
+  },
+  {
+   "check_id": "fv-06",
+   "object": "07_old_new_format_comparison.md",
+   "verdict": "PASS",
+   "evidence": "dangling=[]"
+  },
+  {
+   "check_id": "fv-06",
+   "object": "09_unknowns_and_decisions.md",
+   "verdict": "PASS",
+   "evidence": "dangling=[]"
+  },
+  {
+   "check_id": "fv-06",
+   "object": "10_phase0_summary.md",
+   "verdict": "PASS",
+   "evidence": "dangling=[]"
+  },
+  {
+   "check_id": "fv-06",
+   "object": "PHASE0_FINAL_REPORT.md",
+   "verdict": "PASS",
+   "evidence": "dangling=[]"
+  },
+  {
+   "check_id": "fv-07",
+   "object": "FINAL_VALIDATION_REPORT.md status",
+   "verdict": "SKIP",
+   "evidence": "validation report is regenerated after the freeze run; its closed status is checked in --verify-sums"
+  },
+  {
+   "check_id": "fv-07",
+   "object": "10_phase0_summary.md status",
+   "verdict": "PASS",
+   "evidence": "missing=[] stale=no"
+  },
+  {
+   "check_id": "fv-07",
+   "object": "00_project_brief.md status",
+   "verdict": "PASS",
+   "evidence": "missing=[] stale=no"
+  },
+  {
+   "check_id": "fv-07",
+   "object": "PHASE0_FINAL_REPORT.md status",
+   "verdict": "PASS",
+   "evidence": "missing=[] stale=no"
+  },
+  {
+   "check_id": "fv-08",
+   "object": "PHASE0_FINAL_REPORT.md presence",
+   "verdict": "PASS",
+   "evidence": "missing=[]"
+  },
+  {
+   "check_id": "fv-13a",
+   "object": "manifest final_files vs disk",
+   "verdict": "PASS",
+   "evidence": "bad=[]"
+  },
+  {
+   "check_id": "fv-13b",
+   "object": "source lineage vs archive",
+   "verdict": "PASS",
+   "evidence": "bad=[]"
+  },
+  {
+   "check_id": "fv-14",
+   "object": "external archive records",
+   "verdict": "PASS",
+   "evidence": "sums_entries=254 tsv_file_rows=254 verify_c=ok"
+  },
+  {
+   "check_id": "fv-14b",
+   "object": "archive index resolves manifest sources",
+   "verdict": "PASS",
+   "evidence": "mapping ok"
+  },
+  {
+   "check_id": "fv-15",
+   "object": "history dirs moved out of analysis",
+   "verdict": "PASS",
+   "evidence": "still_present=[]"
+  },
+  {
+   "check_id": "fv-16",
+   "object": "progress.log closeout entry",
+   "verdict": "PASS",
+   "evidence": "entry=ok"
+  },
+  {
+   "check_id": "fv-11",
+   "object": "repo 01_agents-last-exam HEAD",
+   "verdict": "PASS",
+   "evidence": "head=2e91edd3cd26 rc=0"
+  },
+  {
+   "check_id": "fv-11",
+   "object": "repo 02_ale HEAD",
+   "verdict": "PASS",
+   "evidence": "head=73517c2eb097 rc=0"
+  },
+  {
+   "check_id": "fv-11",
+   "object": "repo 04_ale-tasks-base HEAD",
+   "verdict": "PASS",
+   "evidence": "head=492249a2ca4b rc=0"
+  },
+  {
+   "check_id": "fv-10a",
+   "object": "FILE_SHA256SUMS.txt",
+   "verdict": "PASS",
+   "evidence": "byte_newlines=108117"
+  },
+  {
+   "check_id": "fv-10b",
+   "object": "README_READ_ONLY.md perms",
+   "verdict": "PASS",
+   "evidence": "mode=0o400"
+  }
+ ],
+ "summary": {
+  "PASS": 40,
+  "SKIP": 1
+ },
+ "required_fail": 0,
+ "mode_freeze": true,
+ "mode_verify": false
+}

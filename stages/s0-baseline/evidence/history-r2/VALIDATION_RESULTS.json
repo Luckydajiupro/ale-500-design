@@ -1,0 +1,426 @@
+{
+ "run": {
+  "stamp": "2026-11-09T10:19:42.024215+00:00",
+  "argv": [
+   "scripts/validate_r2.py",
+   "--sealed"
+  ],
+  "mode": "sealed"
+ },
+ "paths": {
+  "inputs": "/Users/mac/Workspaces/ale-研究设计/ale-phase0-workspace-20261108/inputs-readonly",
+  "r1": "/Users/mac/Workspaces/ale-研究设计/ale-phase0-workspace-20261108/analysis/phase0-official-baseline-r1",
+  "r2": "/Users/mac/Workspaces/ale-研究设计/ale-phase0-workspace-20261108/analysis/phase0-official-baseline-r2",
+  "analysis": "/Users/mac/Workspaces/ale-研究设计/ale-phase0-workspace-20261108/analysis"
+ },
+ "results": [
+  {
+   "group": "inputs",
+   "id": "in-01",
+   "object": "inputs-readonly write-permission bits",
+   "status": "PASS",
+   "evidence": "writable-bit violations=0 walk-errors=0 total-entries=115313",
+   "run_at": "2026-11-09T10:19:38.004719+00:00"
+  },
+  {
+   "group": "inputs",
+   "id": "in-02",
+   "object": "inputs-readonly current-identity writable access",
+   "status": "PASS",
+   "evidence": "identity-writable=0 walk-errors=0",
+   "run_at": "2026-11-09T10:19:40.031296+00:00"
+  },
+  {
+   "group": "inputs",
+   "id": "in-03",
+   "object": "inputs-readonly traversal completeness",
+   "status": "PASS",
+   "evidence": "walk-errors=0 first=none",
+   "run_at": "2026-11-09T10:19:40.031310+00:00"
+  },
+  {
+   "group": "inputs",
+   "id": "in-04",
+   "object": "inputs-readonly symlink registry",
+   "status": "PASS",
+   "evidence": "links=25 registry-rows=25",
+   "run_at": "2026-11-09T10:19:40.032487+00:00"
+  },
+  {
+   "group": "inputs",
+   "id": "in-05",
+   "object": "inputs-readonly frozen mtimes",
+   "status": "PASS",
+   "evidence": "post-freeze-mtimes=0",
+   "run_at": "2026-11-09T10:19:40.342288+00:00"
+  },
+  {
+   "group": "src",
+   "id": "src-01",
+   "object": "round-1 and R1 source files unchanged",
+   "status": "PASS",
+   "evidence": "rows=64 mismatch=0 missing=0",
+   "run_at": "2026-11-09T10:19:40.355092+00:00"
+  },
+  {
+   "group": "csv",
+   "id": "c04-rows",
+   "object": "04 data row count",
+   "status": "PASS",
+   "evidence": "data-rows=122",
+   "run_at": "2026-11-09T10:19:40.356431+00:00"
+  },
+  {
+   "group": "csv",
+   "id": "c04-cols",
+   "object": "04 header and column uniformity",
+   "status": "PASS",
+   "evidence": "header=True uniform=True",
+   "run_at": "2026-11-09T10:19:40.356454+00:00"
+  },
+  {
+   "group": "csv",
+   "id": "c04-ids",
+   "object": "04 unique task_id",
+   "status": "PASS",
+   "evidence": "unique=122",
+   "run_at": "2026-11-09T10:19:40.356486+00:00"
+  },
+  {
+   "group": "csv",
+   "id": "c04-vocab",
+   "object": "04 controlled vocabularies",
+   "status": "PASS",
+   "evidence": "violations=0",
+   "run_at": "2026-11-09T10:19:40.356536+00:00"
+  },
+  {
+   "group": "csv",
+   "id": "c04-census",
+   "object": "04 locked census numbers",
+   "status": "PASS",
+   "evidence": "gui={'no': 73, 'unknown': 9, 'yes': 40} ext={'none': 109, 'online-required': 6, 'staged-local': 5, 'public-ref': 2} cs={'false': 103, 'true': 19} lr={'allowlist': 78, 'none': 36, 'doc_exception': 8} win=36 lin=86",
+   "run_at": "2026-11-09T10:19:40.356683+00:00"
+  },
+  {
+   "group": "csv",
+   "id": "c05-total",
+   "object": "05 TOTAL row",
+   "status": "PASS",
+   "evidence": "total-rows=1",
+   "run_at": "2026-11-09T10:19:40.356795+00:00"
+  },
+  {
+   "group": "csv",
+   "id": "c05-domains",
+   "object": "05 per-domain counts vs 04",
+   "status": "PASS",
+   "evidence": "domains=13",
+   "run_at": "2026-11-09T10:19:40.356834+00:00"
+  },
+  {
+   "group": "csv",
+   "id": "c08-proposed",
+   "object": "08 quota sum and computing_math zero",
+   "status": "PASS",
+   "evidence": "proposed-sum=500",
+   "run_at": "2026-11-09T10:19:40.356991+00:00"
+  },
+  {
+   "group": "csv",
+   "id": "c08-official",
+   "object": "08 official counts vs 04",
+   "status": "PASS",
+   "evidence": "mismatches=0",
+   "run_at": "2026-11-09T10:19:40.357012+00:00"
+  },
+  {
+   "group": "csv",
+   "id": "c08-sizes",
+   "object": "08 totals vs sizes_scopes.tsv",
+   "status": "PASS",
+   "evidence": "mismatches=0",
+   "run_at": "2026-11-09T10:19:40.357213+00:00"
+  },
+  {
+   "group": "csv",
+   "id": "c08-e-other",
+   "object": "E: other tasks paired by task_id",
+   "status": "PASS",
+   "evidence": "other asset_profile task-bytes pairing",
+   "run_at": "2026-11-09T10:19:40.357374+00:00"
+  },
+  {
+   "group": "csv",
+   "id": "c08-e-social",
+   "object": "E: social unique task paired by task_id",
+   "status": "PASS",
+   "evidence": "social/transport task-bytes pairing",
+   "run_at": "2026-11-09T10:19:40.357514+00:00"
+  },
+  {
+   "group": "csv",
+   "id": "c04-e-attrib",
+   "object": "E: 04 abm and atwood domains",
+   "status": "PASS",
+   "evidence": "abm=transport_safety atwood=social_sciences",
+   "run_at": "2026-11-09T10:19:40.357533+00:00"
+  },
+  {
+   "group": "fixes",
+   "id": "a-01",
+   "object": "A: 03 input delivery row no artifacts",
+   "status": "PASS",
+   "evidence": "rows=1",
+   "run_at": "2026-11-09T10:19:40.357615+00:00"
+  },
+  {
+   "group": "fixes",
+   "id": "a-02",
+   "object": "A: 03 output collection row present",
+   "status": "PASS",
+   "evidence": "rows=1",
+   "run_at": "2026-11-09T10:19:40.357673+00:00"
+  },
+  {
+   "group": "fixes",
+   "id": "a-03",
+   "object": "B: 06 no merge placeholders",
+   "status": "PASS",
+   "evidence": "residues=none",
+   "run_at": "2026-11-09T10:19:40.357779+00:00"
+  },
+  {
+   "group": "fixes",
+   "id": "b-01",
+   "object": "B: 06 three-class census phrases",
+   "status": "PASS",
+   "evidence": "missing=none",
+   "run_at": "2026-11-09T10:19:40.357858+00:00"
+  },
+  {
+   "group": "fixes",
+   "id": "b-02",
+   "object": "B: 06 staged-local system split phrases",
+   "status": "PASS",
+   "evidence": "staged-local system split phrases",
+   "run_at": "2026-11-09T10:19:40.357923+00:00"
+  },
+  {
+   "group": "fixes",
+   "id": "b-03",
+   "object": "B: 06 GUI census phrases",
+   "status": "PASS",
+   "evidence": "non-cs gui census={'no': 59, 'yes': 36, 'unknown': 8}",
+   "run_at": "2026-11-09T10:19:40.358004+00:00"
+  },
+  {
+   "group": "fixes",
+   "id": "c-01",
+   "object": "C: 09 corrected phrases",
+   "status": "PASS",
+   "evidence": "09 corrected staged-local and GPU claims",
+   "run_at": "2026-11-09T10:19:40.358056+00:00"
+  },
+  {
+   "group": "fixes",
+   "id": "c-02",
+   "object": "C: 04 staged-local split 2 Linux 3 Windows",
+   "status": "PASS",
+   "evidence": "linux=['business_finance/bpmn_category_governance_restructuring_l3', 'business_finance/bpmn_supply_disruption_l3'] windows=['business_finance/metabase_bi_dashboard_01', 'business_finance/odoo', 'business_finance/taxform_4_1']",
+   "run_at": "2026-11-09T10:19:40.358071+00:00"
+  },
+  {
+   "group": "fixes",
+   "id": "c-03",
+   "object": "C: 04 gpu rows 3 and all windows",
+   "status": "PASS",
+   "evidence": "gpu-n=3",
+   "run_at": "2026-11-09T10:19:40.358085+00:00"
+  },
+  {
+   "group": "fixes",
+   "id": "d-01",
+   "object": "D: unknown rows never bare low",
+   "status": "PASS",
+   "evidence": "violations=0",
+   "run_at": "2026-11-09T10:19:40.358097+00:00"
+  },
+  {
+   "group": "fixes",
+   "id": "d-02",
+   "object": "D: expected UNKNOWN cells exact",
+   "status": "PASS",
+   "evidence": "violations=0",
+   "run_at": "2026-11-09T10:19:40.358112+00:00"
+  },
+  {
+   "group": "fixes",
+   "id": "d-03",
+   "object": "D: kept tiers carry the unknown-factor note",
+   "status": "PASS",
+   "evidence": "violations=0",
+   "run_at": "2026-11-09T10:19:40.358125+00:00"
+  },
+  {
+   "group": "sub",
+   "id": "chk-01",
+   "object": "live 30_checker.py subprocess",
+   "status": "PASS",
+   "evidence": "rc=0 parsed=True summary=SUMMARY 11/11 pass stdout-tail='counts match sizes_scopes.tsv | proposed sum=500\\nPASS sizes_scopes internal sums | tree=53327153701 dom_sum=53327153701 whole03=92500607918 arch+tree=92500607918 inputs=94086734364\\nSUMMARY 11/11 pass' stderr-tail=''",
+   "run_at": "2026-11-09T10:19:40.397737+00:00"
+  },
+  {
+   "group": "req",
+   "id": "e-01",
+   "object": "R2 deliverable files exist",
+   "status": "PASS",
+   "evidence": "missing=none",
+   "run_at": "2026-11-09T10:19:40.397837+00:00"
+  },
+  {
+   "group": "req",
+   "id": "e-02",
+   "object": "R2 evidence files exist",
+   "status": "PASS",
+   "evidence": "missing=none",
+   "run_at": "2026-11-09T10:19:40.397858+00:00"
+  },
+  {
+   "group": "req",
+   "id": "e-03",
+   "object": "R2 progress.log append format",
+   "status": "PASS",
+   "evidence": "entries=13 malformed=0",
+   "run_at": "2026-11-09T10:19:40.398066+00:00"
+  },
+  {
+   "group": "req",
+   "id": "e-04",
+   "object": "R2 scripts exist",
+   "status": "PASS",
+   "evidence": "missing=none",
+   "run_at": "2026-11-09T10:19:40.398091+00:00"
+  },
+  {
+   "group": "man",
+   "id": "m-01",
+   "object": "SOURCE_MANIFEST_R2.json parses",
+   "status": "PASS",
+   "evidence": "sections=hashed_at_post,hashed_at_pre,note,phase,r2_dir,r2_evidence,r2_outputs,r2_scripts,sources_tsv,stage,workspace",
+   "run_at": "2026-11-09T10:19:40.398280+00:00"
+  },
+  {
+   "group": "man",
+   "id": "m-02",
+   "object": "manifest r2_outputs hashes match disk",
+   "status": "PASS",
+   "evidence": "section=r2_outputs mismatches=0 missing=0",
+   "run_at": "2026-11-09T10:19:40.398813+00:00"
+  },
+  {
+   "group": "man",
+   "id": "m-03",
+   "object": "manifest r2_evidence hashes match disk",
+   "status": "PASS",
+   "evidence": "section=r2_evidence mismatches=0 missing=0",
+   "run_at": "2026-11-09T10:19:40.406323+00:00"
+  },
+  {
+   "group": "man",
+   "id": "m-04",
+   "object": "manifest r2_scripts hashes match disk",
+   "status": "PASS",
+   "evidence": "section=r2_scripts mismatches=0 missing=0",
+   "run_at": "2026-11-09T10:19:40.406652+00:00"
+  },
+  {
+   "group": "boundary",
+   "id": "bd-01",
+   "object": "R1 dir unchanged since R2 start",
+   "status": "PASS",
+   "evidence": "late=0",
+   "run_at": "2026-11-09T10:19:40.407050+00:00"
+  },
+  {
+   "group": "boundary",
+   "id": "bd-02",
+   "object": "round-1 dir unchanged since R2 start",
+   "status": "PASS",
+   "evidence": "late=0",
+   "run_at": "2026-11-09T10:19:40.407160+00:00"
+  },
+  {
+   "group": "boundary",
+   "id": "bd-03",
+   "object": ".audit unchanged since R2 start",
+   "status": "PASS",
+   "evidence": "late=0",
+   "run_at": "2026-11-09T10:19:40.407317+00:00"
+  },
+  {
+   "group": "boundary",
+   "id": "bd-04",
+   "object": "DIRECTORY_SUMMARY_REPORT.md unchanged",
+   "status": "PASS",
+   "evidence": "late=0",
+   "run_at": "2026-11-09T10:19:40.407325+00:00"
+  },
+  {
+   "group": "boundary",
+   "id": "bd-05",
+   "object": "inputs-readonly unchanged since R2 start",
+   "status": "PASS",
+   "evidence": "late=0",
+   "run_at": "2026-11-09T10:19:41.156419+00:00"
+  },
+  {
+   "group": "boundary",
+   "id": "bd-06",
+   "object": "three git repos head and clean state",
+   "status": "PASS",
+   "evidence": "heads=['2e91edd3cd26baa35a38127c90c8e5241dfbe62f', '73517c2eb097abe7974e9ec4de9819a02cd0ee81', '492249a2ca4b9d74efd3584a90399473c2e928c7'] dirty-sets=[[], [], ['?? .DS_Store', '?? tasks/.DS_Store', '?? tasks/demo/.DS_Store', '?? tasks/example_task.zip', '?? tasks/example_task/.DS_Store']] rc=[0, 0, 0, 0, 0, 0]",
+   "run_at": "2026-11-09T10:19:41.398971+00:00"
+  },
+  {
+   "group": "boundary",
+   "id": "bd-07",
+   "object": "ale-data file count unchanged",
+   "status": "PASS",
+   "evidence": "regular=79076 links=3 present=6/6 nondot-exact=0/0 missing=none",
+   "run_at": "2026-11-09T10:19:42.024141+00:00"
+  },
+  {
+   "group": "checksums",
+   "id": "fc-01",
+   "object": "FINAL_CHECKSUMS.sha256 exists",
+   "status": "PASS",
+   "evidence": "exists",
+   "run_at": "2026-11-09T10:19:42.024185+00:00"
+  },
+  {
+   "group": "checksums",
+   "id": "fc-02",
+   "object": "every listed hash matches disk",
+   "status": "SKIP",
+   "evidence": "checksum verification not requested",
+   "run_at": "2026-11-09T10:19:42.024193+00:00"
+  },
+  {
+   "group": "checksums",
+   "id": "fc-03",
+   "object": "checksum file excludes itself",
+   "status": "SKIP",
+   "evidence": "checksum verification not requested",
+   "run_at": "2026-11-09T10:19:42.024195+00:00"
+  }
+ ],
+ "summary": {
+  "total": 50,
+  "PASS": 48,
+  "FAIL": 0,
+  "ERROR": 0,
+  "SKIP": 2,
+  "required_fail": 0
+ }
+}

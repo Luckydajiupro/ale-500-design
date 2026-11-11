@@ -1,0 +1,19 @@
+phys_cluster primary_source_url reachability spot-check 2026-11-09T23:50 (python urllib, UA header, timeout 10s)
+phys_phys_wf01	200	mdanderson.elsevierpure.com .../tolerance-limits-and-methodologies-for
+phys_phys_wf02	200	www.bipm.org .../jc/jcgm/publications
+phys_phys_wf03	HTTPError:403	www.iaea.org .../now-available-two-new-iaea-safety-guides-on-radiation
+phys_phys_wf04	200	inis.iaea.org/records/rpq04-6g729
+phys_chem_wf01	URLError	nist.gov .../development-astm-standard-test-method-x-ray-powder-diffr...
+phys_chem_wf02	200	link.springer.com/article/10.1186/s40192-014-0029-1
+phys_chem_wf03	HTTPError:403	www.oecd.org/en/topics/assessment-of-chemicals.html
+phys_chem_wf04	200	nap.nationalacademies.org/read/12199/chapter/1
+phys_astro_wf01	200	casadocs.readthedocs.io/en/stable/
+phys_astro_wf02	200	lasair.readthedocs.io/en/main
+phys_astro_wf03	200	arxiv.org/abs/1811.02042
+phys_astro_wf04	200	arxiv.org/abs/2404.03002
+phys_earth_wf01	200	confluence.ecmwf.int .../ECMWF+Model+Documentation
+phys_earth_wf02	200	confluence.ecmwf.int .../ERA5+data+documentation
+phys_earth_wf03	200	www.emsc-csem.org/
+phys_earth_wf04	200	calvalportal.ceos.org/
+Summary: 13/16 HTTP 200. 3 failures are real URLs under bot protection (403) or transient network (URLError)
+and match the child's own disclosure of unfetchable sources. No fabricated URL detected.

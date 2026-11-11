@@ -6,21 +6,25 @@
 
 ## 仓库范围
 
-本仓库只收设计产物。14 个文件，约 60 KB，克隆下来就是全部内容。
+本仓库收两类东西。一类是当前被批准的设计，在 `docs/`。另一类是阶段目录的完整内容，在 `stages/`，用来证明每个阶段的结论。
 
-三类东西不进这个仓库。阶段证据（阶段 0 的 11 份基线文档与证据、阶段 1 的 52 份研究表和 40 个脚本，共 166 个文件）只在完整工作副本里。官方输入 88 GiB 只在完整工作副本里。两者都由 `.gitignore` 排除。
+271 个文件，约 6.2 MB，克隆下来就是全部内容。
 
-所以克隆只能读设计，不能跑数据校验。要校验数据，需要在持有完整工作副本的机器上做。
+克隆下来能读设计，也能复跑两个阶段的出口检查。阶段 0 的 65 条校验和、阶段 1 的 15 项和 16 项校验、阶段 2 出口检查器的自检，都在仓库里跑，不需要额外准备。
+
+不进仓库的只有三类。官方输入的 88 GiB 副本、工作副本 `work/`、创建只读副本用的 `tools/freeze/`。前两类由 `.gitignore` 排除，第三类是冻结动作的一次性脚本，已经用完。
+
+因此校验分两种。文档规则、文档数字、阶段 0 与阶段 1 的出口、阶段 2 检查器的自检，在这个仓库里就能跑。官方输入的全量哈希要持有 88 GiB 副本的机器才能跑。两种在下面分开列。
 
 ## 协作流程
 
 `main` 是保护分支。所有改动走同一条路：拉分支、改、开 PR、合并。不直接提交 `main`。
 
-分支名带前缀，一眼看出改什么。`docs/<主题>` 改设计文档，`stage/<阶段号>-<主题>` 收口一个阶段，`tool/<主题>` 改校验工具。
+分支名带前缀，一眼看出改什么。`docs/<主题>` 改设计文档，`stage/<阶段号>-<主题>` 收口一个阶段，`tool/<主题>` 改校验工具，`ci/<主题>` 改流水线。
 
 一个 PR 只做一件事。PR 描述写清为什么改、改了什么、怎么验证。合并用 squash，`main` 上每个提交对应一个已合并的 PR。
 
-服务端保护目前在免费私有仓库上开不了。GitHub 对私有仓库的分支保护和规则集要求 Pro 或以上，免费计划只对公开仓库开放。所以保护落在两处。一处是 `.githooks/pre-push`，直推 `main` 会被拒绝，克隆后执行一次 `git config core.hooksPath .githooks` 生效。另一处是约定，任何人都不直推。
+服务端保护目前在免费私有仓库上开不了。GitHub 对私有仓库的分支保护和规则集要求 Pro 或以上，免费计划只对公开仓库开放。所以保护落在三处。一处是 `.githooks/pre-push`，直推 `main` 会被拒绝，克隆后执行一次 `git config core.hooksPath .githooks` 生效。一处是 GitHub Actions 在每次 PR 上跑六条检查，任何一条不过就不合并。还有一处是约定，任何人都不直推。
 
 要真正的服务端强制，只有两条路：把仓库改成公开，或升级 GitHub Pro。
 
@@ -48,42 +52,53 @@
 
 `docs/` 回答"现在怎么设计的"。`stages/` 回答"当时到底做出了什么"。`inputs/` 回答"官方资料长什么样"。三者不互相替代。
 
-## 五份设计文档
+`stages/` 现在整目录进仓库。它的作用是让"已关闭"和"已收口"这两句话能被外部复核，不是当时那台机器上的自言自语。
+
+## 六份设计文档
 
 | 文件 | 回答什么问题 |
 |---|---|
 | `docs/01-charter.md` | 为什么做、做什么、不做什么、交什么、500 条怎么算 |
-| `docs/02-plan.md` | 七个阶段怎么走、每阶段产出什么、什么条件才能进下一阶段 |
+| `docs/02-plan.md` | 七个阶段怎么走、每阶段产出什么、什么条件才能进下一阶段、每个出口怎么验 |
 | `docs/03-quality-and-acceptance.md` | 什么样的任务算合格、四道门怎么过 |
 | `docs/04-roles-and-decisions.md` | 谁决定什么、哪些已定、哪些没定 |
 | `docs/05-research-findings.md` | 阶段一研究出了什么、这些数字能怎么用、不能怎么用 |
+| `docs/06-decisions-and-blockers.md` | 哪些事还悬着、卡住哪个阶段、谁定、最晚什么时候、没定时的默认走法 |
 
 ## 怎么校验
 
-文档规则在这个仓库里就能跑。
+六条检查在这个仓库里就能跑，每次 PR 自动跑。
 
 ```bash
-python3 tools/check_docs.py
-```
-
-数据完整性要在完整工作副本上跑，仓库里没有这些文件。
-
-```bash
-python3 tools/verify_frozen.py                                   # 官方副本 108,117 条哈希
-cd stages/s0-baseline && shasum -a 256 -c FINAL_CHECKSUMS.sha256 # 阶段 0 的 65 条
+python3 tools/check_docs.py                    # 12 份活文档的写作规则
+python3 tools/check_numbers.py                 # 文档里的数字与仓库表格一致
+python3 tools/exit/selftest_phase2_gate.py     # 阶段 2 出口检查器自检
+cd stages/s0-baseline && shasum -a 256 -c FINAL_CHECKSUMS.sha256
 cd stages/s1-research && python3 -B scripts/35_validate_s1_02c.py
 cd stages/s1-research && python3 -B scripts/36_validate_s1_02c_c16.py
 ```
 
-数据校验失败说明文件被动过，不要继续。文档校验失败说明有文档需要跳转才能读懂。
+第七条要完整工作副本，仓库里没有那 88 GiB。
+
+```bash
+python3 tools/verify_frozen.py
+```
+
+失败怎么读。数据校验失败说明文件被动过，不要继续。文档写作规则失败说明有文档需要跳转才能读懂。数字校验失败说明文档和表格对不上，动手改之前先确认哪一个是对的，不要为了让检查通过而改数字。
+
+## 保密与授权
+
+这个仓库不含官方输入的副本，不含专家提交的原始资料，不含客户材料。研究表里出现的是公开标准与工具文档的链接和摘录，以及研究者自己的判断。
+
+专家资料的授权方式、法域限制和合作条款还没有裁决。它们是待决事项，不在设计结论里，登记在 `docs/06-decisions-and-blockers.md`。
 
 ## 按角色怎么读
 
 新加入的工程师，先读本文件，再读 `docs/02-plan.md` 知道全貌，然后读 `docs/03-quality-and-acceptance.md` 知道你交出去的东西要过什么关。
 
-要接着做阶段二的人，读 `docs/01-charter.md` 的交付物和非目标，读 `docs/02-plan.md` 的阶段二部分，读 `stages/s0-baseline/STAGE.md` 的结论与限制，再打开 `stages/s1-research/STAGE.md` 查研究数据在哪。
+要接着做阶段二的人，读 `docs/01-charter.md` 的交付物和非目标，读 `docs/02-plan.md` 的阶段二部分和出口一节，读 `docs/06-decisions-and-blockers.md` 看有哪几件事必须在开工前有答案，再打开 `stages/s1-research/STAGE.md` 查研究数据在哪。
 
-要评审阶段一的人，先读 `stages/s1-research/STAGE.md`，按里面的速查表在完整工作副本里定位文件，不需要先读 `docs/`。
+要评审阶段一的人，先读 `stages/s1-research/STAGE.md`，直接按里面的速查表定位文件，两个校验器跑一遍就是证据。不需要完整工作副本，也不需要先读 `docs/`。
 
 要对外沟通的人，读 `docs/01-charter.md` 和 `docs/05-research-findings.md`，这两份不含内部过程。
 

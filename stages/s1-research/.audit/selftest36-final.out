@@ -1,0 +1,16 @@
+PASS control (pristine copy) all 16 checks pass
+self-test: mutated copies under the system temp directory, never in the workspace
+PASS A yes to no              caught by C02, C03, C04, C16
+PASS B3 yes to no             caught by C02, C03, C04, C16
+PASS non-uncovered to yes     caught by C02, C03, C04, C16
+PASS non-uncovered no to maybe caught by C16
+PASS uncovered yes to yesterday caught by C16
+PASS deleted assignment row   caught by C01, C11, C13, C14, C15
+PASS registry count bumped    caught by C03, C05
+PASS matrix count bumped      caught by C04, C06
+PASS stats total bumped       caught by C07
+PASS tampered historical file caught by C08
+PASS manifest lists itself    caught by C08, C09
+PASS family id injected       caught by C10
+PASS padding count dropped    caught by C11
+self-test passed: 13 mutations caught, pristine control green

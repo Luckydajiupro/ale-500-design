@@ -1,0 +1,126 @@
+{
+  "subdomains": [
+    {
+      "subdomain_code": "economics",
+      "summary": "economics（13.1, Economics & Quantitative Social Research）出品 4 条候选工作流：wf01 ACS PUMS 复制权重标准误与误差边际（MOE）统计生产（E1，Census 官方精度文档）；wf02 政策影响评估的 DID 设计、识别与估计（E1，世界银行 Handbook on Impact Evaluation）；wf03 AEA 复制包合规核查与复现验证（E3，AEA data & code policy + Data Editor 指南 + DCAS v1.0 多源拼合）；wf04 基于联合国指南的分层多阶段整群家户调查抽样设计（E1，UNSD Series F No.98）。全部 32 列逐单元格非空，ethics 四列全部非空，subdomain_code 恒为 economics，candidate_id 为 soc_econ_wf01..soc_econ_wf04。官方示例任务（causal_ihdp_ite_estimation、ltmle_targeted_bootstrap_simulation_study、reddit_ai_post_codebook_boolean_coding）未做变式生产；abm_hangzhou_metro 按官方归类已出本子领域。",
+      "url_verification": [
+        {
+          "url": "https://www2.census.gov/programs-surveys/acs/tech_docs/pums/accuracy/2024AccuracyPUMS.pdf",
+          "result": "200",
+          "note": "382948 bytes; 全本 PDF 抽取核实 SDR/GVF/MOE 原文"
+        },
+        {
+          "url": "https://www.census.gov/programs-surveys/acs/microdata/documentation.html",
+          "result": "200",
+          "note": "约380KB; PUMS 文档索引页"
+        },
+        {
+          "url": "https://www.census.gov/programs-surveys/acs/microdata.html",
+          "result": "200",
+          "note": "PUMS 概览页"
+        },
+        {
+          "url": "https://www2.census.gov/programs-surveys/acs/tech_docs/pums/2024ACS_PUMS_User_Guide.pdf",
+          "result": "200",
+          "note": "2024 PUMS User Guide"
+        },
+        {
+          "url": "https://www2.census.gov/programs-surveys/acs/tech_docs/pums/accuracy/2024_PUMS_1yr_Design_Factors.csv",
+          "result": "200",
+          "note": "表头经核实 (YEAR,PERIOD,STATENAME,STATE,CHARTYP,CHARACTERISTIC,DESIGN_FA...)；数值未逐行核对（见 wf01 pending）"
+        },
+        {
+          "url": "https://www.census.gov/programs-surveys/acs/data/variance-tables.html",
+          "result": "200",
+          "note": "354535 bytes; ACS 方差表"
+        },
+        {
+          "url": "https://usa.ipums.org/usa/terms.shtml",
+          "result": "200",
+          "note": "IPUMS 使用条款（再分发限制原文已照录于 wf01 usage_permissions）"
+        },
+        {
+          "url": "https://usa.ipums.org/usa/cite.shtml",
+          "result": "200",
+          "note": "IPUMS 引用惯例"
+        },
+        {
+          "url": "https://usa.ipums.org/usa/",
+          "result": "200",
+          "note": "IPUMS USA 首页"
+        },
+        {
+          "url": "https://ipums.org/",
+          "result": "403",
+          "note": "主域反爬，未再试；不用于行内引证"
+        },
+        {
+          "url": "https://openknowledge.worldbank.org/handle/10986/2693",
+          "result": "200",
+          "note": "OKR 条目页（HTML shell）；元数据与全文经 OKR API server/api/core 取得并逐句核对"
+        },
+        {
+          "url": "https://openknowledge.worldbank.org/handle/10986/25030",
+          "result": "200",
+          "note": "IEP 2nd ed 条目页；仅核书目结构与摘要"
+        },
+        {
+          "url": "https://www.aeaweb.org/journals/data/data-code-policy",
+          "result": "200",
+          "note": "30343 bytes; AEA 政策页，背书 DCAS v1.0"
+        },
+        {
+          "url": "https://aeadataeditor.github.io/aea-de-guidance/",
+          "result": "200",
+          "note": "Data Editor 指南首页（验证流程）"
+        },
+        {
+          "url": "https://aeadataeditor.github.io/aea-de-guidance/preparing-for-data-deposit.html",
+          "result": "200",
+          "note": "18166 字符; 提交前准备文档"
+        },
+        {
+          "url": "https://aeadataeditor.github.io/aea-de-guidance/FAQ.html",
+          "result": "200",
+          "note": "FAQ（许可与保密数据处理）"
+        },
+        {
+          "url": "https://datacodestandard.org/",
+          "result": "200",
+          "note": "9102 bytes; DCAS v1.0 条款"
+        },
+        {
+          "url": "https://www.aeaweb.org/journals/forms/data-code-availability",
+          "result": "200",
+          "note": "69772 bytes; 本体为 PDF；AcroForm /T 字段与文本层未能从字节抽取（见 wf03 pending）"
+        },
+        {
+          "url": "https://www.openicpsr.org/openicpsr/",
+          "result": "403",
+          "note": "反爬；仓库界面/条款未核对，已登记 wf03 pending_confirmation，不用于行内主张"
+        },
+        {
+          "url": "https://unstats.un.org/unsd/demographic/sources/surveys/Handbook23June05.pdf",
+          "result": "200",
+          "note": "1322743 bytes; UNSD Series F No.98 全本 PDF 抽取核实"
+        },
+        {
+          "url": "https://data2.nhgis.org/main",
+          "result": "200",
+          "note": "背景核查用，未进入行内引证"
+        },
+        {
+          "url": "https://www.census.gov/library/publications/2018/acs/acs_general_handbook_2018.html",
+          "result": "404",
+          "note": "HTML 页 404；同手册 PDF 路径（content/dam/.../acs_general_handbook_2018.pdf）为 200（背景资料，未进入行内 PRIMARY）"
+        },
+        {
+          "url": "https://www.census.gov/programs-surveys/acs/technical-documentation/pums/accuracy.html",
+          "result": "404",
+          "note": "旧版指向页 404，改用现有 documentation 页与 Accuracy PDF"
+        }
+      ],
+      "evidence_notes": "证据分级：E1×3（wf01/wf02/wf04 均为单一权威来源完整记载该专业工作流：Census 精度文档、WB Handbook on Impact Evaluation、UNSD Series F No.98）；E3×1（wf03：AEA 复现验证流程由政策页+指南+DCAS+FAQ 多源拼合，内部验证细则与报告模板未公开，缺口登记于该行 pending_confirmation；evidence_kind=agent_inferred_combination 与 E3 配对成立）。未使用 E2（本批禁止）与 E4（无 expert_pending_proposal 场景）；无 tool_existence 冒充完整工作流。URL 全部经 urllib 实测（Chrome UA、timeout 20-25s、GET、失败重试一次）；403（ipums.org、openicpsr.org）与 404 均如实登记不烧重试。§4 特殊审查落实：①调查设计——wf04 全程覆盖抽样偏差（覆盖偏差、无响应偏差在设计与文档环节披露，不宣称无偏）、加权重构路径（基础权重→无响应→校准）与加/未加权口径声明；wf02 对复杂抽样调查数据要求按权重与整群/分层做加权方差估计并分列口径；wf01 是加权分析且明确不做未加权越界推断。②数据使用许可——ACS PUMS 公有领域免 DUA（wf01）；IPUMS 再分发限制条款逐句照录（wf01）；世界银行 Microdata Library 使用条款/DUA 未逐条核对（wf02 pending，该候选不附 WB 微数据）；OKR 作品级 CC 许可未逐条核对（wf02 pending，已注明 license.txt 为 DSpace 通用样版不作依据）；本批未主张使用 OECD 数据故无其条款声明义务。③因果推断假设——wf02 点名：平行趋势（章5 p.73 三条件，含 Cov(εit,Ti1t)=0，且标注其为 DID 语境的 unconfoundedness 形态）、时不变未观测异质性（章5 原句）、重复截面组组成稳定（章5 原句）、SUTVA/无溢出（章3 溢出启示）、无同期混淆冲击。④可复核性——wf03 即 AEA data & code availability policy 复现验证机制本身（policy 原句引证）；wf01/wf02/wf04 的 reproducibility_assessment 均写入 AEA 政策义务（数据可得性声明/复制包/DCAS 条款）。"
+    }
+  ]
+}

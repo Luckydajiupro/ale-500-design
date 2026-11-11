@@ -1,0 +1,9 @@
+file	bytes	path_03_ale-data	domain	task_id	reason_included
+tumor_001.tif	3264779514	03_ale-data/task-data-v1.1/health_medicine/wsi_tumor_localization_1/center_point/input/tumor_001.tif	health_medicine	wsi_tumor_localization_1	above 1 GiB
+137.h5	1615261704	03_ale-data/task-data-v1.1/psychology_neuro/celegans_neuron_tracking/137/input/137.h5	psychology_neuro	celegans_neuron_tracking	above 1 GiB
+slicer_5.0.3_20221025.simg	8658481183	03_ale-data/task-data-v1.1/psychology_neuro/scene2_resample/base/software/computer_use_benchmark_bundle/containers/slicer_5.0.3_20221025.simg	psychology_neuro	scene2_resample	above 1 GiB
+metabase.jar	510150415	03_ale-data/task-data-v1.1/business_finance/metabase_bi_dashboard_01/base/software/metabase.jar	business_finance	metabase_bi_dashboard_01	disputed large file below 1 GiB
+replay_state.mat	870922433	03_ale-data/task-data-v1.1/health_medicine/prostate_imrt_matrad_reproduction/base/reference/replay_state.mat	health_medicine	prostate_imrt_matrad_reproduction	disputed large file below 1 GiB
+CA_R0.sav	658672244	03_ale-data/task-data-v1.1/life_sciences/idp_ensemble_scoring/default/input/CSpred/models/CA_R0.sav	life_sciences	idp_ensemble_scoring	disputed large file below 1 GiB
+tms_marrow_unlabeled.h5ad	635863817	03_ale-data/task-data-v1.1/life_sciences/tms_marrow_cell_type_annotation_instance_1/base/input/tms_marrow_unlabeled.h5ad	life_sciences	tms_marrow_cell_type_annotation_instance_1	disputed large file below 1 GiB
+ale-tasks-data.tar.gz	39155440558	03_ale-data/archive/ale-tasks-data.tar.gz	(archive)	UNKNOWN (archive dump)	above 1 GiB

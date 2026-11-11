@@ -1,0 +1,83 @@
+{
+  "meta": {
+    "batch": "S1-02B2-effective",
+    "input_csv": "S1_02B2_WORKFLOW_CANDIDATES.csv",
+    "output_csv": "S1_02B2_EFFECTIVE_CANDIDATES.csv",
+    "erratum_md": "S1_02B2_EVIDENCE_SCOPE_ERRATUM.md",
+    "created": "2026-11-10T11:48:00+08:00",
+    "revised": "2026-11-10T13:45:00+08:00",
+    "revision": "r2",
+    "principle": "corrections-as-data: generator 26 and validator 27 consume this spec as the single source of truth",
+    "software_adaptation_enum": ["native", "partial_function_replacement", "conditional"],
+    "source_support_mode_enum": ["recorded_full_support", "recorded_partial_support", "verified_support", "conditional_support", "name_reference_support", "uncited_support", "judgment_support", "unspecified_support"],
+    "block_state_vocabulary": ["verified_E1", "conditional_E1", "name_reference", "expert_judgment", "uncited", "not_specified_by_code"],
+    "block_strength": {"verified_E1": 5, "conditional_E1": 4, "name_reference": 3, "expert_judgment": 2, "uncited": 1, "not_specified_by_code": 0},
+    "overall_weakest_map": {"verified_E1": "verified_support", "conditional_E1": "conditional_support", "name_reference": "name_reference_support", "expert_judgment": "judgment_support", "uncited": "uncited_support", "not_specified_by_code": "unspecified_support"},
+    "uncorrected_mode_by_evidence_level": {"E1": "recorded_full_support", "E3": "recorded_partial_support"}
+  },
+  "columns_added": [
+    {"name": "source_support_mode", "semantics": "evidence-support state; vocabulary disjoint from software_adaptation tokens; corrected rows take the weakest block state via overall_weakest_map; uncorrected rows take uncorrected_mode_by_evidence_level", "default": "derived from evidence_level, never a copy of software_adaptation"},
+    {"name": "evidence_scope", "format": "semicolon list of block=state_level(status)", "default": "whole_workflow=as_recorded"},
+    {"name": "workflow_family_id", "format": "comma list of fc_ ids", "default": ""},
+    {"name": "process_incident", "format": "none or inc:<event>", "default": "none"}
+  ],
+  "corrections": {
+    "psy_comp_wf01": {
+      "correction_type": "split",
+      "problem": "E1 ISC native claims all 6 operations, but the primary source is only the BIDS specification. The DICOM conversion tools named in the operations (heudiconv/dcm2niix) and the group-level QC reporting standard appear in no source_reference entry.",
+      "evidence_basis": "row.source_reference cites BIDS spec, Gorgolewski 2016, Esteban 2019, fMRIPrep docs, OpenNeuro docs, HCP data-use terms. No conversion-tool documentation anywhere.",
+      "source_support_mode": "uncited_support",
+      "evidence_scope": "bids_layout_validation=verified_E1(BIDS_spec_200);fmriprep_preprocessing=verified_E1(fmriprep_docs_200;esteban2019_fetch_interstitial);dicom_conversion_qc=uncited(heudiconv_dcm2niix_mriqc_absent)",
+      "workflow_family_id": "fc_neuroimaging_curation,fc_mri_preprocessing",
+      "process_incident": "none",
+      "change_reason": "原行把BIDS规范的覆盖隐式扩展为全流程native。校正为两个有据块加一个无据块：转换工具文档与QC标准的来源必须补引，在此之前整体支持模式为uncited_support。原recorded evidence_level=E1、evidence_kind=industry_standard_complete、software_adaptation=native 保持原值不动。"
+    },
+    "psy_exp_wf04": {
+      "correction_type": "split",
+      "problem": "PRISMA 2020 is a reporting standard, not a statistical-methods standard. Page 2021 BMJ fetch returned 403 (citation-level only). The risk-of-bias tool version (RoB 2 vs domain-specific) and the GRADE methodology source are not cited; metafor/meta rest only on the R Project homepage.",
+      "evidence_basis": "row.source_reference: PRISMA statement 200; Page 2021 '403 bot-wall, citation-level'; Cochrane Handbook '200 via redirect'; R Project 200. row.pending_confirmation admits RoB tool version unconfirmed.",
+      "source_support_mode": "conditional_support",
+      "evidence_scope": "sysrev_reporting=verified_E1(prisma_statement_org_200);meta_analysis_methods=conditional_E1(cochrane_handbook_nav_200;page2021_403_citation_level;rob2_grade_tools_unspecified;metafor_source_absent)",
+      "workflow_family_id": "fc_systematic_review_reporting,fc_meta_analysis_methods",
+      "process_incident": "none",
+      "change_reason": "原E1 ISC把报告合规与统计合成合并声称。校正为报告层有据、方法层待补源（RoB 2 版本、GRADE 方法出处、metafor 方法论文献）。原evidence_level=E1等记录保持原值不动，修正仅落入新列与勘误。"
+    },
+    "biz_cmp_wf03": {
+      "correction_type": "narrow",
+      "problem": "The E1 claim rests on the FinCEN SAR Filing Instructions, which cover form completion and e-filing mechanics. The statutory authorities 31 U.S.C. 5318(g) and 31 CFR 1020.320 are name-references only. The five-element defensible narrative and investigation-completeness check are professional judgment not specified by the instructions.",
+      "evidence_basis": "row.source_reference marks the two statutes as 名称参考 only; row.pending_confirmation notes the 30-day clock requires compliance-officer confirmation.",
+      "source_support_mode": "judgment_support",
+      "evidence_scope": "sarfiling_form_ops=verified_E1(fincen_instructions_verified);statutory_authority=name_reference(unverified_5318g_1020.320);narrative_investigation=expert_judgment(not_specified_by_instructions)",
+      "workflow_family_id": "fc_regulatory_filing_operations,fc_aml_investigation_judgment",
+      "process_incident": "none",
+      "change_reason": "原E1 evidence的scope须收窄到申报说明所覆盖的填报与报送技术层；法规文本与调查叙述不属说明文本覆盖，须补验法规原文后另行支持。原记录保持原值。"
+    },
+    "biz_mkt_wf02": {
+      "correction_type": "split",
+      "problem": "Only the ICC/ESOMAR Code landing page was verified (200 redirect). The full Code PDF was not downloaded, revision diffs were not compared, and member-only supplementary guidance was not checked. A code of conduct states principles; it does not specify quota sampling, pretest, trap-question QC, or weighting procedures.",
+      "evidence_basis": "row.pending_confirmation lists all three verification gaps verbatim; row.platform_dependencies names Qualtrics/SurveyMonkey/LimeSurvey as platforms, whose operations the Code does not define.",
+      "source_support_mode": "unspecified_support",
+      "evidence_scope": "conduct_governance=verified_E1(esomar_landing_200);code_text_verification=conditional_E1(full_pdf_unread;revision_diff_unchecked;member_guidance_unchecked);survey_operations=not_specified_by_code(quota_pretest_qc_weighting)",
+      "workflow_family_id": "fc_market_research_conduct,fc_survey_operations_procedures",
+      "process_incident": "inc:biz_b1_split_child_death_and_steer(b778e603,3f1b46b5)",
+      "change_reason": "原E1 ISC把行为准则当作全流程操作标准。校正为原则与治理层有据、准则文本层待核对、调查运算层准则未规定。原记录保持原值；过程事件登记后文单独说明。"
+    },
+    "biz_quant_wf02": {
+      "correction_type": "split",
+      "problem": "The DSR paper (verified 200) natively supports the statistical procedure, but the row folds SEC 206(4)-1 disclosure compliance into the claimed E1 scope while sec.gov was 403-blocked and the row itself states it expressed the rule only in spirit, not by citation.",
+      "evidence_basis": "row.pending_confirmation: 'SEC 206(4)-1 营销规则全文页面 sec.gov 对脚本访问通常 403 未验证，本行以规则精神表述而非条款引用'.",
+      "source_support_mode": "name_reference_support",
+      "evidence_scope": "dsr_psr_statistics=verified_E1(bailey_lopez_prado_pdf_200);pbo_companion=name_reference(citation_level_2017);sec_marketing_disclosure=conditional_E1(sec_gov_403_blocked;rule_spirit_only)",
+      "workflow_family_id": "fc_backtest_statistical_validation,fc_performance_disclosure_compliance",
+      "process_incident": "none",
+      "change_reason": "原E1的scope被拆分：统计校正块保持verified_E1；SEC 206(4)-1披露合规块在规则文本验证前不得进入E1，登记为conditional_E1。总体源支持模式判为name_reference_support。原记录保持原值。"
+    }
+  },
+  "process_incidents_extended": {
+    "biz_hr_wf01": "inc:biz_b1_split_child_death_and_steer(b778e603,3f1b46b5)",
+    "biz_hr_wf02": "inc:biz_b1_split_child_death_and_steer(b778e603,3f1b46b5)",
+    "biz_hr_wf03": "inc:biz_b1_split_child_death_and_steer(b778e603,3f1b46b5)",
+    "biz_mkt_wf01": "inc:biz_b1_split_child_death_and_steer(b778e603,3f1b46b5)",
+    "biz_mkt_wf03": "inc:biz_b1_split_child_death_and_steer(b778e603,3f1b46b5)"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "subdomains": [
+    {
+      "subdomain_code": "clinical_diagnostics",
+      "business_boundary": "Institutional clinical services that acquire, measure, and interpret patient imaging and laboratory specimens to detect, characterize, stage, and monitor disease, producing structured interpretive reports that drive clinical decisions. Customers are treating clinicians, hospital departments, screening programs, and payers. Distinct from clinical_informatics, which builds EHR/reporting systems rather than the interpretations, and from public_health, which does population surveillance rather than individual patient interpretation.",
+      "occupations": "Radiologist; Mammography interpreting physician; Thoracic radiologist; Histopathologist; Clinical pathologist; Medical laboratory scientist; Laboratory director; Radiology technologist; Cytotechnologist",
+      "boundary_note": "Boundary drawn at the institutional interpretive service line: imaging and laboratory work that produces patient-level interpretive reports driving clinical decisions. The five candidates are recurring professional interpretation and reporting workflows with full-workflow standards, namely MQSA and BI-RADS reporting, Lung-RADS screening categorization, RCPath G148 synoptic pathology reporting, CLIA proficiency testing, and Fleischner 2017 incidental nodule management. Excluded are informatics systems work (clinical_informatics), population surveillance (public_health), and trial protocol operations (clinical_trials)."
+    },
+    {
+      "subdomain_code": "therapeutic_oncology",
+      "business_boundary": "Institutional cancer-care services that select, plan, deliver, and monitor treatments for patients with cancer: multidisciplinary treatment decisions, radiotherapy planning and physics quality assurance, chemotherapy prescribing and administration safety, response assessment, and toxicity management. Customers are patients, referring clinicians, and payers. Distinct from clinical_diagnostics, which interprets disease state rather than acting on treatment, and from clinical_trials, which runs protocol operations, although trial response criteria such as RECIST are reused in practice.",
+      "occupations": "Medical oncologist; Radiation oncologist; Medical physicist; Dosimetrist; Oncology pharmacist; Oncology nurse; Surgical oncologist; Cancer conference coordinator; Cancer registrar",
+      "boundary_note": "Boundary drawn at institutional cancer-care delivery: selection, planning, delivery, and monitoring of treatment. The five candidates are recurring per-patient or per-cycle workflows documented end to end by professional or regulatory standards: AAPM TG-275 physics plan and chart review, ASCO/ONS chemotherapy administration safety, RECIST 1.1 response assessment, ACS CoC Standard 2.5 multidisciplinary case conference, and ESMO 2022 irAE grading and management. Excluded are pure interpretation (clinical_diagnostics), trial protocol operations (clinical_trials), and registry analytics (public_health)."
+    }
+  ]
+}

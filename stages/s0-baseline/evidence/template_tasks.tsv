@@ -1,0 +1,17 @@
+relpath_under_04_tasks	top_level_group	declared_task_name
+demo/docker_in_vm/task.toml	demo	agentslastexam/docker-in-vm
+demo/tool_smoke/task.toml	demo	agentslastexam/tool-smoke
+demo/verification_llm_judge/task.toml	demo	agentslastexam/verification-llm-judge
+demo/verification_domain_a/task.toml	demo	agentslastexam/verification-local-a
+demo/external_assets/task.toml	demo	agentslastexam/external-assets
+demo/resource_injection/task.toml	demo	agentslastexam/resource-injection
+demo/verification_separate/task.toml	demo	agentslastexam/verification-separate
+demo/verification_deterministic/task.toml	demo	agentslastexam/verification-deterministic
+demo/verification_agent_judge/task.toml	demo	agentslastexam/verification-agent-judge
+demo/verification_domain_b/task.toml	demo	agentslastexam/verification-local-b
+example_task/task.toml	example_task	agentslastexam/example-task
+TOTAL		
+
+# 顶层组计数 top-level group counts: demo=10, example_task=1
+# 总计 total declared task.toml: 11
+# 区分说明 note: 顶层组是 tasks/ 下第一级目录 (demo, example_task)，任务声明目录是每个 task.toml 所在目录。

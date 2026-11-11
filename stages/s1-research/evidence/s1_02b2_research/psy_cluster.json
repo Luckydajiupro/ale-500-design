@@ -1,0 +1,14 @@
+{
+  "subdomains": [
+    {
+      "subdomain_code": "comp_neuro",
+      "candidate_count": 3,
+      "coverage_notes": "Three workflows cover the fragment's four research areas: BIDS-standard imaging preprocessing via the curation and fMRIPrep pipeline, EEG/MEG/fMRI analysis and reporting via the COBIDAS MEEG checklist, and computational model fitting via the ten-rules workflow; cognitive task behavioral data analysis is folded into the model-fitting workflow. Neuroimaging data permission rules are embedded in each row: public datasets only under their licenses (OpenNeuro per-dataset licenses, HCP Data Use Terms) while hospital-internal imaging is excluded as a default input. The OpenNeuro default-license wording was not captured and is flagged in pending_confirmation."
+    },
+    {
+      "subdomain_code": "exp_psychology",
+      "candidate_count": 4,
+      "coverage_notes": "Four workflows cover the fragment's research areas: online and lab experiment presentation via the self-hosted JATOS deployment, powered experimental design and behavioral data analysis in R, psychometric scale development and validation under the AERA/APA/NCME Standards, and PRISMA 2020 systematic review with meta-analysis. Commercial scale licensing (MMPI, WAIS) is written into usage_permissions and data_usage_authorization on the test-development workflow, and preregistration plus multiple-comparison discipline is built into the design and analysis workflow."
+    }
+  ]
+}
