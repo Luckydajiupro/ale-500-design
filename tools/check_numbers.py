@@ -107,7 +107,7 @@ def stage_rows(path):
         if not match:
             continue
         cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
-        rows.setdefault(int(match.group(1)), cells)
+        rows.setdefault(int(match.group(1)), []).append(cells)
     return rows
 
 
@@ -177,15 +177,24 @@ def check_c():
         problem = None
         for path in tables:
             name = rel(path)
-            row = rows[name].get(stage)
-            if row is None:
+            candidates = rows[name].get(stage)
+            if not candidates:
                 problem = f"no row for stage {stage} in {name}"
                 break
-            found = status_cells(row)
+            found = [
+                (row, status_cells(row))
+                for row in candidates
+                if len(status_cells(row)) == 1
+            ]
             if len(found) != 1:
-                problem = f"{name} stage {stage} has {len(found)} status cells: {' | '.join(row)}"
+                listed = " || ".join(" | ".join(row) for row in candidates)
+                problem = (
+                    f"{name} stage {stage} has {len(found)} rows carrying a status, "
+                    f"expected 1: {listed}"
+                )
                 break
-            cells.append((name, found[0][0], found[0][1]))
+            row, status = found[0]
+            cells.append((name, status[0][0], status[0][1]))
         if problem:
             results.append((f"C{stage}", "fail", problem))
             continue
