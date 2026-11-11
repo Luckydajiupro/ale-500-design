@@ -1,0 +1,67 @@
+scenario,phase,line_item,cost_type,unit_cost_cny,months,total_cny,note
+low,P1 试点,platform_host,opex,1500,2,3000,8C32G 云主机
+low,P1 试点,object_storage,opex,60,2,120,500 GiB 对象存储
+low,P1 试点,backup,opex,60,2,120,异地备份
+low,P1 试点,domain_tls_mail,opex,50,2,100,域名、证书、邮件
+low,P1 试点,PHASE_SUBTOTAL,subtotal,,,3340,P1 试点 合计
+low,前 100 条,platform_host,opex,1500,3,4500,8C32G 云主机
+low,前 100 条,object_storage,opex,100,3,300,1 TiB 对象存储
+low,前 100 条,backup,opex,80,3,240,异地备份
+low,前 100 条,domain_tls_mail,opex,50,3,150,域名、证书、邮件
+low,前 100 条,linux_build_host,opex,2000,3,6000,16C64G 构建机
+low,前 100 条,network_security,opex,250,3,750,VPN 与边界防护
+low,前 100 条,windows_workstation,capex,15000,1,15000,Windows 工作站一次性
+low,前 100 条,PHASE_SUBTOTAL,subtotal,,,26940,前 100 条 合计
+low,满产,platform_host,opex,1500,7,10500,8C32G 云主机
+low,满产,object_storage,opex,200,7,1400,2 TiB 对象存储
+low,满产,backup,opex,150,7,1050,异地备份
+low,满产,domain_tls_mail,opex,50,7,350,域名、证书、邮件
+low,满产,linux_build_host,opex,2000,7,14000,16C64G 构建机
+low,满产,network_security,opex,250,7,1750,VPN 与边界防护
+low,满产,gpu_node,opex,3000,7,21000,24 GiB GPU 按 150 小时/月
+low,满产,PHASE_SUBTOTAL,subtotal,,,50050,满产 合计
+low,YEAR_1,GRAND_TOTAL,total,,,80330,12 个月合计，不含人力
+mid,P1 试点,platform_host,opex,2500,2,5000,8C32G 云主机
+mid,P1 试点,object_storage,opex,100,2,200,500 GiB 对象存储
+mid,P1 试点,backup,opex,100,2,200,异地备份
+mid,P1 试点,domain_tls_mail,opex,100,2,200,域名、证书、邮件
+mid,P1 试点,PHASE_SUBTOTAL,subtotal,,,5600,P1 试点 合计
+mid,前 100 条,platform_host,opex,2500,3,7500,8C32G 云主机
+mid,前 100 条,object_storage,opex,180,3,540,1 TiB 对象存储
+mid,前 100 条,backup,opex,120,3,360,异地备份
+mid,前 100 条,domain_tls_mail,opex,100,3,300,域名、证书、邮件
+mid,前 100 条,linux_build_host,opex,3000,3,9000,16C64G 构建机
+mid,前 100 条,network_security,opex,500,3,1500,VPN 与边界防护
+mid,前 100 条,windows_workstation,capex,22000,1,22000,Windows 工作站一次性
+mid,前 100 条,PHASE_SUBTOTAL,subtotal,,,41200,前 100 条 合计
+mid,满产,platform_host,opex,2500,7,17500,8C32G 云主机
+mid,满产,object_storage,opex,360,7,2520,2 TiB 对象存储
+mid,满产,backup,opex,200,7,1400,异地备份
+mid,满产,domain_tls_mail,opex,100,7,700,域名、证书、邮件
+mid,满产,linux_build_host,opex,3000,7,21000,16C64G 构建机
+mid,满产,network_security,opex,500,7,3500,VPN 与边界防护
+mid,满产,gpu_node,opex,5000,7,35000,24 GiB GPU 按 150 小时/月
+mid,满产,PHASE_SUBTOTAL,subtotal,,,81620,满产 合计
+mid,YEAR_1,GRAND_TOTAL,total,,,128420,12 个月合计，不含人力
+high,P1 试点,platform_host,opex,4000,2,8000,8C32G 云主机
+high,P1 试点,object_storage,opex,150,2,300,500 GiB 对象存储
+high,P1 试点,backup,opex,150,2,300,异地备份
+high,P1 试点,domain_tls_mail,opex,200,2,400,域名、证书、邮件
+high,P1 试点,PHASE_SUBTOTAL,subtotal,,,9000,P1 试点 合计
+high,前 100 条,platform_host,opex,4000,3,12000,8C32G 云主机
+high,前 100 条,object_storage,opex,300,3,900,1 TiB 对象存储
+high,前 100 条,backup,opex,200,3,600,异地备份
+high,前 100 条,domain_tls_mail,opex,200,3,600,域名、证书、邮件
+high,前 100 条,linux_build_host,opex,5000,3,15000,16C64G 构建机
+high,前 100 条,network_security,opex,1000,3,3000,VPN 与边界防护
+high,前 100 条,windows_workstation,capex,35000,1,35000,Windows 工作站一次性
+high,前 100 条,PHASE_SUBTOTAL,subtotal,,,67100,前 100 条 合计
+high,满产,platform_host,opex,4000,7,28000,8C32G 云主机
+high,满产,object_storage,opex,600,7,4200,2 TiB 对象存储
+high,满产,backup,opex,350,7,2450,异地备份
+high,满产,domain_tls_mail,opex,200,7,1400,域名、证书、邮件
+high,满产,linux_build_host,opex,5000,7,35000,16C64G 构建机
+high,满产,network_security,opex,1000,7,7000,VPN 与边界防护
+high,满产,gpu_node,opex,8000,7,56000,24 GiB GPU 按 150 小时/月
+high,满产,PHASE_SUBTOTAL,subtotal,,,134050,满产 合计
+high,YEAR_1,GRAND_TOTAL,total,,,210150,12 个月合计，不含人力

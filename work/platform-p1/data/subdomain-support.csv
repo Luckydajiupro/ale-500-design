@@ -1,0 +1,56 @@
+domain_code,subdomain_code,subdomain_name,official_coverage,environment_dependency,capability_groups_covering,expert_capability_groups,p1_support_status,pilot_batch,note
+engineering,aerospace_mech,Aerospace & Mechanical Engineering,active_observed,Windows; 专有 CAD/FEA,2,ECG-01 结构与机械分析; ECG-02 计量与质量工程,后续,否,冻结前需要额外宿主、许可或服务
+engineering,urban_planning,Urban & Spatial Planning,active_observed,Windows; GIS/CAD,2,ECG-05 测绘与地理空间; ECG-13 交通运输工程,后续,否,冻结前需要额外宿主、许可或服务
+engineering,robotics,Robotics & Autonomous Systems,active_observed,GPU; Linux,1,ECG-12 机器人与控制,后续,否,冻结前需要额外宿主、许可或服务
+engineering,electronics,Electronics Engineering,active_observed,专有 EDA 许可; Linux,2,ECG-10 电子硬件; ECG-11 半导体设计与验证,后续,否,冻结前需要额外宿主、许可或服务
+engineering,civil_geo,"Civil, Architectural & Geospatial Engineering",active_observed,Windows; 专有结构软件,3,ECG-01 结构与机械分析; ECG-04 水利与水资源工程; ECG-05 测绘与地理空间,后续,否,冻结前需要额外宿主、许可或服务
+engineering,chemical_process,Chemical & Process Engineering,uncovered_official,专有流程模拟,1,ECG-03 化工过程工程,手工,否,无官方样本，评分标准与流程需评审从零建立
+engineering,manufacturing,Manufacturing & Industrial Systems,active_observed,Windows; 专有 CAM,1,ECG-02 计量与质量工程,后续,否,冻结前需要额外宿主、许可或服务
+engineering,energy_power,"Energy, Power & Nuclear Engineering",active_observed,Windows; 建筑性能软件,3,ECG-06 电力系统; ECG-07 建筑性能模拟; ECG-08 核与辐射安全,MVP,是,冻结前需要额外宿主、许可或服务
+engineering,mining_petroleum,"Mining, Petroleum & Geological Engineering",uncovered_official,专有储层软件,1,ECG-17 油气与矿业工程,手工,否,无官方样本，评分标准与流程需评审从零建立
+engineering,semiconductor,Semiconductor & Microelectronics Design,active_observed,专有 EDA 许可; Linux,1,ECG-11 半导体设计与验证,后续,否,冻结前需要额外宿主、许可或服务
+transport_safety,aviation,Aviation & Airspace Operations,uncovered_official,无官方样本,1,ECG-14 航空运行与安全,手工,否,无官方样本，评分标准与流程需评审从零建立
+transport_safety,maritime_port,Maritime & Port Operations,uncovered_official,无官方样本,1,ECG-15 海事与港口运营,手工,否,无官方样本，评分标准与流程需评审从零建立
+transport_safety,fire_safety,Fire Science & Public Safety,active_observed,Linux; 开源 FDS,1,ECG-16 消防与生命安全,MVP,否,平台现有能力可承接，工程侧无额外宿主
+education_info,educational_technology,Educational Technology,uncovered_official,无官方样本,2,ECG-46 无障碍与辅助技术; ECG-48 教学设计与学习技术,手工,否,无官方样本，评分标准与流程需评审从零建立
+education_info,library_info,Library & Information Science,active_observed,无,1,ECG-49 图书馆与数字保存,MVP,否,平台现有能力可承接，工程侧无额外宿主
+education_info,translation,Translation & Localization,active_observed,专有 CAT 工具,1,ECG-50 翻译与本地化,后续,否,冻结前需要额外宿主、许可或服务
+agriculture_env,env_water,"Environmental Modeling, Engineering & Water Resources",active_observed,Linux; EPANET/SWMM,1,ECG-04 水利与水资源工程,MVP,否,平台现有能力可承接，工程侧无额外宿主
+agriculture_env,precision_agriculture,Precision Agriculture,uncovered_official,无官方样本,1,ECG-18 精准农业,手工,否,无官方样本，评分标准与流程需评审从零建立
+social_sciences,economics,Economics & Quantitative Social Research,active_observed,无,1,ECG-43 调查方法与经济评估,MVP,否,平台现有能力可承接，工程侧无额外宿主
+other,sports,Sports,active_observed,无,0,无对应能力组,MVP,否,平台现有能力可承接，工程侧无额外宿主
+physical_sciences,physics,Physics,active_observed,专有软件许可,3,ECG-02 计量与质量工程; ECG-08 核与辐射安全; ECG-09 医学物理,后续,否,冻结前需要额外宿主、许可或服务
+physical_sciences,chemistry_materials,Chemistry & Materials Computation,active_observed,专有软件; HPC,1,ECG-20 材料科学与计算化学,后续,否,冻结前需要额外宿主、许可或服务
+physical_sciences,astronomy,Astronomy & Astrophysics,active_observed,Linux,1,ECG-21 天文与天体物理,MVP,否,平台现有能力可承接，工程侧无额外宿主
+physical_sciences,earth_atmo,Earth & Atmospheric Sciences,active_observed,Linux,1,ECG-22 大气与地球物理,MVP,否,平台现有能力可承接，工程侧无额外宿主
+life_sciences,biomolecular,Biomolecular Structure & Design,active_observed,大资产; HPC,1,ECG-23 结构生物学,MVP,否,平台现有能力可承接，工程侧无额外宿主
+life_sciences,genomics,Genomics & Sequence Analysis,active_observed,大资产; Linux,1,ECG-24 基因组与生物信息,MVP,否,平台现有能力可承接，工程侧无额外宿主
+life_sciences,cell_imaging,Cell & Imaging Biology,active_observed,大资产; GPU 可选,2,ECG-25 生物成像与细胞术; ECG-26 研究数据管理与报告标准,后续,否,冻结前需要额外宿主、许可或服务
+life_sciences,systems_microbial,Systems & Microbial Biology,active_observed,Linux,3,ECG-26 研究数据管理与报告标准; ECG-27 临床微生物与系统生物学; ECG-28 微生物组学,MVP,否,平台现有能力可承接，工程侧无额外宿主
+health_medicine,clinical_diagnostics,Clinical Diagnostics & Imaging,active_observed,大资产; GUI 阅片,1,ECG-29 诊断影像与病理,MVP,否,平台现有能力可承接，工程侧无额外宿主
+health_medicine,therapeutic_oncology,Therapeutic & Oncology,active_observed,Linux,2,ECG-09 医学物理; ECG-30 肿瘤临床实践,MVP,否,平台现有能力可承接，工程侧无额外宿主
+health_medicine,clinical_informatics,Clinical Informatics & Care,active_observed,Linux,1,ECG-31 临床信息学,MVP,否,平台现有能力可承接，工程侧无额外宿主
+health_medicine,public_health,Public Health & Epidemiology,active_observed,Linux,1,ECG-32 公共卫生监测,MVP,否,平台现有能力可承接，工程侧无额外宿主
+health_medicine,clinical_trials,Clinical Research & Trial Operations,active_observed,无,1,ECG-33 临床试验运营,MVP,否,平台现有能力可承接，工程侧无额外宿主
+psychology_neuro,comp_neuro,Computational Neuroscience,active_observed,大资产; GUI,1,ECG-34 心理与神经科学方法,MVP,否,平台现有能力可承接，工程侧无额外宿主
+psychology_neuro,exp_psychology,Experimental Psychology & Neuroimaging,active_observed,大资产; GUI,1,ECG-34 心理与神经科学方法,MVP,是,平台现有能力可承接，工程侧无额外宿主
+business_finance,accounting,Accounting & Finance,active_observed,无,1,ECG-35 会计与审计,MVP,否,平台现有能力可承接，工程侧无额外宿主
+business_finance,actuarial_risk,Actuarial & Risk Modeling,active_observed,Windows; Excel,1,ECG-36 精算,后续,否,冻结前需要额外宿主、许可或服务
+business_finance,enterprise_analytics,Enterprise Analytics & Planning,active_observed,staged-local 服务,1,ECG-37 数据科学与预测分析,后续,否,冻结前需要额外宿主、许可或服务
+business_finance,compliance,Compliance & Regulatory,active_observed,无,1,ECG-38 金融犯罪合规,MVP,否,平台现有能力可承接，工程侧无额外宿主
+business_finance,hr_pm,HR & Project Management,active_observed,无,2,ECG-39 人力资源与项目管理; ECG-40 数据保护与营销合规,MVP,否,平台现有能力可承接，工程侧无额外宿主
+business_finance,sales_marketing,Sales & Marketing,active_observed,Windows; GUI,1,ECG-40 数据保护与营销合规,后续,否,冻结前需要额外宿主、许可或服务
+business_finance,quant_finance,Quantitative Finance & Trading,active_observed,Linux,1,ECG-41 量化金融与投资合规,MVP,否,平台现有能力可承接，工程侧无额外宿主
+business_finance,supply_chain,Supply Chain & Logistics,active_observed,staged-local 服务,2,ECG-37 数据科学与预测分析; ECG-42 贸易与供应链合规,后续,否,冻结前需要额外宿主、许可或服务
+legal,litigation,Litigation Support & Discovery,active_observed,无,1,ECG-19 法律研究与诉讼支持,MVP,是,平台现有能力可承接，工程侧无额外宿主
+legal,legal_research,Doctrinal Legal Research,active_observed,无,1,ECG-19 法律研究与诉讼支持,MVP,是,平台现有能力可承接，工程侧无额外宿主
+visual_media,animation_3d,"3D, Animation & Interactive Media",active_observed,Windows; GPU; GUI,1,ECG-44 三维动画与视觉资产,后续,否,冻结前需要额外宿主、许可或服务
+visual_media,graphic_design,"Graphic, Visual & Product Design",active_observed,Windows; GUI; 专有 Adobe,2,ECG-45 印前与平面制作; ECG-46 无障碍与辅助技术,后续,否,冻结前需要额外宿主、许可或服务
+visual_media,audio_music,"Audio, Music & Post-Production Media",active_observed,Windows; GUI; 专有 DAW,1,ECG-47 音频制作与存档,后续,否,冻结前需要额外宿主、许可或服务
+computing_math,software_eng,Software Engineering,active_observed,无; CS 域待 A/B 裁决,0,无对应能力组,后续,否,500 条口径暂排除，A/B 裁决后再定
+computing_math,data_analytics,Data & Analytics Engineering,active_observed,无; CS 域待 A/B 裁决,0,无对应能力组,后续,否,500 条口径暂排除，A/B 裁决后再定
+computing_math,ai_cs_research,AI Engineering & CS Research,active_observed,无; CS 域待 A/B 裁决,0,无对应能力组,后续,否,500 条口径暂排除，A/B 裁决后再定
+computing_math,math_ops_research,Math & Operations Research,active_observed,无; CS 域待 A/B 裁决,0,无对应能力组,后续,否,500 条口径暂排除，A/B 裁决后再定
+computing_math,cybersecurity,Cybersecurity & Forensics,active_observed,无; CS 域待 A/B 裁决,0,无对应能力组,后续,否,500 条口径暂排除，A/B 裁决后再定
+computing_math,infra_cloud,Infrastructure Engineering & Cloud Operations,active_observed,无; CS 域待 A/B 裁决,0,无对应能力组,后续,否,500 条口径暂排除，A/B 裁决后再定
+computing_math,quantum,Quantum Computing,active_observed,无; CS 域待 A/B 裁决,0,无对应能力组,后续,否,500 条口径暂排除，A/B 裁决后再定
