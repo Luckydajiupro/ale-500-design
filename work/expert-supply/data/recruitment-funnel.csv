@@ -1,0 +1,9 @@
+stage,count_per_wave,count_two_waves,conversion_to_next,assumption,sensitivity_low,sensitivity_high,notes
+target_orgs,120,240,4.83 联系人/组织,每波 120 个目标组织/团队，平均 4–5 个联系人,80,180,渠道清单与 20 关键词/类目
+outreach,580,1160,0.3,冷触达回复率 30%；warm intro 50%,400,870,v0 计划未给转化率，本表为假设
+response,174,348,0.5,回复→15 分钟电话 50%,100,260,排期与意愿假设
+phone_screen,87,174,0.6,电话→进入试用/资格 60%,60,120,15 分钟筛选问题
+qualified,52,104,0.7,资格→发 offer 70%,35,70,签约前检查清单
+offer,37,73,0.85,offer→签约 85%,30,45,费用与合同条款
+signed,31,62,0.84,签约→完成首个任务并留池 84%,24,36,首个任务验收
+retained_seats,26,52,—,签约→完成首个任务并留池（累计 52 个 4 个月席位）,20,30,同时在岗 26 人
