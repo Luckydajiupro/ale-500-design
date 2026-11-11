@@ -35,6 +35,7 @@ ENGINEERING = "S1_02C_ENGINEERING_RISK_REGISTER.csv"
 
 STATUS_MARKERS = (
     ("已关闭", "closed"),
+    ("已签字", "signed"),
     ("收口", "awaiting_review"),
     ("未启动", "not_started"),
 )
