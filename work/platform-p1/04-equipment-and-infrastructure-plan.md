@@ -55,18 +55,18 @@ provisioned_gib = ceil_to(512, live_gib × 1.3 + 100)
 
 | 档 | live | DB | 日志 | 备份 | 已开通 |
 | --- | --- | --- | --- | --- | --- |
-| 低 | 110.47 GiB | 3 GiB | 12 GiB | 132.57 GiB | 512 GiB |
-| 中 | 257.77 GiB | 6 GiB | 30 GiB | 309.32 GiB | 512 GiB |
-| 高 | 530.27 GiB | 6 GiB | 30 GiB | 636.32 GiB | 1024 GiB |
+| 低 | 137.17 GiB | 3 GiB | 12 GiB | 164.60 GiB | 512 GiB |
+| 中 | 321.06 GiB | 6 GiB | 30 GiB | 385.28 GiB | 1024 GiB |
+| 高 | 622.42 GiB | 6 GiB | 30 GiB | 746.90 GiB | 1024 GiB |
 
-中档热占用约 294 GiB，开通 512 GiB 留 74% 余量。高档热占用约 566 GiB，开通 1 TiB。逐类目数字在 `data/storage-sizing.csv`，公式与敏感性在 `data/capacity-model.md`。
+中档热占用约 357 GiB，开通 1 TiB 留 65% 余量。高档热占用约 658 GiB，开通 1 TiB 留 36% 余量。逐类目数字在 `data/storage-sizing.csv`，公式与敏感性在 `data/capacity-model.md`。
 
 ### 2.4 敏感性
 
 | 变化 | 影响 | 结论 |
 | --- | --- | --- |
-| 单任务中位翻倍 | live 约 221 / 516 / 1061 GiB | 中档升到 1 TiB |
-| 任务数从 500 到 800 | live ×1.6 | 低档升中档 |
+| 单任务中位翻倍 | live 约 274 / 642 / 1245 GiB | 中档仍在 1 TiB，高档升 2 TiB |
+| 任务数从 500 到 800 | live ×1.6 | 低档升中档，高档升 2 TiB |
 | 快照保留 3 份而非 1 份 | live +50% | 不建议，快照可重建 |
 | 出现 1 条 12 GiB 任务 | 单条 live 约 42 GiB | 需要单任务上限与例外审批 |
 | 日备保留从 30 天到 90 天 | 备份 ×1.5 | 用冷归档，不用热存储 |

@@ -10,27 +10,27 @@
 
 | domain_code | 中文 | 子域数 | 官方任务 | 08 配额 | 建议配额 | 差 |
 | --- | --- | --- | --- | --- | --- | --- |
-| business_finance | 商业与金融 | 8 | 19 | 50 | 47 | -3 |
+| business_finance | 商业与金融 | 8 | 19 | 50 | 50 | 0 |
 | computing_math | 计算与数学 | 7 | 19 | 0 | 0 | 0 |
-| education_info | 教育与信息 | 3 | 2 | 36 | 36 | 0 |
-| engineering | 工程 | 10 | 16 | 50 | 48 | -2 |
-| health_medicine | 健康与医学 | 5 | 19 | 60 | 57 | -3 |
+| education_info | 教育与信息 | 3 | 2 | 36 | 32 | -4 |
+| engineering | 工程 | 10 | 16 | 50 | 50 | 0 |
+| health_medicine | 健康与医学 | 5 | 19 | 60 | 60 | 0 |
 | legal | 法律 | 2 | 2 | 36 | 36 | 0 |
-| life_sciences | 生命科学 | 4 | 12 | 48 | 46 | -2 |
-| other | 其他 | 1 | 2 | 32 | 32 | 0 |
-| physical_sciences | 物理科学 | 4 | 14 | 46 | 44 | -2 |
+| life_sciences | 生命科学 | 4 | 12 | 48 | 48 | 0 |
+| other | 其他 | 1 | 2 | 32 | 28 | -4 |
+| physical_sciences | 物理科学 | 4 | 14 | 46 | 46 | 0 |
 | psychology_neuro | 心理与神经 | 2 | 3 | 34 | 34 | 0 |
 | social_sciences | 社会科学 | 1 | 1 | 34 | 34 | 0 |
-| transport_safety | 交通与安全 | 3 | 2 | 34 | 34 | 0 |
-| visual_media | 视觉与媒体 | 3 | 11 | 40 | 40 | 0 |
-| agriculture_env | 农业与环境 | 2 | 0 | 无行 | 12 | 新增 |
+| transport_safety | 交通与安全 | 3 | 2 | 34 | 30 | -4 |
+| visual_media | 视觉与媒体 | 3 | 11 | 40 | 36 | -4 |
+| agriculture_env | 农业与环境 | 2 | 0 | 无行 | 16 | 新增 |
 | 合计 |  | 55 | 122 | 500 | 500 | 0 |
 
 ### 缺口一：agriculture_env 被漏掉
 
 `08_coverage_matrix_draft.csv` 的 12 个非 CS 类目配额合计正好 500，但 `agriculture_env` 不在表里。它不是 CS 域，也不该按 0 处理。按 12 类做覆盖，等于把一个官方域从 500 条里静默删掉。
 
-建议补 12 条，全部给 `env_water`。`precision_agriculture` 没有官方样本，暂不分配配额，留在手工组做后续扩样。来源从五个资产最重的类目各减一点：health 60 减 3，business 50 减 3，engineering 50 减 2，life 48 减 2，physical 46 减 2。总数仍是 500，08 其余不动。
+建议补 16 条，全部给 `env_water`。`precision_agriculture` 没有官方样本，暂不分配配额，留在手工组做后续扩样。来源从四个覆盖最薄的类目各减 4 条：education 36 减 4，other 32 减 4，transport 34 减 4，visual 40 减 4。总数仍是 500，08 其余不动。这组数字与 `work/expert-supply/01-quota-allocation-500.md` 的 v1 一致。
 
 这条要负责人拍板。未拍板前，500 的计数模型按"13 类加 1 个待补"处理，不能报成 12 类已完成。
 
@@ -194,7 +194,7 @@ business_finance、visual_media，另有 engineering 的 5 条 Windows。
 
 法律、神经影像、建筑节能（属 engineering 的 `energy_power` 子域）。选择理由在 `work/recruitment-plan-v0.md`：专家可得、资料可公开或合成、环境是 Linux。
 
-首批覆盖 3 个 domain_code、5 个子域、5 条任务。这只占 14 个类目的 21%，不能当成覆盖结论。
+首批覆盖 3 个 domain_code、4 个子域、5 条任务。两条神经影像任务分别测 DICOM 到 BIDS 的转换和公开 BIDS 的预处理，不是同一个工作流重复。这只占 14 个类目的 21%，不能当成覆盖结论。
 
 ### 平台能力覆盖的时间线
 
@@ -209,7 +209,7 @@ business_finance、visual_media，另有 engineering 的 5 条 Windows。
 
 1. 平台 schema 覆盖 14 个 domain_code。没有任何一类因为字段缺失而无法录入。
 2. 第一批能完整支持的是 3 个类目，能支持录入与评审但受资产、引用或 GUI 未知限制的是 7 个，需要 Windows、GPU 或在线服务才能验的是 4 个。
-3. `agriculture_env` 必须补进配额，建议 12 条，从五个大类目各减一点，总数仍 500。
+3. `agriculture_env` 必须补进配额，建议 16 条，从 education、other、transport、visual 各减 4 条，总数仍 500。
 4. 6 个空覆盖子域只能手工兜底。平台不做假样本，也不把它们计入自动流程。
 5. 后续类目不会被堵死：新增类目只加配置行，状态机、权限、快照格式都不变。
 

@@ -61,7 +61,7 @@
 | --- | --- | --- | --- | --- | --- |
 | P-01 | legal | legal_research | 检索报告加证据表 | 200 MiB | medium |
 | P-02 | legal | litigation | 争点分析 memo | 200 MiB | high |
-| P-03 | psychology_neuro | exp_psychology | 分析脚本加结果表 | 2 GiB | high |
+| P-03 | psychology_neuro | comp_neuro | DICOM 到 BIDS 转换目录加 QC 日志 | 2 GiB | high |
 | P-04 | psychology_neuro | comp_neuro | 预处理报告加图表 | 8 GiB | high |
 | P-05 | engineering | energy_power | 能耗模型加校核表 | 1 GiB | medium |
 
@@ -186,7 +186,7 @@ P0 全过才算试点通过。P1 允许最多 2 项带临时绕行，但要有�
 | --- | --- | --- |
 | 月提交量 | 超过 40 条 | 加评审人，不改架构 |
 | 并发评审 | 超过 8 人同时在线 | 应用加 2 个 worker |
-| 存储水位 | 超过 70% | 升到 1 TiB，再升 2 TiB |
+| 存储水位 | 超过 70% | 试点 500 GiB，前 100 条 1 TiB；超过 70% 再升 2 TiB |
 | 评审积压 | 平均等待超过 10 个工作日 | 开第二评审池，加抽样 |
 | Windows 任务 | 累计超过 20 条 | 买或租 Windows 宿主 |
 | 外部服务任务 | 累计超过 5 条 | 建服务清单与网络策略 |
