@@ -1,0 +1,13 @@
+inputs/frozen/
+work/
+.DS_Store
+__pycache__/
+*.pyc
+.venv/
+
+# 阶段证据只在完整工作副本里，不随设计仓库分发
+stages/s0-baseline/*
+!stages/s0-baseline/STAGE.md
+stages/s1-research/*
+!stages/s1-research/STAGE.md
+tools/freeze/
