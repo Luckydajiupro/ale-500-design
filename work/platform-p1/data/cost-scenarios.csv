@@ -65,3 +65,25 @@ high,满产,network_security,opex,1000,7,7000,VPN 与边界防护
 high,满产,gpu_node,opex,8000,7,56000,24 GiB GPU 按 150 小时/月
 high,满产,PHASE_SUBTOTAL,subtotal,,,134050,满产 合计
 high,YEAR_1,GRAND_TOTAL,total,,,210150,12 个月合计，不含人力
+default,P1 试点,platform_host,opex,2500,2,5000,8C32G 云主机
+default,P1 试点,object_storage,opex,100,2,200,500 GiB 对象存储
+default,P1 试点,backup,opex,100,2,200,异地备份
+default,P1 试点,domain_tls_mail,opex,100,2,200,域名、证书、邮件
+default,P1 试点,PHASE_SUBTOTAL,subtotal,,,5600,P1 试点 合计
+default,前 100 条,platform_host,opex,2500,3,7500,8C32G 云主机
+default,前 100 条,object_storage,opex,180,3,540,1 TiB 对象存储
+default,前 100 条,backup,opex,120,3,360,异地备份
+default,前 100 条,domain_tls_mail,opex,100,3,300,域名、证书、邮件
+default,前 100 条,linux_build_host,opex,3000,3,9000,16C64G 构建机
+default,前 100 条,network_security,opex,500,3,1500,VPN 与边界防护
+default,前 100 条,windows_cloud,opex,4500,3,13500,Windows 云主机，默认先租
+default,前 100 条,PHASE_SUBTOTAL,subtotal,,,32700,前 100 条 合计
+default,满产,platform_host,opex,2500,7,17500,8C32G 云主机
+default,满产,object_storage,opex,360,7,2520,2 TiB 对象存储
+default,满产,backup,opex,200,7,1400,异地备份
+default,满产,domain_tls_mail,opex,100,7,700,域名、证书、邮件
+default,满产,linux_build_host,opex,3000,7,21000,16C64G 构建机
+default,满产,network_security,opex,500,7,3500,VPN 与边界防护
+default,满产,windows_cloud,opex,4500,7,31500,Windows 云主机，默认先租
+default,满产,PHASE_SUBTOTAL,subtotal,,,78120,满产 合计
+default,YEAR_1,GRAND_TOTAL,total,,,116420,12 个月合计，不含人力

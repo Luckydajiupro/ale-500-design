@@ -61,9 +61,9 @@
 | social_sciences | 1/0 | 0/0 | 0 | 0 | 低 | 447 MiB，单条 | scorer | 无 | 中 | 低（1 条） | MVP | 否 |
 | transport_safety | 2/0 | 0/1 | 0 | 无 | 低 | 170 MiB，中位 85.1 MiB | scorer, evaluator | 无 | 低 | 低（2 条） | MVP | 否 |
 | visual_media | 2/9 | 9/1 | 2 | 无 | 高（Adobe 类） | 2.03 GiB，中位 7.4 MiB | evaluator, scorer, hook | 无 | 中 | 中（11 条） | 后续 | 否 |
-| agriculture_env | 无官方样本 | 未知 | 0 | 0 | 低 | 无样本，按 2 GiB 估 | script, checker（推测） | 无 | 中（地块数据） | 待招募 | MVP | 否 |
+| agriculture_env | 目录 0，重分类 1（Linux） | 未知 | 0 | 0 | 低 | 32 KiB（glm_lake_calibration） | script/scorer（参考 glm_lake_calibration） | 无 | 中（地块数据） | 待招募 | MVP | 否 |
 
-说明：专家可得性用官方任务数加阶段 1 候选族密度作代理，不是独立调查。agriculture_env 没有官方任务，只能按子域能力组估。
+说明：专家可得性用官方任务数加阶段 1 候选族密度作代理，不是独立调查。agriculture_env 官方目录 0 条，但 `env_water` 有 1 条重分类活动任务（`physical_sciences/glm_lake_calibration`），不能当成完全无样本。
 
 ## 3. 按环境门槛分组
 
@@ -194,7 +194,7 @@ business_finance、visual_media，另有 engineering 的 5 条 Windows。
 
 法律、神经影像、建筑节能（属 engineering 的 `energy_power` 子域）。选择理由在 `work/recruitment-plan-v0.md`：专家可得、资料可公开或合成、环境是 Linux。
 
-首批覆盖 3 个 domain_code、4 个子域、5 条任务。这只占 14 个类目的 21%，不能当成覆盖结论。
+首批覆盖 3 个 domain_code、5 个子域、5 条任务。这只占 14 个类目的 21%，不能当成覆盖结论。
 
 ### 平台能力覆盖的时间线
 
@@ -209,7 +209,7 @@ business_finance、visual_media，另有 engineering 的 5 条 Windows。
 
 1. 平台 schema 覆盖 14 个 domain_code。没有任何一类因为字段缺失而无法录入。
 2. 第一批能完整支持的是 3 个类目，能支持录入与评审但受资产、引用或 GUI 未知限制的是 7 个，需要 Windows、GPU 或在线服务才能验的是 4 个。
-3. `agriculture_env` 必须补进配额，建议 12 条，从四个大类目各减一点，总数仍 500。
+3. `agriculture_env` 必须补进配额，建议 12 条，从五个大类目各减一点，总数仍 500。
 4. 6 个空覆盖子域只能手工兜底。平台不做假样本，也不把它们计入自动流程。
 5. 后续类目不会被堵死：新增类目只加配置行，状态机、权限、快照格式都不变。
 
