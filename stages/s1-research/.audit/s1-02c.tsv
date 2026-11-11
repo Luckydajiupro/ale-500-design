@@ -1,0 +1,2 @@
+ts	phase	decision	why	evidence	result
+2026-11-10T21:58:48+08:00	S1-02C	修正 C13 基线条目数 62 改为 61 并完成 15/15	62 行原件含自哈希行，61 才是可满足的历史文件数	.audit/s1-02c-baseline.sha256.as-taken 62 行；当前清单 61/61 匹配；--self-test 10/10	PASS 15/15, exit 0

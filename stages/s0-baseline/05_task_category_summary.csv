@@ -1,0 +1,15 @@
+domain,official_count,cs_domain,retained_for_500,note
+business_finance,19,no,yes,windows=7; staged_local=5; gpu=0; docker_exception=2. retained_for_500 按当前统计过滤口径（CS 域排除为 R1 过滤器，仅统计语义，非任务转换计数）。
+computing_math,19,yes,no,windows=4; staged_local=0; gpu=0; docker_exception=1. retained_for_500 按当前统计过滤口径（CS 域排除为 R1 过滤器，仅统计语义，非任务转换计数）。
+education_info,2,no,yes,windows=1; staged_local=0; gpu=0; docker_exception=0. retained_for_500 按当前统计过滤口径（CS 域排除为 R1 过滤器，仅统计语义，非任务转换计数）。
+engineering,16,no,yes,windows=5; staged_local=0; gpu=1; docker_exception=4. retained_for_500 按当前统计过滤口径（CS 域排除为 R1 过滤器，仅统计语义，非任务转换计数）。
+health_medicine,19,no,yes,windows=4; staged_local=0; gpu=0; docker_exception=0. retained_for_500 按当前统计过滤口径（CS 域排除为 R1 过滤器，仅统计语义，非任务转换计数）。
+legal,2,no,yes,windows=0; staged_local=0; gpu=0; docker_exception=0. retained_for_500 按当前统计过滤口径（CS 域排除为 R1 过滤器，仅统计语义，非任务转换计数）。
+life_sciences,12,no,yes,windows=0; staged_local=0; gpu=0; docker_exception=0. retained_for_500 按当前统计过滤口径（CS 域排除为 R1 过滤器，仅统计语义，非任务转换计数）。
+other,2,no,yes,windows=1; staged_local=0; gpu=0; docker_exception=0. retained_for_500 按当前统计过滤口径（CS 域排除为 R1 过滤器，仅统计语义，非任务转换计数）。
+physical_sciences,14,no,yes,windows=4; staged_local=0; gpu=0; docker_exception=0. retained_for_500 按当前统计过滤口径（CS 域排除为 R1 过滤器，仅统计语义，非任务转换计数）。
+psychology_neuro,3,no,yes,windows=1; staged_local=0; gpu=0; docker_exception=1. retained_for_500 按当前统计过滤口径（CS 域排除为 R1 过滤器，仅统计语义，非任务转换计数）。
+social_sciences,1,no,yes,windows=0; staged_local=0; gpu=0; docker_exception=0. retained_for_500 按当前统计过滤口径（CS 域排除为 R1 过滤器，仅统计语义，非任务转换计数）。
+transport_safety,2,no,yes,windows=0; staged_local=0; gpu=0; docker_exception=0. retained_for_500 按当前统计过滤口径（CS 域排除为 R1 过滤器，仅统计语义，非任务转换计数）。
+visual_media,11,no,yes,windows=9; staged_local=0; gpu=2; docker_exception=0. retained_for_500 按当前统计过滤口径（CS 域排除为 R1 过滤器，仅统计语义，非任务转换计数）。
+TOTAL,122,n/a,103,103 个非 CS 域任务 retained_for_500 口径；122 为官方 full.txt 任务总数。windows 总计=36；staged-local=5；gpu=3；docker_exception=8。

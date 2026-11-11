@@ -1,0 +1,42 @@
+fv-02a	04_task_inventory.csv	PASS	rows=122 unique_ids=122
+fv-02b	04_task_inventory.csv	PASS	header_cols=31 uniform=True
+fv-02c	04_task_inventory.csv vocab	PASS	gui=['no', 'unknown', 'yes'] ext=['none', 'online-required', 'public-ref', 'staged-local'] lr=['allowlist', 'doc_exception', 'none'] run={'NOT_RUN'}
+fv-02d	04_task_inventory.csv domains	PASS	domains=13 cs=19
+fv-03a	05_task_category_summary.csv	PASS	total_rows=1 total=['TOTAL', '122', 'n/a', '103', '103 个非 CS 域任务 retained_for_500 口径；122 为官方 full.txt 任务总数。windows 总计=36；staged-local=5；gpu=3；docker_exception=8。']
+fv-03b	05_task_category_summary.csv vs 04 census	PASS	05_domains=13 equal=True
+fv-04a	08_coverage_matrix_draft.csv	PASS	non_cs_rows=12 sum=500
+fv-04b	08_coverage_matrix_draft.csv	PASS	computing_math=0
+fv-04c	08 official_count vs 05	PASS	08_domains=13 equal=True
+fv-05	00_project_brief.md	PASS	banned_hits=[]
+fv-05	02_repo_inventory.md	PASS	banned_hits=[]
+fv-05	03_repo_structure_comparison.md	PASS	banned_hits=[]
+fv-05	06_runtime_provider_matrix.md	PASS	banned_hits=[]
+fv-05	07_old_new_format_comparison.md	PASS	banned_hits=[]
+fv-05	09_unknowns_and_decisions.md	PASS	banned_hits=[]
+fv-05	10_phase0_summary.md	PASS	banned_hits=[]
+fv-05	PHASE0_FINAL_REPORT.md	PASS	banned_hits=[]
+fv-06	00_project_brief.md	PASS	dangling=[]
+fv-06	02_repo_inventory.md	PASS	dangling=[]
+fv-06	03_repo_structure_comparison.md	PASS	dangling=[]
+fv-06	06_runtime_provider_matrix.md	PASS	dangling=[]
+fv-06	07_old_new_format_comparison.md	PASS	dangling=[]
+fv-06	09_unknowns_and_decisions.md	PASS	dangling=[]
+fv-06	10_phase0_summary.md	PASS	dangling=[]
+fv-06	PHASE0_FINAL_REPORT.md	PASS	dangling=[]
+fv-07	FINAL_VALIDATION_REPORT.md status	SKIP	validation report is regenerated after the freeze run; its closed status is checked in --verify-sums
+fv-07	10_phase0_summary.md status	PASS	missing=[] stale=no
+fv-07	00_project_brief.md status	PASS	missing=[] stale=no
+fv-07	PHASE0_FINAL_REPORT.md status	PASS	missing=[] stale=no
+fv-08	PHASE0_FINAL_REPORT.md presence	PASS	missing=[]
+fv-13a	manifest final_files vs disk	PASS	bad=[]
+fv-13b	source lineage vs archive	PASS	bad=[]
+fv-14	external archive records	PASS	sums_entries=254 tsv_file_rows=254 verify_c=ok
+fv-14b	archive index resolves manifest sources	PASS	mapping ok
+fv-15	history dirs moved out of analysis	PASS	still_present=[]
+fv-16	progress.log closeout entry	PASS	entry=ok
+fv-11	repo 01_agents-last-exam HEAD	PASS	head=2e91edd3cd26 rc=0
+fv-11	repo 02_ale HEAD	PASS	head=73517c2eb097 rc=0
+fv-11	repo 04_ale-tasks-base HEAD	PASS	head=492249a2ca4b rc=0
+fv-10a	FILE_SHA256SUMS.txt	PASS	byte_newlines=108117
+fv-10b	README_READ_ONLY.md perms	PASS	mode=0o400
+TOTAL 41 PASS 40 FAIL 0 ERROR 0 SKIP 1

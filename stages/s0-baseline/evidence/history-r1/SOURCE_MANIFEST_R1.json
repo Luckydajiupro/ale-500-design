@@ -1,0 +1,161 @@
+{
+  "round1_source_dir": "/Users/mac/Workspaces/ale-研究设计/ale-phase0-workspace-20261108/analysis/phase0-official-baseline",
+  "hashed_at_pre": "2026-11-09T10:46:10+08:00",
+  "hashed_at_post": "2026-11-09T13:50:46+08:00",
+  "files": {
+    "00_project_brief.md": {
+      "source_path": "/Users/mac/Workspaces/ale-研究设计/ale-phase0-workspace-20261108/analysis/phase0-official-baseline/00_project_brief.md",
+      "sha256_pre": "339c6b547a51069e76e1f60b303daa730f505e65cbdf8738a8d528568a3b1cd1",
+      "sha256_post": "339c6b547a51069e76e1f60b303daa730f505e65cbdf8738a8d528568a3b1cd1",
+      "status": "copied_and_revised",
+      "r1_output": "./00_project_brief.md",
+      "r1_sha256": "2c31732ba1386a4dd533e8dff0ca665317ae2972bea5bbb3850b807759be567a"
+    },
+    "01_baseline_manifest.json": {
+      "source_path": "/Users/mac/Workspaces/ale-研究设计/ale-phase0-workspace-20261108/analysis/phase0-official-baseline/01_baseline_manifest.json",
+      "sha256_pre": "181ab5ee500b04e57d5cda271211070ba3e9bbac6f121a76717280e51860118f",
+      "sha256_post": "181ab5ee500b04e57d5cda271211070ba3e9bbac6f121a76717280e51860118f",
+      "status": "reference_only",
+      "r1_output": null,
+      "r1_sha256": null
+    },
+    "02_repo_inventory.md": {
+      "source_path": "/Users/mac/Workspaces/ale-研究设计/ale-phase0-workspace-20261108/analysis/phase0-official-baseline/02_repo_inventory.md",
+      "sha256_pre": "c1c5b2c302d5aa262104e9f882c75d6f00efd4565d550692537766bf763c25a7",
+      "sha256_post": "c1c5b2c302d5aa262104e9f882c75d6f00efd4565d550692537766bf763c25a7",
+      "status": "copied_and_revised",
+      "r1_output": "./02_repo_inventory.md",
+      "r1_sha256": "a60c74375f7dd1afb151cdc0ea1309af8600e1db69073c3b0a7d430f94010470"
+    },
+    "03_repo_structure_comparison.md": {
+      "source_path": "/Users/mac/Workspaces/ale-研究设计/ale-phase0-workspace-20261108/analysis/phase0-official-baseline/03_repo_structure_comparison.md",
+      "sha256_pre": "b608c0dabc0e1eac6e0a6b2db0a579c4b615b9371c1a296e83cc41458d4c25f8",
+      "sha256_post": "b608c0dabc0e1eac6e0a6b2db0a579c4b615b9371c1a296e83cc41458d4c25f8",
+      "status": "copied_and_revised",
+      "r1_output": "./03_repo_structure_comparison.md",
+      "r1_sha256": "83db547a9f10a85951bdd89c2ea122d8ce261b4fbe3bc653822debab0604c208"
+    },
+    "04_task_inventory.csv": {
+      "source_path": "/Users/mac/Workspaces/ale-研究设计/ale-phase0-workspace-20261108/analysis/phase0-official-baseline/04_task_inventory.csv",
+      "sha256_pre": "05bc549534ccc9dc0a00219368dbf13d5d6f4c6cab4e1a99bd10ba9afde98545",
+      "sha256_post": "05bc549534ccc9dc0a00219368dbf13d5d6f4c6cab4e1a99bd10ba9afde98545",
+      "status": "delegated_child_a",
+      "r1_output": "./04_task_inventory.csv",
+      "r1_sha256": "9d73e17515b594eb6d35170ac01ce8047e889462a44939efc60b41cf75f2c00f"
+    },
+    "05_task_category_summary.csv": {
+      "source_path": "/Users/mac/Workspaces/ale-研究设计/ale-phase0-workspace-20261108/analysis/phase0-official-baseline/05_task_category_summary.csv",
+      "sha256_pre": "0564b075c127304c03f52edf0578278cf7184c1772ba9968d9dabb10651d0fdf",
+      "sha256_post": "0564b075c127304c03f52edf0578278cf7184c1772ba9968d9dabb10651d0fdf",
+      "status": "delegated_child_a",
+      "r1_output": "./05_task_category_summary.csv",
+      "r1_sha256": "f2bc36a1b86831193ab70dc51dc105bfc21c791fd01942b06c142ec3e55a5fc3"
+    },
+    "06_runtime_provider_matrix.md": {
+      "source_path": "/Users/mac/Workspaces/ale-研究设计/ale-phase0-workspace-20261108/analysis/phase0-official-baseline/06_runtime_provider_matrix.md",
+      "sha256_pre": "f0349f7169557e8bb48a2969886cce892f331a13320575c45366db9d53298881",
+      "sha256_post": "f0349f7169557e8bb48a2969886cce892f331a13320575c45366db9d53298881",
+      "status": "delivered_child_e",
+      "r1_output": "./06_runtime_provider_matrix.md",
+      "r1_sha256": "31f22482d41ccd60bdd494c229418f3225664ceae778030ffa9e5a3fdd90ab33"
+    },
+    "07_old_new_format_comparison.md": {
+      "source_path": "/Users/mac/Workspaces/ale-研究设计/ale-phase0-workspace-20261108/analysis/phase0-official-baseline/07_old_new_format_comparison.md",
+      "sha256_pre": "76f511810f0b858be40c58db0efb27e5894d8d92df167439b08ce20d6c96991c",
+      "sha256_post": "76f511810f0b858be40c58db0efb27e5894d8d92df167439b08ce20d6c96991c",
+      "status": "delivered_child_e",
+      "r1_output": "./07_old_new_format_comparison.md",
+      "r1_sha256": "3f4ce84e6eef3ee8073e1b81958ba3a3d01aaaccebe6e830fc664296577644ac"
+    },
+    "08_coverage_matrix_draft.csv": {
+      "source_path": "/Users/mac/Workspaces/ale-研究设计/ale-phase0-workspace-20261108/analysis/phase0-official-baseline/08_coverage_matrix_draft.csv",
+      "sha256_pre": "f88fe8198cca6e3602fc256333a51c933c4884d3cd3b935b888001d1e28d3009",
+      "sha256_post": "f88fe8198cca6e3602fc256333a51c933c4884d3cd3b935b888001d1e28d3009",
+      "status": "delegated_child_a",
+      "r1_output": "./08_coverage_matrix_draft.csv",
+      "r1_sha256": "91f5e5f5ad8679780315d6ab305d06a8bfe27c6b8a47539e5d849585bd8ad875"
+    },
+    "09_unknowns_and_decisions.md": {
+      "source_path": "/Users/mac/Workspaces/ale-研究设计/ale-phase0-workspace-20261108/analysis/phase0-official-baseline/09_unknowns_and_decisions.md",
+      "sha256_pre": "b1b8b9437922a6eef8daeb7a547a93e6b5a8d542a4acf92f2401fb749bfc3d33",
+      "sha256_post": "b1b8b9437922a6eef8daeb7a547a93e6b5a8d542a4acf92f2401fb749bfc3d33",
+      "status": "copied_and_revised",
+      "r1_output": "./09_unknowns_and_decisions.md",
+      "r1_sha256": "394398ef532a3e5e7badd26f2abe2d19fdc40dfa48d051a54c4d8cdd5621b353"
+    },
+    "10_phase0_summary.md": {
+      "source_path": "/Users/mac/Workspaces/ale-研究设计/ale-phase0-workspace-20261108/analysis/phase0-official-baseline/10_phase0_summary.md",
+      "sha256_pre": "02bcf3467168dd71949b47d995525dbcb3086f03e57912f96b579379ce456ca6",
+      "sha256_post": "02bcf3467168dd71949b47d995525dbcb3086f03e57912f96b579379ce456ca6",
+      "status": "copied_and_revised",
+      "r1_output": "./10_phase0_summary.md",
+      "r1_sha256": "f254372e718fa9b601f11159db94b35e94cce931dac48ffb31f26889d81ceecb"
+    },
+    "parse_progress.log": {
+      "source_path": "/Users/mac/Workspaces/ale-研究设计/ale-phase0-workspace-20261108/analysis/phase0-official-baseline/parse_progress.log",
+      "sha256_pre": "9511fa46328543b98be1cb31461dd460f81d7c757471ec70ec861345e0cdefa4",
+      "sha256_post": "9511fa46328543b98be1cb31461dd460f81d7c757471ec70ec861345e0cdefa4",
+      "status": "reference_only",
+      "r1_output": null,
+      "r1_sha256": null
+    }
+  },
+  "r1_evidence": {
+    "evidence/engine_format_evidence.md": {
+      "sha256": "793aaac1aa8889a33ee1721f8424ee8ee3dd8a22d6c3fbf52e46a0149dcdce3f",
+      "provider": "child_e"
+    },
+    "evidence/runtime_claim_audit.md": {
+      "sha256": "995aebda5ac18d80850aa1c4276b22c345e479eaf06847c2713fb3bbb6a7a8df",
+      "provider": "child_e"
+    },
+    "evidence/historical_log_index.md": {
+      "sha256": "6e4696b4f8abb0404da598734a6ac4435ab47a57221fda136196e89d25ffe6a7",
+      "provider": "child_e"
+    },
+    "evidence/license_evidence.md": {
+      "sha256": "d2ff1aed72fc96a380fb901f24fb09e03ec169f46291ff000931b4bb1d786007",
+      "provider": "child_e"
+    },
+    "evidence/r1_engine_notes.md": {
+      "sha256": "c16b5623de13eaa6d01dfb6a6d44496ecc6b1dd6b08380648f79fc50a431f0f6",
+      "provider": "child_e"
+    },
+    "sizes_scopes.tsv": {
+      "sha256": "e0a17090dc1cd5ef9d04a47586e5e7373de2e570dcdce6b3dc7389be7a753f31",
+      "provider": "child_a"
+    },
+    "file_attribution.tsv": {
+      "sha256": "78a580b286625b724821763597e1d64c82f7c7b6c571a3ff537ca492918b345f",
+      "provider": "child_a"
+    },
+    "gpu_cross.tsv": {
+      "sha256": "0eb6e3de1d33c7fa35316a5e6da77fef63ae4cb0189cf24becd0b4ce10cd2817",
+      "provider": "child_a"
+    },
+    "staged_local_os.tsv": {
+      "sha256": "e2d1ebb8cb813ca791281b956cdd2e857dbe17933ac35e7bb6680198666b79b7",
+      "provider": "child_a"
+    },
+    "template_tasks.tsv": {
+      "sha256": "6d4f376abbc6fee8602d8db008705057edbcf22b51ba048bcc30757548bd292d",
+      "provider": "child_a"
+    },
+    "set_diff_report.md": {
+      "sha256": "075470cd783ce18d5d71421fa394ea8a88528e1e08062697043db7f393e3d820",
+      "provider": "child_a"
+    },
+    "symlink_resolution_r1.tsv": {
+      "sha256": "9a95b1c24d78c92d8a690fc191f038f195206e2dd03285619f5dc9361bbc8a43",
+      "provider": "child_a"
+    },
+    "chmod_wording_check.md": {
+      "sha256": "235dee796b5a63a48fc064b1a07aad39bd1259fe4e8f1044b8b93e0883d34330",
+      "provider": "child_a"
+    },
+    "r1_data_notes.md": {
+      "sha256": "accf8710899d990c96865886b5bc68ad134590919e63d00fa932346cbafeb97f",
+      "provider": "child_a"
+    }
+  }
+}

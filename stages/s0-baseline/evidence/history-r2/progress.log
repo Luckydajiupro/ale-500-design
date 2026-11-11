@@ -1,0 +1,14 @@
+[2026-11-09 15:55:51 +0800] R2 执行开始。任务书 m00718（文言 m00718，R2 定点修复与复验）。唯一写入目录 analysis/phase0-official-baseline-r2/。
+[2026-11-09 15:55:51 +0800] 进场检查：R2 目录此前不存在，无覆盖风险。
+[2026-11-09 15:55:51 +0800] 进场固定：轮一 12 份 + R1 全部 52 个小型产物完整 SHA256 → evidence/source_hashes_round1_r1.tsv。
+[2026-11-09 15:55:51 +0800] 脚本输出路径审查：20/21/22/23/30 全部硬编码写入 R1。R2 副本读源保留 R1（census_raw.json 只读引用），写根改为 R2。
+[2026-11-09 15:55:51 +0800] 复制 03/06/09/10 与 20/21/30 到 R2 准备修订（原文件不动）。
+[2026-11-09 17:24:12 +0800] 反例测试夹具构建与运行：build_fixtures.py 构建 8 个注入用例，run_counterexamples.py 全部 8 例 TRIGGERED，runner rc=0；结果记录在 evidence/counterexamples/results.tsv。c07 首次未触发（整段 name+number 整段互换对称，已改为仅数字互换锚定），修复后命中 c08-e-other。
+[2026-11-09 17:24:12 +0800] 修正 validate_r2.py e-01 死锁：sealed 模式移除 VALIDATION_RESULTS.json 与 R2_VALIDATION_REPORT.md 的检查期存在性要求（由本轮自身生成，其存在与哈希改由 FINAL_CHECKSUMS 在结封印证），改后反例全量重跑仍全触发，真实目录 pre-freeze 重跑 rc=0 PASS 42 FAIL 0 ERROR 0 SKIP 8。
+[2026-11-09 17:43:07 +0800] 封存前主校验（--sealed）执行完。rc=0。TOTAL 50，PASS 47，FAIL 0，ERROR 0，SKIP 3（fc-01/fc-02/fc-03 策略跳过，封存后 verify 模式执行），required_fail 0。VALIDATION_RESULTS.json 已生成。stdout/stderr 存 evidence/sealed_stdout.txt、evidence/sealed_stderr.txt。
+[2026-11-09 17:48:31 +0800] 工作区边界独立审计完成。41 行。范围外全部条目已归类：用户侧 Finder 增量（12 个注册于 boundary_user_delta.tsv）、三个 Git 仓库 .git 目录 mtime 抖动（内部 0 个文件内容变化，head 与干净状态由 bd-06 复核）、以及本执行器早期带 bug 的验证器首次运行产生的一个嵌套目录（含 2 个临时证据输出文件，已核验内容后于 17:47:07 删除）。审计输出存 evidence/boundary_final_audit.txt。
+[2026-11-09 17:48:31 +0800] 边界审计中间文件曾因 find 优先级写错把整个工作区误记为变更，已用修正后的 find 重新生成，最终文件只保留正确内容。
+[2026-11-09 17:58:19 +0800] 结封工具修正两条: CHANGELOG_R2.md F 节追加 stage-vs-mode 键名开发期缺陷记录; SOURCE_MANIFEST_R2.json 的 hashed_at_pre 修正回 pre 时点 2026-11-09T17:42:44+08:00（依据 pre 运行输出与进度记录）。随后重跑 60 final 保持该 pre 值。
+[2026-11-09 18:11:13 +0800] 结封期边界重基线: 用户侧 Finder 在 17:43 后移除 legal.zip 并重写 task-data-v1.1/.DS_Store，verify 的 bd-07 因此 FAIL(79076/5/7)。已更新 boundary_user_delta.tsv(ale-data 段 7行->6行)、验证器 bd-07 期望值 79077->79076，事件记录 evidence/boundary_event_r2_note.md，CHANGELOG 边界节追加说明。另修正 m-02/m-03/m-04 在 verify 模式被跳过的门控缺陷(只在 prefreeze 跳过)。随后重跑 60 final、sealed、报告、60 final、70 校验清单、verify。
+[2026-11-09 18:19:36 +0800] 边界监控升级与重密封: (1) bd-07 升级 v2——.DS_Store 行只断言存在性与总数(基线 79070+6=79076)，内容增量行断言字节精确，任何内容增删触发总数失败并显式重基线；(2) sealed 重跑控制台改落 /tmp 后再复制进 evidence，消除 m-03 自引用竞态；(3) m-02/03/04 改为 sealed 与 verify 都执行、仅 prefreeze 跳过。18:17 确认 ale-data 非 .DS_Store 常规文件=79070 与原始基线相等。此后按序重跑 60 final、sealed、报告、60 final、70、verify。
+[2026-11-09 18:20:09 +0800] 重密封通过: PASS 48 FAIL 0 ERROR 0 SKIP 2（fc-02/fc-03 策略跳过），required_fail 0。控制台已复制进 evidence。报告将以新 VALIDATION_RESULTS.json 重新生成。此后执行最终 60 final 与 70 校验清单，然后只读 verify。

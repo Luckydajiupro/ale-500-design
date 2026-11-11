@@ -1,0 +1,19 @@
+{
+  "subdomains": [
+    {
+      "subdomain_code": "aviation",
+      "candidate_count": 3,
+      "coverage_notes": "3 条：签派放行包（E1，14 CFR 121.533/593/617/639/657 条款级）、新航线 SMS 危险源识别与风险评估（E3，14 CFR 5.53/5.55 条款级，风险矩阵按 ICAO Doc 9859 name_reference）、UAS BVLOS 的 SORA 安全档案（E3，丹麦 CAA 十步法页面逐条支撑）。原候选「事故调查分析包（ICAO Annex 13）」未采用：本批次未取得可打开的 Annex 13 方法原文（ICAO 资料为付费 PDF），按本简报第 8 节不得据未读标准作条款级主张；SORA 备选方案补足第 3 行，三行分属运行控制、安全管理、无人机取证三种不同专业过程。"
+    },
+    {
+      "subdomain_code": "maritime_port",
+      "candidate_count": 3,
+      "coverage_notes": "3 条：危险货物隔离与文件核查（E1，49 CFR 176.83 条款级）、集装箱积载与系固方案核查（E3，IMO CSS Code 官方页面支撑规划/监督与船长责任）、靠泊与周转计划（E3，33 CFR 160.206/160.204 条款级 + IMO 引航与 VTS 页面）。IMO FAL 公约页面返回 HTTP 500，无法作为靠泊行的主源，改用美国到港通知规则与 IMO 引航/VTS 页面组合；该替代已在 source log 第 24 条记录。"
+    },
+    {
+      "subdomain_code": "fire_safety",
+      "candidate_count": 3,
+      "coverage_notes": "3 条：建筑疏散与出口合规审查（E1，29 CFR 1910.36/.37 条款级）、工业易燃液体储罐区火灾风险评估（E3，29 CFR 1910.106 部分条款级）、自动喷淋水力设计与验收试验复核（E1，29 CFR 1910.159 条款级）。原候选「火灾原因调查（NFPA 921）」未采用：nfpa.org 的 921 页面只返回标题、USFA 与 IAAI 页面无方法文本，按 name_reference 不足以支撑一条完整工作流，故替换为条款级可验证的喷淋验收行；替换理由已记入 source log。"
+    }
+  ]
+}

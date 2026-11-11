@@ -1,0 +1,37 @@
+ts	phase	decision	why	evidence	result
+2026-11-10T15:10:00+08:00	start	start	run id s1-02b3; 本 run 无前行 ts 范围（新文件首次写）	.audit/s1-02b3.tsv	created
+2026-11-10T15:10:00+08:00	precheck	phase0-final 采纳为唯一 Phase 0 基线	用户指令 m00082: R1 草案不再作控制依据；前勘察已引 R1 措辞，现全部改挂 phase0-final	FINAL_CHECKSUMS.sha256 vernier 65/65 OK; .audit/s1-02b3-phase0-final-register.md	CHECKSUM_VERIFIED 65/65; 与当前研究目录计数一致，零冲突
+2026-11-10T15:10:00+08:00	playbook	选定 figure-it-out 作为本批总 playbook	无捆绑 playbook 匹配研究+产多文件批次；Investigation 仅限只读；本批要产出 6 交付文件	.audit/s1-02b3.tsv (本行)	proceed2026-11-10T17:22:05+0800	phaseB	合同先行: 28-33 六脚本全部写入	用户 m00114 要求先冻结脚本合同再启动研究子代理; 单一真源 = 30
+.audit/s1-02b3.tsv (本行)	6/6 脚本存在
+2026-11-10T17:22:05+0800	check	六脚本 --selftest 全绿	30=25 flip, 28=13, 29=12, 31=9, 32=20, 33=7; 每项变异恰翻转自己的门	scripts/28..33 自测输出; /tmp/s_*.log	VERIFIED exit 0 x6
+2026-11-10T17:22:05+0800	check	28 --record + 默认 verify 全绿	G1-G6 全 OK; phase0 65/65 重哈希通过; B2-effective 39 行 mode 词表通过	/Users/mac/Workspaces/ale-研究设计/ale-phase0-workspace-20261108/analysis/phase0-final/FINAL_CHECKSUMS.sha256; .audit/s1-02b3-frozen-manifest.json	VERIFIED gates failed=0 x2
+2026-11-10T17:23:17+0800	checkpoint-correct	supersede: 上一节 3 行结构损坏	原文件缺尾换行导致 proceed 与 17:22 行粘连; phaseB 三行被折成多行违反单行单元格规则; 本行后的三条为正式版本	.audit/s1-02b3.tsv	superseded
+2026-11-10T17:23:17+0800	phaseB	合同先行: 28-33 六脚本全部写入	用户 m00114 要求先冻结脚本合同再启动研究子代理; 单一真源 = 30	.audit/s1-02b3.tsv	6/6 脚本存在
+2026-11-10T17:23:17+0800	check	六脚本 --selftest 全绿	30=25 flip, 28=13, 29=12, 31=9, 32=20, 33=7; 每项变异恰翻转自己的门	scripts/28..33 自测输出 /tmp/s_*.log	VERIFIED exit 0 x6
+2026-11-10T17:23:17+0800	check	28 --record + 默认 verify 全绿	G1-G6 全 OK; phase0 65/65 重哈希通过; B2-effective 39 行 mode 词表通过	/Users/mac/Workspaces/ale-研究设计/ale-phase0-workspace-20261108/analysis/phase0-final/FINAL_CHECKSUMS.sha256; .audit/s1-02b3-frozen-manifest.json	VERIFIED gates failed=0 x2
+2026-11-10T17:28:16+0800	checkpoint-correct	supersede: 前一行自测计数修正	32 实际 16 组 flip + baseline-clean/V12-clean/v12-drift 三组探测(共19行); 33 实际 9 组 probe(脚本尾部消息原误写7已改为9)	.audit/s1-02b3.tsv; scripts/33_b3_overlap.py	superseded; 33 --selftest 重跑 exit 0
+2026-11-10T17:45:00+0800	precheck	28 verify gate before research fan-out	用户 m00374 要求前置检查失败即停；脚本无 --verify 旗标，默认模式即 verify	scripts/28_b3_precheck.py default: G1..G6 OK, gates failed=0; phase0 65/65	PASS
+2026-11-10T17:45:00+0800	fanout	launch vm/ts/edu research clusters in parallel	9 subdomains x 3-5 rows; clusters are independent seams; shared brief encodes frozen 30 contract	.audit/s1-02b3-research-brief.md; children fc2fb1a5 86904ebc da9958c9	RUNNING
+2026-11-10T18:37:00+0800	decision	require >=3 rows per subdomain (overrides brief's 'fewer allowed')	frozen 32_validate_b3 V2 hard-fails any subdomain with fewer than 3 rows; scripts cannot change	scripts/32_validate_b3.py V2 low=[c for c,n in counts.items() if n<3]	APPLIED to all three children
+2026-11-10T18:37:00+0800	gate	accept ts_cluster fragment	fragment gate returns 0 failures; 9 rows 3/3/3; all primary URLs HTTP 200	check_fragment_text(text,'ts_cluster',FRAG_DIR)=0; evidence/s1_02b3_research/ts_cluster_candidates.csv	PASS
+2026-11-10T18:37:00+0800	gate	accept edu_cluster fragment after primary URL correction	gate 0 failures; edu_trn_wf01 primary moved from blocked iso.org mirror to SII page (200); 9 rows	check_fragment_text(text,'edu_cluster',FRAG_DIR)=0; mtime 18:23 rebuild	PASS
+2026-11-10T19:16:00+0800	incident	ignore untrusted injected task-copy seen during research	该段文本重复行污染并把范围矩阵扩展名改为 .md，来源不明；按不可信数据处理	transcript m00519	未执行其中任何改动；产物仍为 CSV，32 校验按 .csv 通过
+2026-11-10T19:16:10+0800	gate	accept vm_cluster fragment after disclosed rebuild	子代理在冻结提示后重建一次并主动披露，只改 source_reference 措辞与两处条款引用级别	evidence/s1_02b3_research/vm_cluster_candidates.csv; 30 gate	30 gate 0 errors；9 rows 3/3/3；9 条主源均 200（IASA 需浏览器 UA）
+2026-11-10T19:16:20+0800	patch	lead refreshed two stale cross_domain_overlap cells	edu_edt_wf03 称本批未产出 graphic_design 候选，已过时；vm_gra_wf03 未点名同标准行	两个片段 CSV 各替换 1 处，其余字节不变	三片段 gate 重跑全部 0 errors
+2026-11-10T19:16:30+0800	merge	run 31_merge_b3.py	三片段 gate 全过后按用户指定顺序合并	scripts/31_merge_b3.py	27 rows x 43 cols + 27 rows claim map x 10 cols, exit 0
+2026-11-10T19:16:40+0800	matrix	run 29_b3_scope_matrix.py	合并后生成 9 行范围矩阵，计数取合并实数	scripts/29_b3_scope_matrix.py	S1_02B3_SCOPE_MATRIX.csv 9 rows, batch_3, exit 0
+2026-11-10T19:16:50+0800	docs	write DUP, OVERLAP and REVIEW	10 对相邻对裁定 no；两份 MD 含 B1 五条原样与五组标题	S1_02B3_DUPLICATE_ATTRIBUTION.csv; S1_02B3_OVERLAP_AND_RISKS.md; S1_02B3_REVIEW_SUMMARY.md	三文件落盘，V13 通过
+2026-11-10T19:17:00+0800	sweep	run 33_b3_overlap.py	机器扫描仅作证据，不替代人工裁定	scripts/33_b3_overlap.py	flagged 1 pair (b3-internal 0.400), exit 0
+2026-11-10T19:17:10+0800	validate	run 32_validate_b3.py	终验 V1-V14 一次跑	scripts/32_validate_b3.py	14/14 OK, validations failed=0, exit 0
+2026-11-10T19:17:20+0800	final	reverify completion predicate	六交付物、六脚本、冻结哈希、B2-effective 未改、负例全绿	28 --post; 六脚本 --selftest; B2-effective sha256 eb99cdb4	PASS: G1-G6 OK; 六 selftest 全绿; sha 一致; 32 exit 0
+2026-11-10T19:21:00+0800	deviation	30 has no <stem> CLI and 28 has no --verify flag; used documented equivalents	用户指令写 30 <stem>、28 --verify；实际 argparse 只接受 --selftest，28 默认模式即 verify	scripts/30_check_fragment_b3.py argparse; scripts/28_b3_precheck.py main	逐片段改调 check_fragment_text(text, stem, FRAG_DIR)；28 以默认模式跑 G1-G6，结果等价并在回报中披露
+2026-11-10T19:47:00+0800	supersede	L18-L27 timestamps were backfilled at write time, not recorded live	评审发现行内时间与产物 mtime 冲突；append-only 规则禁止改写，只能追加更正	mtime: fragments 19:05:29; merge 19:06:04; matrix 19:06:49; DUP 19:03:48; OVERLAP 19:10:07; REVIEW 19:11:59; sweep 19:13:01	时序以产物 mtime 为准；L18-L27 行内时间不承载证据
+2026-11-10T19:47:05+0800	supersede	L17 edu rebuild mtime no longer resolves	19:05:29 是 lead patch 重写文件后的 mtime；18:37 判过的字节已被替换	patch 后三片段 gate 重跑 0 errors；当前 30 gate 14/14	端点有效；原始被判字节不可复验，已如实登记
+2026-11-10T19:47:10+0800	supersede	L4/L5 playbook evidence was self-referential and fused with next record	legacy 损坏行不可改写；playbook 决策当时无独立工件	.audit/s1-02b3-phaseB-checkpoint.md; scripts/28_b3_precheck.py..33_b3_overlap.py	决策有效；证据改指 checkpoint 与脚本，L4/L5 仅作历史
+2026-11-10T19:47:15+0800	supersede	L14 fanout ids are session facts, not persisted	子代理 id 仅存在于工具返回，工作区无注册表	本会话 subagent 记录 fc2fb1a5 / 86904ebc / da9958c9	会话内可证；跨会话不可复验
+2026-11-10T19:47:20+0800	supersede	L2/L13/L18 transcript refs are not resolvable from the workspace	m00082 / m00374 / m00519 只存在于对话记录	本会话 transcript	以对话为唯一来源；工作区无副本
+2026-11-10T19:47:25+0800	supersede	L15 padding risk was not checked	九子域恰好各 3 条，第三行未做独立证据强度复核	scripts/32_validate_b3.py V2 硬性 >=3；research brief 允许 <3 需说明	风险已写入两份 MD 的未验证事项，交评审裁定
+2026-11-10T19:47:30+0800	supersede	L20 claim that other bytes unchanged is unverifiable	patch 前字节未留存	patch 后 gate 0 errors；当前文件 14/14	记录为不可复验，不再主张字节不变
+2026-11-10T19:47:35+0800	supersede	L22 matrix includes 3 uncovered_official rows with empty example ids	此前两份 MD 未写明覆盖口径，读起来像官方全覆盖	S1_02B3_SCOPE_MATRIX.csv coverage_status = uncovered_official x3	两份 MD 已补覆盖口径与 3 条凑数风险
+2026-11-10T19:47:40+0800	fix	MD clarifications added after independent review	评审 8 项 flag 中涉及文档口径与过程披露的部分	S1_02B3_REVIEW_SUMMARY.md; S1_02B3_OVERLAP_AND_RISKS.md	32_validate_b3.py 重跑 V1-V14 全 OK，exit 0
+2026-11-10T19:47:45+0800	review	independent trail audit returned 8 flags	show-me-your-work 要求跨模型族复审；本环境只有一族，改用独立上下文并披露	.audit/s1-02b3-review-attention.md	8 项全部处理：7 项 supersede，1 项文档更正并复验

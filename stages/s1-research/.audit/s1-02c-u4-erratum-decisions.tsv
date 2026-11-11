@@ -1,0 +1,13 @@
+ts	phase	decision	why	evidence	result
+2026-11-11T01:30Z	start	started the S1-02C-U4 erratum run and the persona and quota drafts	asked by the operator to correct the U4 report and open two preparation studies	this conversation	open
+2026-11-11T01:35Z	evidence	pulled all seven erratum points against the candidate rows with a csv field dumper	needed exact field values not long-line reading	field dumps of 6 candidates from 4 CSV	facts confirmed
+2026-11-11T01:40Z	framing	version U5 written as edit in place of S1_02C_BUSINESS_REVIEW_REPORT.md plus two new draft files	the operator named the report and the two new artifacts	decision log	this row
+2026-11-11T02:05Z	revision	three files written and line number residue removed from the report	running full verification next	three md files and their mtime listing	open
+2026-11-11T02:10Z	verify	validators 35 and 36 both green on the current four deliverables, 7 tool_existence rows and E1 count 83 confirmed	needed a machine check that the report matches the csv before handing back	validator outputs exit 0 and the tool dump	green
+2026-11-11T03:00Z	verify	final pass of validators 35 and 36, line-number residue gone, persona facts cross-checked against csv rows	closing the run only with machine-checked claims	both validators exit 0, mtime listing shows history untouched	green
+2026-11-11T03:10Z	start	started the S1-02C-U6 second erratum run	the independent review named three targeted corrections in the three draft files	this conversation	open
+2026-11-11T03:15Z	revision	report DC-HYD-DIST wording changed to remove any opposite-direction implication and keep the current primary-home record unreversed	operator item 1	S1_02C_BUSINESS_REVIEW_REPORT.md sections 4.1 and 8 and 9 and 11	open
+2026-11-11T03:20Z	revision	persona P2 credentials kept as task and jurisdiction clues only, persona P5 split into engineering side and professional user side with no evidence on either	operator items 2 and 3	S1_02C_EXPERT_PERSONA_DRAFTS.md version U6-P1	open
+2026-11-11T03:25Z	revision	quota pilot sample sizes now set by data availability, expert participation and engineering verification, no fixed per-family counts	operator item 4	S1_02C_QUOTA_PRINCIPLES_DRAFT.md version U6-P2	open
+2026-11-11T03:30Z	revision	status note added with the five required statements to the report	operator item 5	S1_02C_BUSINESS_REVIEW_REPORT.md section 12	open
+2026-11-11T03:35Z	verify	validators 35 and 36 both green, five csv sha256 match the fingerprint file, history mtimes untouched	closing the run only with machine-checked claims	both validator runs and the sha compare output	green

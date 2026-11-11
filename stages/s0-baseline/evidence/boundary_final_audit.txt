@@ -1,0 +1,49 @@
+# boundary final audit 2026-11-09 17:48:31 +0800
+# scope: workspace entries changed after R2 start (2026-11-09 15:48:47 +0800), R2 dir pruned out
+./.DS_Store
+./agents-last-exam/.git
+./agents-last-exam/.git/modules/ale_run/agents/codex/upstream
+./agents-last-exam/.git/modules/ale_run/agents/gemini_cli/upstream
+./agents-last-exam/.git/modules/ale_run/agents/grok_cli/upstream
+./agents-last-exam/.git/modules/ale_run/agents/hermes/upstream
+./agents-last-exam/.git/modules/ale_run/agents/openclaw_cli/upstream
+./ale-data
+./ale-data/.DS_Store
+./ale-data/task-data-v1.1
+./ale-data/task-data-v1.1/.DS_Store
+./ale-data/task-data-v1.1/legal
+./ale-data/task-data-v1.1/legal.zip
+./ale-data/task-data-v1.1/legal/.DS_Store
+./ale-data/task-data-v1.1/legal/agora_governance_classify_instance_1
+./ale-data/task-data-v1.1/legal/agora_governance_classify_instance_1/.DS_Store
+./ale-data/task-data-v1.1/legal/agora_governance_classify_instance_1/base
+./ale-data/task-data-v1.1/legal/agora_governance_classify_instance_1/base/.DS_Store
+./ale-data/task-data-v1.1/legal/legal_dr_fees_01
+./ale-data/task-data-v1.1/legal/legal_dr_fees_01/.DS_Store
+./ale-phase0-workspace-20261108
+./ale-phase0-workspace-20261108/.DS_Store
+./ale-phase0-workspace-20261108/analysis/.DS_Store
+./ale-tasks-base
+./ale-tasks-base/.DS_Store
+./ale-tasks-base/.git
+./ale-tasks-base/tasks
+./ale-tasks-base/tasks/.DS_Store
+./ale-tasks-base/tasks/demo
+./ale-tasks-base/tasks/demo/.DS_Store
+./ale-tasks-base/tasks/example_task
+./ale-tasks-base/tasks/example_task.zip
+./ale-tasks-base/tasks/example_task/.DS_Store
+./ale/.git
+
+# annotations
+# 1. .DS_Store files and the two zip files (legal.zip, example_task.zip) are the user-side Finder delta registered in evidence/boundary_user_delta.tsv (12 entries) and accepted by check bd-06/bd-07. Not written by this execution.
+# 2. .git directory entries show mtime bumps at 16:38:56-57 with ZERO file content changes inside (find -type f -newermt over the three .git trees returns 0). Git heads and clean worktrees re-verified by check bd-06 in the sealed run 17:43:07. These are directory-entry timestamp effects of git read commands, no content written.
+# 3. A stray nested directory ale-phase0-workspace-20261108/ale-phase0-workspace-20261108 existed from the first buggy validator run (WS constant bug, fixed at 16:31). It contained only two duplicate evidence outputs of that failed run. Verified contents, then removed at 17:47:07 before this final audit. It was this execution's own artifact, not an original or deliverable.
+
+## 2026-11-09 18:17 追加说明（结封期）
+
+- 18:12 与 18:13 期间发现：用户在 Finder 中浏览 ale-data，先后重写 task-data-v1.1/.DS_Store
+  与 ale-data/.DS_Store，并已移除 17 时创建的 legal.zip。
+- 本执行器对此无任何写入；18:17 测算 ale-data 非 .DS_Store 常规文件 = 79,070，与原始基线相等。
+- bd-07 断言设计升级为 v2（见 evidence/boundary_event_r2_note.md）：
+  .DS_Store 登记行断言存在性与总数，内容增量行断言字节精确。

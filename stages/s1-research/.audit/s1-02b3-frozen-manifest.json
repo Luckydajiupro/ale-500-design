@@ -1,0 +1,159 @@
+{
+  "files": {
+    "/Users/mac/Workspaces/ale-研究设计/ale-500-category-research/S1_01_CATEGORY_MAPPING.csv": {
+      "sha256": "961ec1df305eed5b91048f4604692d2bc620dcf91884cd0422abd1af35784df1",
+      "size": 25144
+    },
+    "/Users/mac/Workspaces/ale-研究设计/ale-500-category-research/S1_01_GAPS_AND_RISKS.md": {
+      "sha256": "3b5f48a5eb558b5efc3f35d30ef19ac29138627567ba3ec16fbe20f298eca8bd",
+      "size": 7254
+    },
+    "/Users/mac/Workspaces/ale-研究设计/ale-500-category-research/S1_01_RECLASSIFICATION_EVIDENCE.csv": {
+      "sha256": "a2d754b52ebde9f144bd96682997dd8809372efeb95afbfa2a25e2f9678211d6",
+      "size": 4460
+    },
+    "/Users/mac/Workspaces/ale-研究设计/ale-500-category-research/S1_01_REVIEW_SUMMARY.md": {
+      "sha256": "c210c3e97a7ccac9cd50d00421f4db3577c5015f5934be759be059c76bbe6a57",
+      "size": 8592
+    },
+    "/Users/mac/Workspaces/ale-研究设计/ale-500-category-research/S1_01_REVISION_LOG.md": {
+      "sha256": "5b89e5bdc98611f9ea042fd5ceabd7cb87138a97202deef90d22699d10e7ce7e",
+      "size": 7639
+    },
+    "/Users/mac/Workspaces/ale-研究设计/ale-500-category-research/S1_01_SOURCE_REGISTER.md": {
+      "sha256": "07217394a7237638821dda75df0b32f679d3faaa9ce2bd25bd2d84a3cc9b427f",
+      "size": 7799
+    },
+    "/Users/mac/Workspaces/ale-研究设计/ale-500-category-research/S1_01_TASK_ARCHETYPE_EVIDENCE.csv": {
+      "sha256": "c6050ddc9b5eefdaeb3685d2806148263e610d20945ecb93aae228e4a7668d33",
+      "size": 37950
+    },
+    "/Users/mac/Workspaces/ale-研究设计/ale-500-category-research/S1_02A_DUPLICATE_ATTRIBUTION.csv": {
+      "sha256": "e8243a6e39edcb4d22ca197b37c12bffd4a6ba37ea605e31caaa29b4e07da27a",
+      "size": 2394
+    },
+    "/Users/mac/Workspaces/ale-研究设计/ale-500-category-research/S1_02A_DUPLICATE_ATTRIBUTION.md": {
+      "sha256": "4194517066869ce5c600dd5590ac3a82440704d23a51923f375606aeb4d4ab7e",
+      "size": 4391
+    },
+    "/Users/mac/Workspaces/ale-研究设计/ale-500-category-research/S1_02A_EFFECTIVE_CANDIDATES.csv": {
+      "sha256": "f71c4305e5efd38e980ec7483b7905e28322d10cd26ba6348a83637059987ac9",
+      "size": 64535
+    },
+    "/Users/mac/Workspaces/ale-研究设计/ale-500-category-research/S1_02A_EFFECTIVE_VIEW_VALIDATION.md": {
+      "sha256": "606fc3ca152b4dabd8892ceae0b33044a4d043ede9cf60b8e0f81f7a763fe47d",
+      "size": 7673
+    },
+    "/Users/mac/Workspaces/ale-研究设计/ale-500-category-research/S1_02A_EVIDENCE_AND_RISKS.md": {
+      "sha256": "d5271f7709a5554b5030937e4d606a18de09b32f23bb44a64f8cbd096ff18321",
+      "size": 7451
+    },
+    "/Users/mac/Workspaces/ale-研究设计/ale-500-category-research/S1_02A_REVIEW_SUMMARY.md": {
+      "sha256": "864b730c4de3e6ec3d4f64ba406b643841576ff80b49f0e7bcb6c87abaea0f53",
+      "size": 5555
+    },
+    "/Users/mac/Workspaces/ale-研究设计/ale-500-category-research/S1_02A_REVISION_LOG.md": {
+      "sha256": "149a5dd4b885276600d31f17176420536c631b6749669078d5278b88f5a0c056",
+      "size": 10734
+    },
+    "/Users/mac/Workspaces/ale-研究设计/ale-500-category-research/S1_02A_SCOPE_MATRIX.csv": {
+      "sha256": "deefe87bf6c610c82a7ea273085b21181bf2660b06dacf7606d4e964ae52c2f6",
+      "size": 13241
+    },
+    "/Users/mac/Workspaces/ale-研究设计/ale-500-category-research/S1_02A_SOURCE_CLAIM_MAP.csv": {
+      "sha256": "71dac3248a8f460959e89834aebedec4627390b34bd8ec56b188b220524cf792",
+      "size": 21424
+    },
+    "/Users/mac/Workspaces/ale-研究设计/ale-500-category-research/S1_02A_WORKFLOW_CANDIDATES.csv": {
+      "sha256": "172cf4161dfeee2729b016a0efa7fc2dd22d993c922bc252b0153320ce883588",
+      "size": 107368
+    },
+    "/Users/mac/Workspaces/ale-研究设计/ale-500-category-research/S1_02B1_BASELINE_CONSISTENCY_REPORT.md": {
+      "sha256": "a9145a4e5159bbd4c3496f297833a6cb6d2282bfcccfc2e80c7f315a85352ea3",
+      "size": 2863
+    },
+    "/Users/mac/Workspaces/ale-研究设计/ale-500-category-research/S1_02B1_DUPLICATE_ATTRIBUTION.csv": {
+      "sha256": "0d324f7813dd64615083ff81ca0ab9fd707c359ce23783c69710072a7c8ab74a",
+      "size": 2008
+    },
+    "/Users/mac/Workspaces/ale-研究设计/ale-500-category-research/S1_02B1_DUPLICATE_ATTRIBUTION.md": {
+      "sha256": "bb99c22e74af247ce75bb7a9b03c660928f3cc651978c6d2b6e36890b3fab63a",
+      "size": 4669
+    },
+    "/Users/mac/Workspaces/ale-研究设计/ale-500-category-research/S1_02B1_EVIDENCE_AND_RISKS.md": {
+      "sha256": "422d91d15112552091f5c75198ba4280ba7713010c10072b1e65eb585a4d4318",
+      "size": 6156
+    },
+    "/Users/mac/Workspaces/ale-研究设计/ale-500-category-research/S1_02B1_REVIEW_SUMMARY.md": {
+      "sha256": "a731ae071b0513d5a7a8b1d28c9301cd4f12c6dc31f528eed29dbbe404524292",
+      "size": 3370
+    },
+    "/Users/mac/Workspaces/ale-研究设计/ale-500-category-research/S1_02B1_SOURCE_CLAIM_MAP.csv": {
+      "sha256": "291949efe88cd3a9c3b9c8751c062a844bb7b2d99a1964f4b337bf00e2578365",
+      "size": 15995
+    },
+    "/Users/mac/Workspaces/ale-研究设计/ale-500-category-research/S1_02B1_WORKFLOW_CANDIDATES.csv": {
+      "sha256": "2c24f55a6c2a04d21f530df3e6d9b8a49b98be1772ae4b762bd59aa2f14c35c1",
+      "size": 358232
+    },
+    "/Users/mac/Workspaces/ale-研究设计/ale-500-category-research/S1_02B2_DUPLICATE_ATTRIBUTION.csv": {
+      "sha256": "47af64ff941ff367e6cd9a6e6e187199fc814f662c971f3b9282bd899055cf33",
+      "size": 3881
+    },
+    "/Users/mac/Workspaces/ale-研究设计/ale-500-category-research/S1_02B2_EFFECTIVE_CANDIDATES.csv": {
+      "sha256": "eb99cdb41962bc120aa16c77641c6fc457195b6b1dd52f0145efc2854be05e3f",
+      "size": 213948
+    },
+    "/Users/mac/Workspaces/ale-研究设计/ale-500-category-research/S1_02B2_EVIDENCE_SCOPE_ERRATUM.md": {
+      "sha256": "24740ab4ceb0e361914bf6039b3864e21679812daaae4cab6d5d94d8f8fa089c",
+      "size": 15510
+    },
+    "/Users/mac/Workspaces/ale-研究设计/ale-500-category-research/S1_02B2_OVERLAP_AND_RISKS.md": {
+      "sha256": "f81a0bab62a9d79e8aaab96569323e499cd948811ca42896d9e02540b36e32b2",
+      "size": 7902
+    },
+    "/Users/mac/Workspaces/ale-研究设计/ale-500-category-research/S1_02B2_REVIEW_SUMMARY.md": {
+      "sha256": "5adecf9bed2781480d55b10a11b2960766ee430d60ea5894c77c209bdac94734",
+      "size": 6234
+    },
+    "/Users/mac/Workspaces/ale-研究设计/ale-500-category-research/S1_02B2_SCOPE_MATRIX.csv": {
+      "sha256": "7df36e0905443fab0414f066fc048107556a57d36361f7a3410681490ad8866b",
+      "size": 5169
+    },
+    "/Users/mac/Workspaces/ale-研究设计/ale-500-category-research/S1_02B2_SOURCE_CLAIM_MAP.csv": {
+      "sha256": "b22dc97ffb51800e7749d8a9ceb9831aadec4aed3d1a2e4b5d3b209a8493dcdc",
+      "size": 10071
+    },
+    "/Users/mac/Workspaces/ale-研究设计/ale-500-category-research/S1_02B2_WORKFLOW_CANDIDATES.csv": {
+      "sha256": "910c31e3b5055675b543e185f5ca761b182e1169fc63d102f1a466ae88eb15c2",
+      "size": 210192
+    },
+    "/Users/mac/Workspaces/ale-研究设计/ale-500-category-research/evidence/s1_02b2_research/b1_open_review_items.md": {
+      "sha256": "fcd941ee9ea76490ed9d77a0dae375795fcbf6d4fa55fc0328f4a11165acfb3b",
+      "size": 1332
+    },
+    "/Users/mac/Workspaces/ale-研究设计/ale-phase0-workspace-20261108/analysis/phase0-final/FINAL_CHECKSUMS.sha256": {
+      "sha256": "7be6367044a95ba58c4d90c3652f55ac12dc8b78fbb78667ff0100bb1ecab96e",
+      "size": 6418
+    },
+    "/Users/mac/Workspaces/ale-研究设计/ale-phase0-workspace-20261108/analysis/phase0-final/FINAL_VALIDATION_REPORT.md": {
+      "sha256": "f001b4a4a8cc7be76a21431eee1c645e987c1768052dd4cdd3687f83b2d37833",
+      "size": 7638
+    },
+    "/Users/mac/Workspaces/ale-研究设计/ale-phase0-workspace-20261108/analysis/phase0-final/PHASE0_FINAL_REPORT.md": {
+      "sha256": "902fc4f91e56e00dc37e8e69cfc140ab42dbf413d5d5589809cd6eb5cc46dc00",
+      "size": 26447
+    },
+    "/Users/mac/Workspaces/ale-研究设计/ale-phase0-workspace-20261108/analysis/phase0-final/SOURCE_MANIFEST_FINAL.json": {
+      "sha256": "542153254f9d5449d3b06afc614dd4273cdfb1ad18cb57239be5c49b6916aba6",
+      "size": 36449
+    }
+  },
+  "meta": {
+    "created_at": "2026-11-10T17:20:06+0800",
+    "phase0_final": "/Users/mac/Workspaces/ale-研究设计/ale-phase0-workspace-20261108/analysis/phase0-final",
+    "check_entries": 65,
+    "frozen_project_files": 33,
+    "frozen_phase0_files": 4
+  }
+}

@@ -1,0 +1,12 @@
+PASS 04 column count uniform | header=31 data rows=122
+PASS 04 unique task_id | unique=122
+PASS 04 task set equals full.txt | n=122
+PASS 04 windows census | win=36 lin=86
+PASS 04 linux_runnable census | allowlist=78 doc_exception=8
+PASS 05 domain counts and notes match 04 census | all match
+PASS 04 gpu rows match gpu.txt | gpu list n=3
+PASS staged-local OS split 2 bpmn linux / 3 windows | linux=['business_finance/bpmn_category_governance_restructuring_l3', 'business_finance/bpmn_supply_disruption_l3'] windows=['business_finance/metabase_bi_dashboard_01', 'business_finance/odoo', 'business_finance/taxform_4_1']
+PASS windows totals agree 04/05/08 vs vm.snapshot census | 04=36 05=36
+PASS 08 asset_profile sizes and counts match sizes_scopes.tsv | proposed sum=500
+PASS sizes_scopes internal sums | tree=53327153701 dom_sum=53327153701 whole03=92500607918 arch+tree=92500607918 inputs=94086734364
+SUMMARY 11/11 pass

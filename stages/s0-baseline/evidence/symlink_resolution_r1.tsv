@@ -1,0 +1,30 @@
+# symlink_resolution_r1.tsv: inputs-readonly/SYMLINKS.tsv 的 25 条符号链接逐一重解析。
+# direct_target 是链接里写下的目标，resolved_final_target 是沿链解析后的最终目标。
+# final_in_inputs=no 表示最终目标离开 inputs-readonly 树，例如指向 /home/user 下的 uv python。
+# exists_status=broken 表示本机无法到达最终目标（含指向本机不存在的外部绝对路径）。
+link_relpath	direct_target	resolved_final_target	final_in_inputs	exists_status	chain_len
+01_agents-last-exam/ale_run/agents/codex/upstream/codex-rs/vendor/bubblewrap/LICENSE	COPYING	01_agents-last-exam/ale_run/agents/codex/upstream/codex-rs/vendor/bubblewrap/COPYING	yes	resolved	1
+01_agents-last-exam/ale_run/agents/gemini_cli/upstream/docs/CONTRIBUTING.md	../CONTRIBUTING.md	01_agents-last-exam/ale_run/agents/gemini_cli/upstream/CONTRIBUTING.md	yes	resolved	1
+01_agents-last-exam/ale_run/agents/openclaw_cli/upstream/ui/CLAUDE.md	AGENTS.md	01_agents-last-exam/ale_run/agents/openclaw_cli/upstream/ui/AGENTS.md	yes	resolved	1
+01_agents-last-exam/ale_run/agents/openclaw_cli/upstream/test/helpers/CLAUDE.md	AGENTS.md	01_agents-last-exam/ale_run/agents/openclaw_cli/upstream/test/helpers/AGENTS.md	yes	resolved	1
+01_agents-last-exam/ale_run/agents/openclaw_cli/upstream/test/helpers/channels/CLAUDE.md	AGENTS.md	01_agents-last-exam/ale_run/agents/openclaw_cli/upstream/test/helpers/channels/AGENTS.md	yes	resolved	1
+01_agents-last-exam/ale_run/agents/openclaw_cli/upstream/docs/CLAUDE.md	AGENTS.md	01_agents-last-exam/ale_run/agents/openclaw_cli/upstream/docs/AGENTS.md	yes	resolved	1
+01_agents-last-exam/ale_run/agents/openclaw_cli/upstream/docs/reference/templates/CLAUDE.md	AGENTS.md	01_agents-last-exam/ale_run/agents/openclaw_cli/upstream/docs/reference/templates/AGENTS.md	yes	resolved	1
+01_agents-last-exam/ale_run/agents/openclaw_cli/upstream/extensions/acpx/CLAUDE.md	AGENTS.md	01_agents-last-exam/ale_run/agents/openclaw_cli/upstream/extensions/acpx/AGENTS.md	yes	resolved	1
+01_agents-last-exam/ale_run/agents/openclaw_cli/upstream/extensions/CLAUDE.md	AGENTS.md	01_agents-last-exam/ale_run/agents/openclaw_cli/upstream/extensions/AGENTS.md	yes	resolved	1
+01_agents-last-exam/ale_run/agents/openclaw_cli/upstream/scripts/CLAUDE.md	AGENTS.md	01_agents-last-exam/ale_run/agents/openclaw_cli/upstream/scripts/AGENTS.md	yes	resolved	1
+01_agents-last-exam/ale_run/agents/openclaw_cli/upstream/CLAUDE.md	AGENTS.md	01_agents-last-exam/ale_run/agents/openclaw_cli/upstream/AGENTS.md	yes	resolved	1
+01_agents-last-exam/ale_run/agents/openclaw_cli/upstream/src/plugins/CLAUDE.md	AGENTS.md	01_agents-last-exam/ale_run/agents/openclaw_cli/upstream/src/plugins/AGENTS.md	yes	resolved	1
+01_agents-last-exam/ale_run/agents/openclaw_cli/upstream/src/agents/tools/CLAUDE.md	AGENTS.md	01_agents-last-exam/ale_run/agents/openclaw_cli/upstream/src/agents/tools/AGENTS.md	yes	resolved	1
+01_agents-last-exam/ale_run/agents/openclaw_cli/upstream/src/agents/pi-embedded-runner/run/CLAUDE.md	AGENTS.md	01_agents-last-exam/ale_run/agents/openclaw_cli/upstream/src/agents/pi-embedded-runner/run/AGENTS.md	yes	resolved	1
+01_agents-last-exam/ale_run/agents/openclaw_cli/upstream/src/agents/CLAUDE.md	AGENTS.md	01_agents-last-exam/ale_run/agents/openclaw_cli/upstream/src/agents/AGENTS.md	yes	resolved	1
+01_agents-last-exam/ale_run/agents/openclaw_cli/upstream/src/plugin-sdk/CLAUDE.md	AGENTS.md	01_agents-last-exam/ale_run/agents/openclaw_cli/upstream/src/plugin-sdk/AGENTS.md	yes	resolved	1
+01_agents-last-exam/ale_run/agents/openclaw_cli/upstream/src/gateway/protocol/CLAUDE.md	AGENTS.md	01_agents-last-exam/ale_run/agents/openclaw_cli/upstream/src/gateway/protocol/AGENTS.md	yes	resolved	1
+01_agents-last-exam/ale_run/agents/openclaw_cli/upstream/src/gateway/server-methods/CLAUDE.md	AGENTS.md	01_agents-last-exam/ale_run/agents/openclaw_cli/upstream/src/gateway/server-methods/AGENTS.md	yes	resolved	1
+01_agents-last-exam/ale_run/agents/openclaw_cli/upstream/src/gateway/CLAUDE.md	AGENTS.md	01_agents-last-exam/ale_run/agents/openclaw_cli/upstream/src/gateway/AGENTS.md	yes	resolved	1
+01_agents-last-exam/ale_run/agents/openclaw_cli/upstream/src/channels/CLAUDE.md	AGENTS.md	01_agents-last-exam/ale_run/agents/openclaw_cli/upstream/src/channels/AGENTS.md	yes	resolved	1
+03_ale-data/task-data-v1.1/life_sciences/tcga_brca_deg_analysis/base/input/runtime_env/.venv/lib64	lib	03_ale-data/task-data-v1.1/life_sciences/tcga_brca_deg_analysis/base/input/runtime_env/.venv/lib	yes	resolved	1
+03_ale-data/task-data-v1.1/life_sciences/tcga_brca_deg_analysis/base/input/runtime_env/.venv/bin/python3	python	/home/user/.local/share/uv/python/cpython-3.14-linux-x86_64-gnu/bin/python3.14	no	broken	2
+03_ale-data/task-data-v1.1/life_sciences/tcga_brca_deg_analysis/base/input/runtime_env/.venv/bin/python	/home/user/.local/share/uv/python/cpython-3.14-linux-x86_64-gnu/bin/python3.14	/home/user/.local/share/uv/python/cpython-3.14-linux-x86_64-gnu/bin/python3.14	no	broken	1
+03_ale-data/task-data-v1.1/life_sciences/tcga_brca_deg_analysis/base/input/runtime_env/.venv/bin/python3.14	python	/home/user/.local/share/uv/python/cpython-3.14-linux-x86_64-gnu/bin/python3.14	no	broken	2
+02_ale/AGENTS.md	CLAUDE.md	02_ale/CLAUDE.md	yes	resolved	1

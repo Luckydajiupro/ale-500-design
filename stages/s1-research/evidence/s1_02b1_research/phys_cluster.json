@@ -1,0 +1,28 @@
+{
+  "subdomains": [
+    {
+      "subdomain_code": "physics",
+      "business_boundary": "Hospitals with radiation oncology programs, metrology institutes, nuclear regulators and nuclear fuel-cycle operators need physics services that quantify and control radiation, measurement traceability, and nuclear criticality safety. Separated from chemistry_materials (substance and phase modeling) and from engineering clusters (device or plant design); the physicist owns measurement-based verification, standards-based uncertainty evaluation, radiation protection calculations, and safety-method validation.",
+      "occupations": "Medical physicist; Radiation Protection Officer; Health physicist; Metrologist; Nuclear criticality safety engineer; Nuclear safety analyst; Calibration laboratory scientist",
+      "boundary_note": "Boundary drawn around radiation physics, metrology and nuclear-safety professional services that deliver standards-governed, measurement-based verification artifacts (QA reports, uncertainty budgets, shielding designs, validation safety cases). Simulation work that serves device or plant design was left to engineering clusters."
+    },
+    {
+      "subdomain_code": "chemistry_materials",
+      "business_boundary": "Cement producers and construction-materials laboratories certify phase composition, alloy and materials developers assess thermodynamic equilibria, chemicals registrants must generate and defend predictive safety data under REACH, and national materials programs push multiscale simulation-to-component integration. Separated from physics (radiation and measurement) and from engineering clusters (component and plant design); chemistry_materials owns substance-level modeling, crystallography, and regulatory (Q)SAR science.",
+      "occupations": "Analytical chemist; X-ray diffraction analyst; Computational materials scientist; Alloy designer; Crystallographer; Regulatory toxicology modeler; ICME engineer; Materials R and D scientist",
+      "boundary_note": "Boundary drawn around substance-level science: phase-composition certification, thermodynamic database assessment, regulatory predictive chemistry for REACH, and multiscale materials modeling. Component and plant engineering stay in engineering clusters; drug-discovery SAR stays in life sciences."
+    },
+    {
+      "subdomain_code": "astronomy",
+      "business_boundary": "Observatories and survey facilities (ALMA, JVLA, ZTF, LIGO/Virgo, DESI) and their user institutions produce peer-reviewed astrophysics through shared infrastructure: radio interferometric pipelines, real-time alert brokers, gravitational-wave analysis, and cosmological surveys. Separated from earth_atmo (Earth target and operational public services) and from physics (general-method work vs facility astrophysics practice).",
+      "occupations": "Radio astronomer; Optical astronomer; Time-domain astronomer; Gravitational-wave data analyst; Survey cosmologist; Observatory data reduction specialist",
+      "boundary_note": "Boundary drawn around facility astrophysics practice: observatory data reduction, alert-broker operations, gravitational-wave analysis and survey cosmology as performed by professional astronomers at facilities and institutes. Earth-targeted remote sensing stays in earth_atmo."
+    },
+    {
+      "subdomain_code": "earth_atmo",
+      "business_boundary": "National meteorological and hydrological services, climate services, seismological observatories, and space agencies with Earth-observation programs run operational production that governments and industry depend on: numerical weather prediction, climate reanalysis, earthquake bulletins, and sensor calibration and validation. Coordinated via WMO, ECMWF/C3S, IASPEI, and CEOS. Separated from astronomy (celestial targets, discovery research) and from agriculture_env (local hydrological and ecological modeling).",
+      "occupations": "Operational meteorologist; NWP system developer; Reanalysis scientist; Seismologist; Seismic data analyst; Earth-observation Cal/Val scientist; Satellite product validation engineer",
+      "boundary_note": "Boundary drawn around operational Earth-system services coordinated by WMO, ECMWF/C3S, IASPEI and CEOS: weather prediction, reanalysis, seismological bulletins, and EO calibration and validation. Local hydrological and ecological study workflows reclassified to agriculture_env are excluded."
+    }
+  ]
+}

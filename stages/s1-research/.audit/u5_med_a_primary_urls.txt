@@ -1,0 +1,11 @@
+med_a primary_source_url reachability spot-check 2026-11-09T23:57 (python urllib, UA, timeout 10s)
+med_diag_wf01	200	https://www.law.cornell.edu/cfr/text/21/900.12
+med_diag_wf02	200	https://edge.sitecorecloud.io/americancoldf5f-acrorgf92a-productioncb02-3650/media/ACR/Files/RA
+med_diag_wf03	200	https://www.rcpath.org/resourceLibrary/g148-dataset-for-histopathological-reporting-of-breast-d
+med_diag_wf04	200	https://www.law.cornell.edu/cfr/text/42/493.801
+med_diag_wf05	200	https://pmc.ncbi.nlm.nih.gov/articles/PMC5903561/
+med_onco_wf01	200	https://pmc.ncbi.nlm.nih.gov/articles/PMC9012523/
+med_onco_wf02	200	https://pharmed.datapharma.ch/download/4988/
+med_onco_wf03	200	https://recist.eortc.org/recist-1-1/
+med_onco_wf04	200	https://www.impedimed.com/wp-content/uploads/2023/07/CoC_Optimal_Resources_for_Cancer_Care_Feb_
+med_onco_wf05	200	https://www.esmo.org/guidelines/esmo-clinical-practice-guideline-management-of-toxicities-from-

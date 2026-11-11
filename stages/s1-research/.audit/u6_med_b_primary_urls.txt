@@ -1,0 +1,14 @@
+med_b primary_source_url reachability spot-check 2026-11-10T00:59 (python urllib, UA, timeout 10s)
+med_inform_wf01	200	https://pmc.ncbi.nlm.nih.gov/articles/PMC7973467/
+med_inform_wf02	200	https://ecqi.healthit.gov/ecqm-lifecycle
+med_inform_wf03	200	https://ohdsi.github.io/TheBookOfOhdsi/
+med_inform_wf04	200	https://profiles.ihe.net/ITI/TF/Volume1/ch-10.html
+med_pubhealth_wf01	FAIL:HTTPError:403	https://www.cdc.gov/nndss/what-is-case-surveillance/conducting.html
+med_pubhealth_wf02	FAIL:HTTPError:403	https://www.cdc.gov/field-epi-manual/php/chapters/field-investigation.html
+med_pubhealth_wf03	FAIL:HTTPError:403	https://www.cdc.gov/nssp/php/about/index.html
+med_pubhealth_wf04	FAIL:HTTPError:403	https://www.cdc.gov/brfss/annual_data/annual_2024.html
+med_trials_wf01	200	https://www.law.cornell.edu/cfr/text/21/312.56
+med_trials_wf02	200	https://www.jscdm.org/article/id/31/
+med_trials_wf03	200	https://www.law.cornell.edu/cfr/text/21/312.32
+med_trials_wf04	200	https://www.jscdm.org/article/id/524/
+med_trials_wf05	200	https://www.law.cornell.edu/cfr/text/42/part-11

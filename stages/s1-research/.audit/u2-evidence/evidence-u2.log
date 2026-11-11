@@ -1,0 +1,31 @@
+=== S1-02C-U2 evidence: temp rebuild /var/folders/m2/v5rxvvkj5l9_j0vch5z149pw0000gn/T/s1-02c-u2-rebuild ===
+
+--- step1 snapshot ---
+snapshot rows: 174 uncovered_yes pre: 22
+--- step2 build run1 ---
+assignment 174
+registry 72 used 72
+matrix 50 used 50
+auth 9 eng 7
+flags {'linux_not_verified': 174, 'engineering_pending': 83, 'uncovered_official': 22, 'padding_risk': 27, 'padding_risk_high': 9, 'expert_endorsement_required': 45, 'expert_pending': 9}
+family sizes {2: 30, 1: 15, 5: 3, 3: 14, 6: 1, 4: 9}
+cross-batch [{'family': 'WF-METRO-QUALITY', 'batches': 'A;B1', 'primary_counts': [4, 1, 0, 0], 'secondary_candidates': ''}, {'family': 'WF-NUCLEAR-SAFETY', 'batches': 'A;B1', 'primary_counts': [1, 1, 0, 0], 'secondary_candidates': ''}, {'family': 'WF-RESEARCH-DATA', 'batches': 'B1;B2', 'primary_counts': [0, 2, 0, 0], 'secondary_candidates': 'psy_comp_wf01'}]
+input verify Counter({'match': 13})
+build exit=0
+--- step3..6 functional checks ---
+rows 174 uncovered_yes 22
+   chemical_process 3 3
+   mining_petroleum 5 5
+   precision_agriculture 5 5
+   aviation 3 3
+   maritime_port 3 3
+   educational_technology 3 3
+padding 27
+flags not in yes/no: none
+snapshot fields unchanged: True
+stray basis on no-rows: none
+registered keys: ['registered_original_family_rows', 'registered_original_family_by_batch'] | old key present: False
+registered rows: 32 {'B2': 5, 'B3': 27}
+registry 72 sum_uncovered 22
+matrix 50 sum_uncovered 22
+auth 9 eng 7

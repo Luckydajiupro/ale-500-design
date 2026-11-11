@@ -1,0 +1,19 @@
+{
+  "subdomains": [
+    {
+      "subdomain_code": "animation_3d",
+      "candidate_count": 3,
+      "coverage_notes": "3 rows: animated short to AS-11 UK DPP broadcast master (E3, DPP factsheet, delivery step conditional_E1), game-ready character pipeline with engine import validation (E3, Epic vendor doc, name_reference), WebGL configurator with validated glTF 2.0 asset (E3, Khronos spec, export/accessor steps conditional_E1). Thin evidence: AS-11 UK DPP is a trade-body factsheet, not the AMWA specification text (AMWA page returned no extractable body through the fetcher); render-farm and QC tool behaviour is professional practice, not clause-backed."
+    },
+    {
+      "subdomain_code": "graphic_design",
+      "candidate_count": 3,
+      "coverage_notes": "3 rows: print packaging to PDF/X-4 with GS1 barcode (E3, GS1 US factsheet, barcode step name_reference because ISO 15930-7 and GS1 General Specifications are paywalled/blocked), editorial layout to PDF/X-4 plus EPUB 3 (E3, W3C EPUB 3.3, EPUBCheck step conditional_E1), accessibility remediation to WCAG 2.2 AA (E1, clause-level reading of 5.2 and 1.4.3/1.1.1/1.2.x). Thin evidence: PDF/X-4 and PDF/UA are cited by name only (ISO paywall)."
+    },
+    {
+      "subdomain_code": "audio_music",
+      "candidate_count": 3,
+      "coverage_notes": "3 rows: music mix/master to loudness specs (E3, ITU-R BS.1770-5, measurement and true-peak steps conditional_E1), TV 5.1 post mix to ATSC A/85 (E1, clause-level reading of sections 5.2.3/5.2.6/6/7.1), archival carrier transfer to preservation master (E3, IASA TC-04 landing page, format and metadata steps name_reference because the PDF is sold, not free). Thin evidence: EBU R128 and BS.775 are blocked/paywalled and cited by name only; no Linux path is verified for the analogue playback chain."
+    }
+  ]
+}
