@@ -147,7 +147,7 @@
 | 编号 | 类目 | 子域 | 族 | 专家画像 | 资料 | 交付物 | 主要验证 |
 |---|---|---|---|---|---|---|---|
 | P1-01 | 法律检索 | legal_research | LEGAL-RESEARCH | P3 法律研究 | 公开法规 + 公开判决 + 3 份合成解除通知 | 检索 memo、引证表、风险清单 | 引证可回溯、法条现行有效、结论与问题对齐 |
-| P1-02 | 法律检索 | litigation | LITIGATION | P3 诉讼支持 | 合成案卷（合同、往来函、时间线） | 争点表、证据目录、时间线 | 争点与证据一一对应、日期无矛盾 |
+| P1-02 | 诉讼支持 | litigation | LITIGATION | P3 诉讼支持 | 合成案卷（合同、往来函、时间线） | 争点表、证据目录、时间线 | 争点与证据一一对应、日期无矛盾 |
 | P1-03 | 神经影像 | comp_neuro | NEUROIMAGING | P4 神经影像 | 合成 DICOM（3 个序列）+ 假名化表格 | BIDS 目录、侧车 JSON、转换日志 | BIDS validator 通过、字段与源表一致 |
 | P1-04 | 神经影像 | comp_neuro | NEUROIMAGING | P4 神经影像 | 公开 BIDS（OpenNeuro CC0）+ 合成事件表 | 预处理报告、质控图、异常清单 | 步骤可复现、参数与报告一致 |
 | P1-05 | 建筑节能 | energy_power | BUILDING-ENERGY | P2 建筑性能 | EnergyPlus 示例模型 + 公开 TMY3 + 合成账单 | 能耗基线、节能量表、M&V 方案 | 单位/边界一致、节能量可重算 |
