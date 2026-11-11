@@ -24,6 +24,8 @@
 
 一个 PR 只做一件事。PR 描述写清为什么改、改了什么、怎么验证。合并用 squash，`main` 上每个提交对应一个已合并的 PR。
 
+远端分支在合并后自动删除，仓库设置 `delete_branch_on_merge` 已打开。本地那份分支要自己删，`git branch -d <分支名>`。合并命令不要加 `--delete-branch`，2026-11-11 实测它会在删本地分支那一步挂住不返回，合并本身早已完成。
+
 服务端保护目前在免费私有仓库上开不了。GitHub 对私有仓库的分支保护和规则集要求 Pro 或以上，免费计划只对公开仓库开放。所以保护落在三处。一处是 `.githooks/pre-push`，直推 `main` 会被拒绝，克隆后执行一次 `git config core.hooksPath .githooks` 生效。一处是 GitHub Actions 在每次 PR 上跑六条检查，任何一条不过就不合并。还有一处是约定，任何人都不直推。
 
 要真正的服务端强制，只有两条路：把仓库改成公开，或升级 GitHub Pro。
