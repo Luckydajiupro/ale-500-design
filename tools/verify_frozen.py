@@ -12,7 +12,6 @@ import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent / "inputs" / "frozen"
-MANIFEST = ROOT / "FILE_SHA256SUMS.txt"
 CHUNK = 8 << 20
 
 
@@ -38,14 +37,16 @@ def sha256_of(path):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--root", type=Path, default=ROOT, help="frozen tree to verify")
     parser.add_argument("--limit", type=int, default=0, help="check only the first N entries")
     parser.add_argument("--every", type=int, default=5000, help="progress interval in files")
     args = parser.parse_args()
 
-    if not MANIFEST.is_file():
-        raise SystemExit(f"manifest not found: {MANIFEST}")
+    manifest = args.root / "FILE_SHA256SUMS.txt"
+    if not manifest.is_file():
+        raise SystemExit(f"manifest not found: {manifest}")
 
-    rows = load_manifest(MANIFEST)
+    rows = load_manifest(manifest)
     if args.limit:
         rows = rows[: args.limit]
 
@@ -53,7 +54,7 @@ def main():
     total_bytes = 0
     mismatches = []
     for index, (digest, size, rel) in enumerate(rows, 1):
-        target = ROOT / rel
+        target = args.root / rel
         if not target.is_file():
             mismatches.append(f"missing  {rel}")
         else:
