@@ -4,7 +4,7 @@
 Each case writes a record, runs the gate as a subprocess with the current
 interpreter, and asserts the exit code. The last four cases exercise --dir: three
 good records pass, one bad record in three fails, and two or six records fail the
-three-to-five count guard.
+exactly-three count guard.
 """
 
 import json
@@ -104,13 +104,13 @@ def main():
         too_few.mkdir()
         for index in range(2):
             write_record(too_few / f"{index:02d}-good.json", good_record())
-        cases.append(("dir with two records", "--dir", too_few, 1))
+        cases.append(("dir with two records, one missing", "--dir", too_few, 1))
 
         too_many = root / "too-many"
         too_many.mkdir()
         for index in range(6):
             write_record(too_many / f"{index:02d}-good.json", good_record())
-        cases.append(("dir with six records", "--dir", too_many, 1))
+        cases.append(("dir with six records, three extra", "--dir", too_many, 1))
 
         failed = 0
         for name, mode, path, expected in cases:

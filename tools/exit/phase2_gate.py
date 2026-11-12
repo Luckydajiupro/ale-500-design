@@ -8,9 +8,10 @@ status and evidence. The gate passes only when every stage says PASS with
 evidence and both commits are full lowercase hex hashes.
 
 Phase 2 replaces the earlier five-task pilot with three: one neuroscience task,
-one building task, one business task. The record directory therefore holds three
-to five records. One or two records cannot cover the three task families, and
-more than five means the directory has picked up work outside the pilot.
+one building task, one business task. The record directory therefore holds
+exactly three records, one per task. A missing record means one task family was
+never proven, and an extra record means the directory has picked up work outside
+the pilot.
 """
 
 import json
@@ -20,8 +21,7 @@ from pathlib import Path
 
 STAGES = ("snapshot", "convert", "run", "score")
 COMMIT = re.compile(r"^[0-9a-f]{40}$")
-MIN_RECORDS = 3
-MAX_RECORDS = 5
+RECORDS = 3
 USAGE = "usage: phase2_gate.py --record PATH | --dir PATH"
 
 
@@ -139,11 +139,8 @@ def check_dir(path):
     if not files:
         print("FAIL dir: no record files")
         return 1
-    if len(files) < MIN_RECORDS:
-        print(f"FAIL dir: {len(files)} record files, need at least {MIN_RECORDS}")
-        return 1
-    if len(files) > MAX_RECORDS:
-        print(f"FAIL dir: {len(files)} record files, at most {MAX_RECORDS} accepted")
+    if len(files) != RECORDS:
+        print(f"FAIL dir: {len(files)} record files, need exactly {RECORDS}")
         return 1
 
     passed = 0
