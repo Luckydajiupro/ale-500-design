@@ -57,12 +57,12 @@
 
 | domain_code | OS（L/W） | GUI 是/未知 | GPU | 外部服务 | 专有软件 | 数据规模 | 验证器主型 | 网络 | 隐私 | 专家可得性 | P1 状态 | 首批 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| business_finance | 12/7 | 9/2 | 0 | 4 online + 5 staged | 中 | 1.69 GiB，中位 0.6 MiB | scorer, evaluator | 需在线与本地服务 | 中 | 高（19 条） | 后续 | 否 |
+| business_finance | 12/7 | 9/2 | 0 | 4 online + 5 staged | 中 | 1.69 GiB，中位 0.6 MiB | scorer, evaluator | 需在线与本地服务 | 中 | 高（19 条） | MVP | 是 |
 | computing_math | 15/4 | 4/1 | 0 | 0 | 低 | 1.37 GiB，中位 0.4 MiB | scorer, checker | 无 | 低 | 高（19 条） | 后续（A/B 待裁） | 否 |
 | education_info | 1/1 | 1/0 | 0 | 0 | 低 | 0.55 MiB | scorer | 无 | 低 | 低（2 条） | MVP | 否 |
 | engineering | 11/5 | 7/2 | 1 | 0 | 中（仿真） | 1.42 GiB，中位 12.1 MiB | scorer, checker | 无 | 中 | 高（16 条） | MVP | 是 |
 | health_medicine | 15/4 | 1/0 | 0 | 0 | 中（影像） | 16.76 GiB，中位 9.0 MiB | scorer | 无 | 高 | 高（19 条） | MVP | 否 |
-| legal | 2/0 | 0/0 | 0 | 0 | 低 | 1.25 MiB | scorer | 无 | 中 | 低（2 条） | MVP | 是 |
+| legal | 2/0 | 0/0 | 0 | 0 | 低 | 1.25 MiB | scorer | 无 | 中 | 低（2 条） | MVP | 否 |
 | life_sciences | 12/0 | 1/2 | 0 | 1 public-ref | 中（生信） | 14.51 GiB，中位 178.5 MiB | scorer, hook, checker | 只读公开库 | 高 | 中（12 条） | MVP | 否 |
 | other | 1/1 | 2/0 | 0 | 1 public-ref | 低 | 195 MiB，中位 97.3 MiB | scorer | 只读公开库 | 低 | 低（2 条） | 后续 | 否 |
 | physical_sciences | 10/4 | 3/0 | 0 | 2 online | 中（化学） | 1.50 GiB，中位 10.2 MiB | checker, scorer | 需在线 | 低 | 中（14 条） | MVP | 否 |
@@ -101,7 +101,7 @@ health_medicine、life_sciences、physical_sciences、agriculture_env。
 
 business_finance、visual_media，另有 engineering 的 5 条 Windows。
 
-- business_finance 有 3 条 Windows staged-local（Metabase、Odoo 加 psql、taxform）。
+- business_finance 有 3 条 Windows staged-local（Metabase、Odoo 加 psql、taxform）；首批 2 条会计与企业分析任务走 Linux，不受影响。
 - visual_media 有 9 条 Windows，占该域 11 条的大头。
 - 平台动作：`environment.os=windows` 正常保存，风险层自动升 medium；交接包标注 `windows_required`。任务能不能跑由工程侧决定，平台不承诺。
 
@@ -201,17 +201,17 @@ business_finance、visual_media，另有 engineering 的 5 条 Windows。
 
 ### 首批三个类目
 
-法律、神经影像、建筑节能（属 engineering 的 `energy_power` 子域）。选择理由在 `work/recruitment-plan-v0.md`：专家可得、资料可公开或合成、环境是 Linux。
+商业分析、神经影像、建筑节能（属 engineering 的 `energy_power` 子域）。选择理由在专家 v5 的试点安排：三名专家各带 1 个方向，商业与神经各交 2 条。
 
-首批覆盖 3 个 domain_code、4 个子域、5 条任务。两条神经影像任务分别测 DICOM 到 BIDS 的转换和公开 BIDS 的预处理，不是同一个工作流重复。这只占 14 个类目的 21%，不能当成覆盖结论。
+首批覆盖 3 个 domain_code、4 个子域、5 条任务。两条商业任务分别测会计核对与企业分析，两条神经影像任务分别测 DICOM 到 BIDS 的转换和公开 BIDS 的预处理。这只占 14 个类目的 21%，不能当成覆盖结论。法律 42 条由供应方包导入，只做路径 B 回归，不占全流程试点位。
 
 ### 平台能力覆盖的时间线
 
 | 阶段 | 覆盖类目 | 依赖 |
 | --- | --- | --- |
-| 试点两周 | legal、psychology_neuro、engineering（energy_power） | 无额外设备 |
+| 试点两周 | business_finance、psychology_neuro、engineering（energy_power） | 无额外设备 |
 | 前 100 条 | 加 health、life、physical、education、social、agriculture、transport | 大资产存储、公开引用证据 |
-| 满产 | 加 business、visual、other | Windows 宿主、外部服务清单、GPU 决策 |
+| 满产 | 继续 business，加 visual、other | Windows 宿主、外部服务清单、GPU 决策 |
 | 手工 | 6 个空覆盖子域 | 专家从零设计，平台只记录 |
 
 ## 7. 结论

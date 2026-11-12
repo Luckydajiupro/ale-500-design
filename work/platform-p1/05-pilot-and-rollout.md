@@ -16,14 +16,14 @@
 
 | 项 | 范围 |
 | --- | --- |
-| 类目 | legal、psychology_neuro、engineering（energy_power 子域） |
-| 任务数 | 5 条：legal 2、psychology_neuro 2、engineering 1 |
-| 专家 | 5 人，每人 1 条 |
+| 类目 | business_finance、psychology_neuro、engineering（energy_power 子域） |
+| 任务数 | 5 条：business_finance 2、psychology_neuro 2、engineering 1 |
+| 专家 | 3 人：神经 1、建筑 1、商业 1；神经和商业各交 2 条 |
 | 评审 | 每任务 2 人，其中 1 人跨类目复核 |
 | 环境 | Linux，无 GPU，无在线外部服务 |
 | 资料 | 公开或合成，单任务不超过 8 GiB，其余控制在 2 GiB 内 |
 
-选择理由：三个类目都在 MVP 组，都不依赖 Windows 与 GPU，专家在招募计划里已锁定。
+选择理由：三个类目都在 MVP 组，都不依赖 Windows 与 GPU，专家在 v5 试点安排里已锁定。
 
 ## 2. 两周 MVP 开发范围
 
@@ -43,7 +43,7 @@
 | D8-D9 | 评审表单、意见、退回、重提 | 完成一轮退回与重提 |
 | D10 | 冻结、快照、哈希清单、导出包 | 生成快照并在另一台机器校验通过 |
 | D11 | 审计、备份、恢复演练 | 还原到 1 小时前 |
-| D12 | 修缺陷、写操作手册、试点培训 | 5 名专家能独立走完提交 |
+| D12 | 修缺陷、写操作手册、试点培训 | 3 名专家（神经、建筑、商业各 1；神经和商业各 2 条）能独立走完提交 |
 
 ### 明确不做
 
@@ -59,8 +59,8 @@
 
 | 编号 | 类目 | 子域 | 交付物 | 资产上限 | 风险层 |
 | --- | --- | --- | --- | --- | --- |
-| P-01 | legal | legal_research | 检索报告加证据表 | 200 MiB | medium |
-| P-02 | legal | litigation | 争点分析 memo | 200 MiB | high |
+| P-01 | business_finance | accounting | 会计核对表加说明 | 200 MiB | medium |
+| P-02 | business_finance | enterprise_analytics | 企业分析 memo 加数据表 | 200 MiB | medium |
 | P-03 | psychology_neuro | comp_neuro | DICOM 到 BIDS 转换目录加 QC 日志 | 2 GiB | high |
 | P-04 | psychology_neuro | comp_neuro | 预处理报告加图表 | 8 GiB | high |
 | P-05 | engineering | energy_power | 能耗模型加校核表 | 1 GiB | medium |
@@ -156,7 +156,7 @@ P0 全过才算试点通过。P1 允许最多 2 项带临时绕行，但要有�
 
 转换的字段映射以 `02-platform-design.md` 第 14.5 节为准。平台的验收只到"包能通过同版本校验器"，不验"镜像能构建"。镜像构建失败算工程侧缺口，走 `handoff_gap` 回平台补字段。
 
-试点期转换两条包：P-01 是路径 A，由专家从零生产；另拿 `legal_dr_fees_01` 做路径 B 的导入回归。两条都必须通过 AT-ALE-01..05。
+试点期做两个转换样本：P-01 走路径 A，由专家从零生产后导出；`legal_dr_fees_01` 走路径 B，只做导入回归，不占 5 条试点记录。两者都必须通过 AT-ALE-01..05。
 
 ### 平台不做什么
 
@@ -219,9 +219,9 @@ P0 全过才算试点通过。P1 允许最多 2 项带临时绕行，但要有�
 
 | 批次 | 范围 | 任务数 | 进入条件 |
 | --- | --- | --- | --- |
-| 试点 | legal、psychology_neuro、engineering | 5 | 本文件第 6 节 Go |
+| 试点 | business_finance、psychology_neuro、engineering | 5 | 本文件第 6 节 Go |
 | 第 1 批 | 加 health、life、physical、education、social、agriculture、transport | 50 | 试点 Go 加存储升级 |
-| 第 2 批 | 加 business、transport、visual、other | 150 | Windows 宿主就绪，外部服务清单确认 |
+| 第 2 批 | 继续 business，加 transport、visual、other | 150 | Windows 宿主就绪，外部服务清单确认 |
 | 第 3 批 | 剩余类目与手工子域 | 295 | 前两批冻结率大于 90% |
 
 每批结束做一次复盘，指标进看板。批次之间不并行超过 2 个，否则评审池会被抽干。

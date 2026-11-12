@@ -32,18 +32,18 @@ health_medicine,therapeutic_oncology,Therapeutic & Oncology,active_observed,Linu
 health_medicine,clinical_informatics,Clinical Informatics & Care,active_observed,Linux,1,ECG-31 临床信息学,MVP,否,平台现有能力可承接，工程侧无额外宿主
 health_medicine,public_health,Public Health & Epidemiology,active_observed,Linux,1,ECG-32 公共卫生监测,MVP,否,平台现有能力可承接，工程侧无额外宿主
 health_medicine,clinical_trials,Clinical Research & Trial Operations,active_observed,无,1,ECG-33 临床试验运营,MVP,否,平台现有能力可承接，工程侧无额外宿主
-psychology_neuro,comp_neuro,Computational Neuroscience,active_observed,大资产; GUI,1,ECG-34 心理与神经科学方法,MVP,否,平台现有能力可承接，工程侧无额外宿主
-psychology_neuro,exp_psychology,Experimental Psychology & Neuroimaging,active_observed,大资产; GUI,1,ECG-34 心理与神经科学方法,MVP,是,平台现有能力可承接，工程侧无额外宿主
-business_finance,accounting,Accounting & Finance,active_observed,无,1,ECG-35 会计与审计,MVP,否,平台现有能力可承接，工程侧无额外宿主
+psychology_neuro,comp_neuro,Computational Neuroscience,active_observed,大资产; GUI,1,ECG-34 心理与神经科学方法,MVP,是,平台现有能力可承接，工程侧无额外宿主
+psychology_neuro,exp_psychology,Experimental Psychology & Neuroimaging,active_observed,大资产; GUI,1,ECG-34 心理与神经科学方法,MVP,否,平台现有能力可承接，工程侧无额外宿主
+business_finance,accounting,Accounting & Finance,active_observed,无,1,ECG-35 会计与审计,MVP,是,平台现有能力可承接，工程侧无额外宿主
 business_finance,actuarial_risk,Actuarial & Risk Modeling,active_observed,Windows; Excel,1,ECG-36 精算,后续,否,冻结前需要额外宿主、许可或服务
-business_finance,enterprise_analytics,Enterprise Analytics & Planning,active_observed,staged-local 服务,1,ECG-37 数据科学与预测分析,后续,否,冻结前需要额外宿主、许可或服务
+business_finance,enterprise_analytics,Enterprise Analytics & Planning,active_observed,staged-local 服务,1,ECG-37 数据科学与预测分析,MVP,是,冻结前需要额外宿主、许可或服务
 business_finance,compliance,Compliance & Regulatory,active_observed,无,1,ECG-38 金融犯罪合规,MVP,否,平台现有能力可承接，工程侧无额外宿主
 business_finance,hr_pm,HR & Project Management,active_observed,无,2,ECG-39 人力资源与项目管理; ECG-40 数据保护与营销合规,MVP,否,平台现有能力可承接，工程侧无额外宿主
 business_finance,sales_marketing,Sales & Marketing,active_observed,Windows; GUI,1,ECG-40 数据保护与营销合规,后续,否,冻结前需要额外宿主、许可或服务
 business_finance,quant_finance,Quantitative Finance & Trading,active_observed,Linux,1,ECG-41 量化金融与投资合规,MVP,否,平台现有能力可承接，工程侧无额外宿主
 business_finance,supply_chain,Supply Chain & Logistics,active_observed,staged-local 服务,2,ECG-37 数据科学与预测分析; ECG-42 贸易与供应链合规,后续,否,冻结前需要额外宿主、许可或服务
-legal,litigation,Litigation Support & Discovery,active_observed,无,1,ECG-19 法律研究与诉讼支持,MVP,是,平台现有能力可承接，工程侧无额外宿主
-legal,legal_research,Doctrinal Legal Research,active_observed,无,1,ECG-19 法律研究与诉讼支持,MVP,是,平台现有能力可承接，工程侧无额外宿主
+legal,litigation,Litigation Support & Discovery,active_observed,无,1,ECG-19 法律研究与诉讼支持,MVP,否,平台现有能力可承接，工程侧无额外宿主
+legal,legal_research,Doctrinal Legal Research,active_observed,无,1,ECG-19 法律研究与诉讼支持,MVP,否,平台现有能力可承接，工程侧无额外宿主
 visual_media,animation_3d,"3D, Animation & Interactive Media",active_observed,Windows; GPU; GUI,1,ECG-44 三维动画与视觉资产,后续,否,冻结前需要额外宿主、许可或服务
 visual_media,graphic_design,"Graphic, Visual & Product Design",active_observed,Windows; GUI; 专有 Adobe,2,ECG-45 印前与平面制作; ECG-46 无障碍与辅助技术,后续,否,冻结前需要额外宿主、许可或服务
 visual_media,audio_music,"Audio, Music & Post-Production Media",active_observed,Windows; GUI; 专有 DAW,1,ECG-47 音频制作与存档,后续,否,冻结前需要额外宿主、许可或服务
