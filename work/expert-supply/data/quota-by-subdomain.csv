@@ -1,53 +1,53 @@
 level1_code,level1_name_zh,level1_official_tasks,level1_subdomain_count,level1_active_subdomains,level1_quota,level1_share_pct,level2_code,level2_name_zh,level2_official_tasks,coverage_status,research_candidates,proposed_tasks,quota_share_pct,quota_per_official,quota_per_candidate,batch,pilot_tasks,first_30_50_subdomain_flag,notes
-engineering,工程与建筑,16,10,8,50,10.0,aerospace_mech,航空航天与机械,1,active_observed,3,5,1.0,5.0,1.67,B3,0,0,
-engineering,工程与建筑,16,10,8,50,10.0,urban_planning,城市与空间规划,2,active_observed,3,5,1.0,2.5,1.67,B3,0,0,
-engineering,工程与建筑,16,10,8,50,10.0,robotics,机器人与自主系统,2,active_observed,3,5,1.0,2.5,1.67,B4,0,0,
-engineering,工程与建筑,16,10,8,50,10.0,electronics,电子工程,3,active_observed,3,5,1.0,1.67,1.67,B4,0,0,
-engineering,工程与建筑,16,10,8,50,10.0,civil_geo,土木、建筑与地理空间,3,active_observed,4,5,1.0,1.67,1.25,B3,0,0,
-engineering,工程与建筑,16,10,8,50,10.0,chemical_process,化工与过程,0,uncovered_official,3,5,1.0,,1.67,B3,0,0,官方零覆盖；有研究候选，配额用于补覆盖
-engineering,工程与建筑,16,10,8,50,10.0,manufacturing,制造与工业系统,1,active_observed,3,5,1.0,5.0,1.67,B3,0,0,
-engineering,工程与建筑,16,10,8,50,10.0,energy_power,能源、电力与核工程,2,active_observed,4,5,1.0,2.5,1.25,B3,1,0,
-engineering,工程与建筑,16,10,8,50,10.0,mining_petroleum,采矿、石油与地质,0,uncovered_official,5,6,1.2,,1.2,B3,0,0,官方零覆盖；有研究候选，配额用于补覆盖
-engineering,工程与建筑,16,10,8,50,10.0,semiconductor,半导体与微电子设计,2,active_observed,3,4,0.8,2.0,1.33,B4,0,0,
-transport_safety,交通与安全,1,3,1,30,6.0,aviation,航空与空域运行,0,uncovered_official,3,10,2.0,,3.33,B4,0,0,官方零覆盖；有研究候选，配额用于补覆盖
-transport_safety,交通与安全,1,3,1,30,6.0,maritime_port,海事与港口运行,0,uncovered_official,3,10,2.0,,3.33,B4,0,0,官方零覆盖；有研究候选，配额用于补覆盖
-transport_safety,交通与安全,1,3,1,30,6.0,fire_safety,消防与公共安全,1,active_observed,3,10,2.0,10.0,3.33,B4,0,0,
-education_info,教育与信息,2,3,2,32,6.4,educational_technology,教育技术,0,uncovered_official,3,11,2.2,,3.67,B4,0,0,官方零覆盖；有研究候选，配额用于补覆盖
-education_info,教育与信息,2,3,2,32,6.4,library_info,图书馆与信息科学,1,active_observed,3,11,2.2,11.0,3.67,B4,0,0,
-education_info,教育与信息,2,3,2,32,6.4,translation,翻译与本地化,1,active_observed,3,10,2.0,10.0,3.33,B4,0,0,
-agriculture_env,农业与环境,1,2,1,16,3.2,env_water,环境建模、工程与水资源,1,active_observed,4,7,1.4,7.0,1.75,B3,0,0,
-agriculture_env,农业与环境,1,2,1,16,3.2,precision_agriculture,精准农业,0,uncovered_official,5,9,1.8,,1.8,B3,0,0,官方零覆盖；有研究候选，配额用于补覆盖
-social_sciences,社会科学,4,1,1,28,5.6,economics,经济与定量社会研究,4,active_observed,4,28,5.6,7.0,7.0,B1,0,1,单一子域承载 28 条；法律 42 后由 34 下调
-other,其他,2,1,1,28,5.6,sports,体育,2,active_observed,0,14,2.8,7.0,,B3,0,0,有官方任务但无研究候选；待验证假设
-other,其他,2,1,1,28,5.6,other_catchall,兜底桶（非官方子域）,0,project_bucket,0,14,2.8,,,B4,0,0,非官方子域；无候选，待验证假设
-physical_sciences,自然科学,11,4,4,46,9.2,physics,物理学,2,active_observed,4,12,2.4,6.0,3.0,B2,0,0,
-physical_sciences,自然科学,11,4,4,46,9.2,chemistry_materials,化学与材料计算,7,active_observed,4,12,2.4,1.71,3.0,B2,0,0,
-physical_sciences,自然科学,11,4,4,46,9.2,astronomy,天文与天体物理,1,active_observed,4,11,2.2,11.0,2.75,B2,0,0,
-physical_sciences,自然科学,11,4,4,46,9.2,earth_atmo,地球与大气科学,1,active_observed,4,11,2.2,11.0,2.75,B2,0,0,
-life_sciences,生命科学,14,4,4,48,9.6,biomolecular,生物分子结构与设计,4,active_observed,5,13,2.6,3.25,2.6,B2,0,0,
-life_sciences,生命科学,14,4,4,48,9.6,genomics,基因组与序列分析,3,active_observed,4,11,2.2,3.67,2.75,B2,0,0,
-life_sciences,生命科学,14,4,4,48,9.6,cell_imaging,细胞与成像生物学,6,active_observed,4,11,2.2,1.83,2.75,B2,0,0,
-life_sciences,生命科学,14,4,4,48,9.6,systems_microbial,系统与微生物生物学,1,active_observed,5,13,2.6,13.0,2.6,B2,0,0,
-health_medicine,健康与医学,17,5,5,60,12.0,clinical_diagnostics,临床诊断与影像,5,active_observed,5,13,2.6,2.6,2.6,B3,0,0,
-health_medicine,健康与医学,17,5,5,60,12.0,therapeutic_oncology,治疗与肿瘤,4,active_observed,5,13,2.6,3.25,2.6,B3,0,0,
-health_medicine,健康与医学,17,5,5,60,12.0,clinical_informatics,临床信息学与照护,1,active_observed,4,11,2.2,11.0,2.75,B3,0,0,
-health_medicine,健康与医学,17,5,5,60,12.0,public_health,公共卫生与流行病学,5,active_observed,4,10,2.0,2.0,2.5,B3,0,0,
-health_medicine,健康与医学,17,5,5,60,12.0,clinical_trials,临床研究与试验运营,2,active_observed,5,13,2.6,6.5,2.6,B3,0,0,
-psychology_neuro,心理与神经,2,2,2,34,6.8,comp_neuro,计算神经科学,1,active_observed,3,15,3.0,15.0,5.0,B2,1,0,
-psychology_neuro,心理与神经,2,2,2,34,6.8,exp_psychology,实验心理学与神经影像,1,active_observed,4,19,3.8,19.0,4.75,B2,0,0,
-business_finance,商业与金融,18,8,8,50,10.0,accounting,会计与财务,4,active_observed,4,7,1.4,1.75,1.75,B1,1,1,5 条试点之一（商业全流程）
-business_finance,商业与金融,18,8,8,50,10.0,actuarial_risk,精算与风险建模,1,active_observed,4,7,1.4,7.0,1.75,B1,0,0,
-business_finance,商业与金融,18,8,8,50,10.0,enterprise_analytics,企业分析与规划,5,active_observed,3,6,1.2,1.2,2.0,B1,0,1,5 条试点之一（商业全流程）
-business_finance,商业与金融,18,8,8,50,10.0,compliance,合规与监管,3,active_observed,4,7,1.4,2.33,1.75,B1,0,1,
-business_finance,商业与金融,18,8,8,50,10.0,hr_pm,人力资源与项目管理,1,active_observed,3,6,1.2,6.0,2.0,B1,0,0,
-business_finance,商业与金融,18,8,8,50,10.0,sales_marketing,销售与市场,2,active_observed,3,5,1.0,2.5,1.67,B1,0,0,
-business_finance,商业与金融,18,8,8,50,10.0,quant_finance,量化金融与交易,1,active_observed,4,7,1.4,7.0,1.75,B1,0,0,
-business_finance,商业与金融,18,8,8,50,10.0,supply_chain,供应链与物流,1,active_observed,3,5,1.0,5.0,1.67,B1,0,0,
-legal,法律,2,2,2,42,8.4,litigation,诉讼支持与证据开示,1,active_observed,4,21,4.2,21.0,5.25,B1,0,1,供应方 ALE-data 导入，不写任务源/不做平台评审/不冻结；42 条标 scope_exception（Q18）；两子域各 21
-legal,法律,2,2,2,42,8.4,legal_research,教义法律研究,1,active_observed,4,21,4.2,21.0,5.25,B1,0,1,供应方 ALE-data 导入，不写任务源/不做平台评审/不冻结；42 条标 scope_exception（Q18）；两子域各 21
-visual_media,视觉与媒体,14,3,3,36,7.2,animation_3d,3D、动画与互动媒体,10,active_observed,3,12,2.4,1.2,4.0,B4,0,0,
-visual_media,视觉与媒体,14,3,3,36,7.2,graphic_design,平面、视觉与产品设计,1,active_observed,3,12,2.4,12.0,4.0,B4,0,0,
-visual_media,视觉与媒体,14,3,3,36,7.2,audio_music,音频、音乐与后期,3,active_observed,3,12,2.4,4.0,4.0,B4,0,0,
+engineering,工程与建筑,16,10,8,50,10.0,aerospace_mech,航空航天与机械,1,active_observed,3,5,1.0,5.0,1.67,W3,0,0,
+engineering,工程与建筑,16,10,8,50,10.0,urban_planning,城市与空间规划,2,active_observed,3,5,1.0,2.5,1.67,W3,0,0,
+engineering,工程与建筑,16,10,8,50,10.0,robotics,机器人与自主系统,2,active_observed,3,5,1.0,2.5,1.67,W4,0,0,
+engineering,工程与建筑,16,10,8,50,10.0,electronics,电子工程,3,active_observed,3,5,1.0,1.67,1.67,W4,0,0,
+engineering,工程与建筑,16,10,8,50,10.0,civil_geo,土木、建筑与地理空间,3,active_observed,4,5,1.0,1.67,1.25,W3,0,0,
+engineering,工程与建筑,16,10,8,50,10.0,chemical_process,化工与过程,0,uncovered_official,3,5,1.0,,1.67,W3,0,0,官方零覆盖；有研究候选，配额用于补覆盖
+engineering,工程与建筑,16,10,8,50,10.0,manufacturing,制造与工业系统,1,active_observed,3,5,1.0,5.0,1.67,W3,0,0,
+engineering,工程与建筑,16,10,8,50,10.0,energy_power,能源、电力与核工程,2,active_observed,4,5,1.0,2.5,1.25,W3,1,0,
+engineering,工程与建筑,16,10,8,50,10.0,mining_petroleum,采矿、石油与地质,0,uncovered_official,5,6,1.2,,1.2,W3,0,0,官方零覆盖；有研究候选，配额用于补覆盖
+engineering,工程与建筑,16,10,8,50,10.0,semiconductor,半导体与微电子设计,2,active_observed,3,4,0.8,2.0,1.33,W4,0,0,
+transport_safety,交通与安全,1,3,1,30,6.0,aviation,航空与空域运行,0,uncovered_official,3,10,2.0,,3.33,W4,0,0,官方零覆盖；有研究候选，配额用于补覆盖
+transport_safety,交通与安全,1,3,1,30,6.0,maritime_port,海事与港口运行,0,uncovered_official,3,10,2.0,,3.33,W4,0,0,官方零覆盖；有研究候选，配额用于补覆盖
+transport_safety,交通与安全,1,3,1,30,6.0,fire_safety,消防与公共安全,1,active_observed,3,10,2.0,10.0,3.33,W4,0,0,
+education_info,教育与信息,2,3,2,32,6.4,educational_technology,教育技术,0,uncovered_official,3,11,2.2,,3.67,W4,0,0,官方零覆盖；有研究候选，配额用于补覆盖
+education_info,教育与信息,2,3,2,32,6.4,library_info,图书馆与信息科学,1,active_observed,3,11,2.2,11.0,3.67,W4,0,0,
+education_info,教育与信息,2,3,2,32,6.4,translation,翻译与本地化,1,active_observed,3,10,2.0,10.0,3.33,W4,0,0,
+agriculture_env,农业与环境,1,2,1,16,3.2,env_water,环境建模、工程与水资源,1,active_observed,4,7,1.4,7.0,1.75,W3,0,0,
+agriculture_env,农业与环境,1,2,1,16,3.2,precision_agriculture,精准农业,0,uncovered_official,5,9,1.8,,1.8,W3,0,0,官方零覆盖；有研究候选，配额用于补覆盖
+social_sciences,社会科学,4,1,1,28,5.6,economics,经济与定量社会研究,4,active_observed,4,28,5.6,7.0,7.0,W1,0,1,单一子域承载 28 条；法律 42 后由 34 下调
+other,其他,2,1,1,28,5.6,sports,体育,2,active_observed,0,14,2.8,7.0,,W3,0,0,有官方任务但无研究候选；待验证假设
+other,其他,2,1,1,28,5.6,other_catchall,兜底桶（非官方子域）,0,project_bucket,0,14,2.8,,,W4,0,0,非官方子域；无候选，待验证假设
+physical_sciences,自然科学,11,4,4,46,9.2,physics,物理学,2,active_observed,4,12,2.4,6.0,3.0,W2,0,0,
+physical_sciences,自然科学,11,4,4,46,9.2,chemistry_materials,化学与材料计算,7,active_observed,4,12,2.4,1.71,3.0,W2,0,0,
+physical_sciences,自然科学,11,4,4,46,9.2,astronomy,天文与天体物理,1,active_observed,4,11,2.2,11.0,2.75,W2,0,0,
+physical_sciences,自然科学,11,4,4,46,9.2,earth_atmo,地球与大气科学,1,active_observed,4,11,2.2,11.0,2.75,W2,0,0,
+life_sciences,生命科学,14,4,4,48,9.6,biomolecular,生物分子结构与设计,4,active_observed,5,13,2.6,3.25,2.6,W2,0,0,
+life_sciences,生命科学,14,4,4,48,9.6,genomics,基因组与序列分析,3,active_observed,4,11,2.2,3.67,2.75,W2,0,0,
+life_sciences,生命科学,14,4,4,48,9.6,cell_imaging,细胞与成像生物学,6,active_observed,4,11,2.2,1.83,2.75,W2,0,0,
+life_sciences,生命科学,14,4,4,48,9.6,systems_microbial,系统与微生物生物学,1,active_observed,5,13,2.6,13.0,2.6,W2,0,0,
+health_medicine,健康与医学,17,5,5,60,12.0,clinical_diagnostics,临床诊断与影像,5,active_observed,5,13,2.6,2.6,2.6,W3,0,0,
+health_medicine,健康与医学,17,5,5,60,12.0,therapeutic_oncology,治疗与肿瘤,4,active_observed,5,13,2.6,3.25,2.6,W3,0,0,
+health_medicine,健康与医学,17,5,5,60,12.0,clinical_informatics,临床信息学与照护,1,active_observed,4,11,2.2,11.0,2.75,W3,0,0,
+health_medicine,健康与医学,17,5,5,60,12.0,public_health,公共卫生与流行病学,5,active_observed,4,10,2.0,2.0,2.5,W3,0,0,
+health_medicine,健康与医学,17,5,5,60,12.0,clinical_trials,临床研究与试验运营,2,active_observed,5,13,2.6,6.5,2.6,W3,0,0,
+psychology_neuro,心理与神经,2,2,2,34,6.8,comp_neuro,计算神经科学,1,active_observed,3,15,3.0,15.0,5.0,W2,1,0,
+psychology_neuro,心理与神经,2,2,2,34,6.8,exp_psychology,实验心理学与神经影像,1,active_observed,4,19,3.8,19.0,4.75,W2,0,0,
+business_finance,商业与金融,18,8,8,50,10.0,accounting,会计与财务,4,active_observed,4,7,1.4,1.75,1.75,W1,1,1,试点 1 条 + 首批 30 之一（商业全流程）
+business_finance,商业与金融,18,8,8,50,10.0,actuarial_risk,精算与风险建模,1,active_observed,4,7,1.4,7.0,1.75,W1,0,0,
+business_finance,商业与金融,18,8,8,50,10.0,enterprise_analytics,企业分析与规划,5,active_observed,3,6,1.2,1.2,2.0,W1,0,1,首批 30 之一（商业全流程）
+business_finance,商业与金融,18,8,8,50,10.0,compliance,合规与监管,3,active_observed,4,7,1.4,2.33,1.75,W1,0,1,
+business_finance,商业与金融,18,8,8,50,10.0,hr_pm,人力资源与项目管理,1,active_observed,3,6,1.2,6.0,2.0,W1,0,0,
+business_finance,商业与金融,18,8,8,50,10.0,sales_marketing,销售与市场,2,active_observed,3,5,1.0,2.5,1.67,W1,0,0,
+business_finance,商业与金融,18,8,8,50,10.0,quant_finance,量化金融与交易,1,active_observed,4,7,1.4,7.0,1.75,W1,0,0,
+business_finance,商业与金融,18,8,8,50,10.0,supply_chain,供应链与物流,1,active_observed,3,5,1.0,5.0,1.67,W1,0,0,
+legal,法律,2,2,2,42,8.4,litigation,诉讼支持与证据开示,1,active_observed,4,21,4.2,21.0,5.25,W1,0,1,供应方 ALE-data 导入，不写任务源/不做平台评审/不冻结；42 条标 scope_exception（Q18）；两子域各 21
+legal,法律,2,2,2,42,8.4,legal_research,教义法律研究,1,active_observed,4,21,4.2,21.0,5.25,W1,0,1,供应方 ALE-data 导入，不写任务源/不做平台评审/不冻结；42 条标 scope_exception（Q18）；两子域各 21
+visual_media,视觉与媒体,14,3,3,36,7.2,animation_3d,3D、动画与互动媒体,10,active_observed,3,12,2.4,1.2,4.0,W4,0,0,
+visual_media,视觉与媒体,14,3,3,36,7.2,graphic_design,平面、视觉与产品设计,1,active_observed,3,12,2.4,12.0,4.0,W4,0,0,
+visual_media,视觉与媒体,14,3,3,36,7.2,audio_music,音频、音乐与后期,3,active_observed,3,12,2.4,4.0,4.0,W4,0,0,
 computing_math,计算、数据与数学,18,7,7,0,0.0,software_eng,软件工程,2,excluded_project,0,0,0.0,0.0,,,0,0,项目口径排除
 computing_math,计算、数据与数学,18,7,7,0,0.0,data_analytics,数据与分析工程,4,excluded_project,0,0,0.0,0.0,,,0,0,项目口径排除
 computing_math,计算、数据与数学,18,7,7,0,0.0,ai_cs_research,AI 工程与 CS 研究,3,excluded_project,0,0,0.0,0.0,,,0,0,项目口径排除

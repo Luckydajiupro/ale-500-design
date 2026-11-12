@@ -13,10 +13,10 @@ STATUS: v5
 | `00-README.md`（本文件） | 假设、决定、待拍板、冲突 | 项目负责人、评审人 |
 | `01-quota-allocation-500.md` | 500 条怎么分到 13 域、56 子域、四批 | 出题、排产 |
 | `02-expert-recruitment-plan.md` | 招多少人、从哪招、怎么筛、怎么签 | 招募、采购 |
-| `03-task-writing-spec.md` | 一条任务写成什么样才算合格 | 专家、审稿人 |
-| `04-reviewer-manual.md` | 评审看什么、怎么打分、怎么判返修 | 专家（副线评审） |
-| `05-expert-onboarding.md` | 专家进来第一周做什么 | 运营、领域负责人 |
-| `06-quality-gates.md` | 质量门在哪、什么情况拦下 | 运营、工程 |
+| `03-annotation-manual-general.md` | 一条任务写成什么样才算合格；十块、样例、退回原因、提交前检查 | 专家、审稿人 |
+| `04-annotation-manual-by-category.md` | 商业会计、神经、建筑怎么写；法律供应方包怎么检 | 专家、审稿人 |
+| `05-sample-annotation-walkthroughs.md` | 三份完整样例：会计、神经、建筑；法律附录 | 专家、试点评审 |
+| `06-expert-onboarding-and-quality.md` | 入驻、培训、认证、shadow、返修、争议、绩效 | 运营、领域负责人 |
 | `07-compressed-delivery-plan.md` | 4.5 个月怎么排、和平台/导入怎么并行 | 项目负责人、工程 |
 | `data/quota-allocation.csv` | 14 域配额（机器可读） | 脚本、校对 |
 | `data/quota-by-subdomain.csv` | 56 行二级配额（机器可读，本次未改） | 脚本、校对 |
@@ -129,8 +129,8 @@ STATUS: v5
 | C16 | 法律来源 | 旧稿法律由专家写 | 供应方导入 | 以 brief 为准 |
 | C17 | 法律 scope exception | `docs/` 要求所有任务走同一冻结流程 | 法律 42 条走 import 旁路 | 需在评审记录里写明例外 |
 | C18 | 旧漏斗 | 旧稿 1,160 触达 / 348 回复 / 62 签约 | 1,946 / 584 / 104 | 旧表作废 |
-| C19 | 56 行表的批次列 | `data/quota-by-subdomain.csv` 的 batch 列仍写 B1-B4 | 本次不改，语义按 W1-W4 读 | 下次同步时改列值 |
-| C20 | 56 行表与一级表的标记列 | 旧稿三处标记按“5 条试点、30/50 首批、跨类目首批”标：`pilot_tasks`（4 子域 5 条）、`first_30_50_subdomain_flag`（9 子域）、`first_30_50`（5 域 yes） | 所有标记列已一致：`pilot_tasks` = accounting / comp_neuro / energy_power 各 1、其余 0；`first_30_50_subdomain_flag` = accounting / enterprise_analytics / compliance / litigation / legal_research / economics 共 6 个子域；`first_30_50` = 商业、法律、社会 3 域 yes、其余 no。首批 30 = 商业 14 + 法律 8 + 社会 8 | 已被 01 第 7、8 节与 C20 的收口取代，无残余旧标记 |
+| C19 | 56 行表的批次列 | `data/quota-by-subdomain.csv` 的 batch 列已从 B1-B4 改为 W1-W4 | 与主设计批次名一致 | 已收口 |
+| C20 | 56 行表与一级表的标记列 | 旧稿按“5 条试点、30/50 首批、跨类目首批”标，已过时 | 当前标记：`pilot_tasks` = accounting / comp_neuro / energy_power 各 1、其余 0；`first_30_50_subdomain_flag` = accounting / enterprise_analytics / compliance / litigation / legal_research / economics 共 6 个子域；`first_30_50` = 商业、法律、社会 3 域 yes、其余 no。首批 30 = 商业 14 + 法律 8 + 社会 8 | 已收口 |
 
 ## 6. 数字自检
 

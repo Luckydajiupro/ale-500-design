@@ -51,7 +51,7 @@ v1 的 `official_count_domain` 用了阶段 0 的目录数（`domain_dir_count`�
 
 ## 3. 一级配额：14 个 domain_code，合计 500
 
-批次列用 W1-W4 表示四批生产窗口；`data/quota-allocation.csv` 的 `batches` 列仍写 B1-B4，语义一一对应（B1=W1，B2=W2，B3=W3，B4=W4），本文不改该 CSV 的列值。
+批次列用 W1-W4 表示四批生产窗口；`data/quota-allocation.csv` 与 `data/quota-by-subdomain.csv` 的批次列已统一为 W1-W4。
 
 | 一级类目 | 官方 | 子域/活跃 | 配额 | 占比 | 配额/官方 | 候选 | 配额/候选 | 批次 |
 |---|---:|---:|---:|---:|---:|---:|---:|---|
