@@ -2,8 +2,9 @@
 """Self test for phase2_gate.py using synthetic records in a temporary directory.
 
 Each case writes a record, runs the gate as a subprocess with the current
-interpreter, and asserts the exit code. The last case exercises --dir with one
-good and one bad record so the summary path is covered too.
+interpreter, and asserts the exit code. The last four cases exercise --dir: three
+good records pass, one bad record in three fails, and two or six records fail the
+three-to-five count guard.
 """
 
 import json
@@ -90,7 +91,26 @@ def main():
         batch.mkdir()
         write_record(batch / "01-good.json", good_record())
         write_record(batch / "02-bad.json", run_stage_not_run())
-        cases.append(("dir with one good and one bad record", "--dir", batch, 1))
+        write_record(batch / "03-good.json", good_record())
+        cases.append(("dir with three records, one bad", "--dir", batch, 1))
+
+        passing = root / "passing"
+        passing.mkdir()
+        for index in range(3):
+            write_record(passing / f"{index:02d}-good.json", good_record())
+        cases.append(("dir with three good records", "--dir", passing, 0))
+
+        too_few = root / "too-few"
+        too_few.mkdir()
+        for index in range(2):
+            write_record(too_few / f"{index:02d}-good.json", good_record())
+        cases.append(("dir with two records", "--dir", too_few, 1))
+
+        too_many = root / "too-many"
+        too_many.mkdir()
+        for index in range(6):
+            write_record(too_many / f"{index:02d}-good.json", good_record())
+        cases.append(("dir with six records", "--dir", too_many, 1))
 
         failed = 0
         for name, mode, path, expected in cases:

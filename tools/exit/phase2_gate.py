@@ -1,11 +1,16 @@
 #!/usr/bin/env python3
-"""Check the phase 2 exit condition: one record from snapshot to score.
+"""Check the phase 2 exit condition: records from snapshot to score.
 
 Phase 2 is technical feasibility, and its exit is a run record proving that one
 task went snapshot to convert to run to score. A record is a JSON object with a
 task id, the frozen ALE and Harbor commits, and the four stages, each carrying a
 status and evidence. The gate passes only when every stage says PASS with
 evidence and both commits are full lowercase hex hashes.
+
+Phase 2 replaces the earlier five-task pilot with three: one neuroscience task,
+one building task, one business task. The record directory therefore holds three
+to five records. One or two records cannot cover the three task families, and
+more than five means the directory has picked up work outside the pilot.
 """
 
 import json
@@ -15,6 +20,8 @@ from pathlib import Path
 
 STAGES = ("snapshot", "convert", "run", "score")
 COMMIT = re.compile(r"^[0-9a-f]{40}$")
+MIN_RECORDS = 3
+MAX_RECORDS = 5
 USAGE = "usage: phase2_gate.py --record PATH | --dir PATH"
 
 
@@ -131,6 +138,12 @@ def check_dir(path):
     )
     if not files:
         print("FAIL dir: no record files")
+        return 1
+    if len(files) < MIN_RECORDS:
+        print(f"FAIL dir: {len(files)} record files, need at least {MIN_RECORDS}")
+        return 1
+    if len(files) > MAX_RECORDS:
+        print(f"FAIL dir: {len(files)} record files, at most {MAX_RECORDS} accepted")
         return 1
 
     passed = 0
