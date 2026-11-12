@@ -1,11 +1,129 @@
-# 05 三份样例标注流程：商业会计、神经影像、建筑节能
+# 05 从官方完整包到三份角色样例
 
-> 本文回答：拿到一份公开或合成资料后，怎么找到可做的工作流、怎么拆步骤、怎么填十块、怎么写成功标准与证据、评审会问什么、哪里最容易失败。
-> 三份样例对应 3 条试点：商业会计 1、神经影像 1、建筑节能 1。法律 42 条走供应方 ALE-data 导入，不在专家手册里做全流程样例；供应方包检查见 `04` 第 1 节和本文附录。
+> 本文回答：官方 ALE 任务包长什么样，每个文件起什么作用，怎么把它映射到我们的十块任务源和工程 Harbor 包；然后再看商业会计、神经影像、建筑节能三份角色样例。
+> 三份角色样例对应 3 条试点。法律 42 条走供应方 ALE-data 导入，不在专家手册里做全流程样例；供应方包检查见 `04` 第 1 节和本文附录。
 > 全部使用公开或合成资料，不复制官方任务正文、隐藏评分规则或受限资产。
-> 读法：不要照抄样例内容；照抄结构。每份末尾的“最容易失败”比正文更值得先看。
+> 读法：先读 `02a-ale-context-and-data.md` 第 1 到 6 节，再读本文第 0 节，建立“完整包”的标准；最后看三份样例，学怎么在自己的领域里做到同样的结构。不要照抄样例内容，照抄结构。
+
+## 0. 先看官方完整包
+
+官方数据包里有一条完整任务，路径是 `inputs/frozen/03_ale-data/task-data-v1.1/legal/legal_dr_fees_01/base`。它 1.0M，包含 7 份 PDF、5 个案件、1 份金标、1 份验证记录。
+
+它不是为了让你照抄法律内容。它是让你看到一条 ALE 任务到底要交什么，以及输入、输出、答案、评分和验证怎么分开。
+
+### 0.1 包的完整结构
+
+```
+base/
+  input/
+    task_brief.md
+    output_contract.json
+    document_manifest.json
+    cases.json
+    documents/
+      bac_*.pdf                7 份
+    runtime_env/
+      pyproject.toml
+  reference/
+    answer_key.json
+    stage1_manifest.json
+  software/
+    README.txt
+    python3.12
+```
+
+### 0.2 每个文件做什么
+
+| 文件 | 作用 | 关键点 |
+|---|---|---|
+| `input/task_brief.md` | 任务说明 | 闭卷；只允许用 `base/input` 下的材料；5 个案件；交付一个 JSON；字段名和两位小数写死 |
+| `input/output_contract.json` | 输出合同 | 根对象、`cases` 数组、case_1 到 case_5、字段类型、示例形状 |
+| `input/document_manifest.json` | 材料清单 | 7 份 PDF 的 document_id、文件名、格式、相对路径、sha256 |
+| `input/cases.json` | 案件事实 | 5 个案件的金额和 special_condition；case_4 已达成和解 |
+| `input/documents/` | 源材料 | 7 份真实形态的 BAC PDF，不是整理后的表格 |
+| `input/runtime_env/pyproject.toml` | 运行环境 | 任务需要的 Python 依赖 |
+| `reference/answer_key.json` | 金标 | 5 案三字段答案；三项权重 7/7/6；容差 0.01 元 |
+| `reference/stage1_manifest.json` | 验证记录 | 正例 1.0、负例 0.0、满分 100；输入泄漏审查结论 |
+| `software/` | 运行软件 | 任务运行需要的解释器或工具说明 |
+
+### 0.3 任务说明写到什么程度
+
+`task_brief.md` 只写 Agent 需要知道的四件事。
+
+1. 场景和角色。你在什么机构，处理什么案件。
+2. 输入范围。只能读 `base/input` 下的材料，闭卷。
+3. 要做什么。对 5 个案件计算机构费和仲裁员报酬。
+4. 交付什么。写到 `output/arbitration_fee_results.json`，字段名和两位小数写死。
+
+它不写“先读哪份 PDF，再算什么”，也不给公式答案。步骤由 Agent 自己规划，判断由 Agent 自己做。这是 ALE 任务和“操作手册”的区别。
+
+### 0.4 输出合同写到什么程度
+
+`output_contract.json` 把交付物写死到机器能校验。
+
+- 根对象必须有 `cases`。
+- `cases` 是数组，长度 5。
+- 每个元素有 `case_id`、`institution_fee_rmb`、`arbitrator_remuneration_rmb`、`total_fee_rmb`。
+- 金额是数字，保留两位小数。
+- 示例形状给出一个合法对象。
+
+专家写任务源时，`deliverables` 块就要写到这个程度。不是“一份 JSON”，而是路径、字段、类型、精度、示例。
+
+### 0.5 金标和验证怎么分开
+
+`reference/answer_key.json` 写答案、权重和容差。它不在 `input/` 里，Agent 看不到。
+
+`reference/stage1_manifest.json` 写验证结果。正例得分 1.0，负例得分 0.0，满分 100。它还写输入泄漏审查结论。
+
+> input contains source PDFs, case facts, output schema, and runtime manifest only; no gold fee values or scoring code.
+
+这句话是标准动作。提交前要自己检查一遍。输入里不能有答案、评分代码、金标痕迹。
+
+### 0.6 这份包为什么是合格任务
+
+- 有真实材料。7 份 PDF，不是一段编造的案例。
+- 有真实摩擦。案件事实、金额、和解条件分散在多份文件里，需要交叉核对。
+- 有多步判断。先读任务，再读案件，再找费率规则，再算机构费和报酬，再检查总额。
+- 有精确交付物。一个 JSON，5 个案件，4 个字段，两位小数。
+- 有可复现判定。答案、权重、容差、正负 fixture 都写死。
+- 有泄漏审查。输入和答案分开。
+
+### 0.7 映射到我们的十块任务源
+
+| 官方包 | 作用 | 我们的十块 | 工程 Harbor 包 |
+|---|---|---|---|
+| `task_brief.md` | 指令和约束 | identity + scenario | `instruction.md` |
+| `documents/` + `document_manifest.json` + `cases.json` | 输入和事实 | materials | `input/` 或 environment 挂载 |
+| `output_contract.json` | 交付物合同 | deliverables | `instruction.md` 的 artifacts 段 + 验证器 |
+| `answer_key.json` | 金标、权重、容差 | success_criteria + review | `solution/` + `tests/` |
+| `runtime_env/` + `software/` | 环境 | environment | `environment/` |
+| `stage1_manifest.json` | 验证与泄漏审查 | review + provenance | `tests/` + `metadata` |
+
+### 0.8 映射到 Harbor 包
+
+工程最终会把你的任务源转成 Harbor 1.4 + ALE 扩展格式。
+
+| Harbor 文件 | 从哪来 | 谁写 |
+|---|---|---|
+| `task.toml` | 环境、超时、artifacts、验证器配置 | 工程 |
+| `instruction.md` | 你的 scenario + 交付物要求 | 工程基于你的任务源定稿 |
+| `input/` | 你的 materials | 工程打包 |
+| `environment/` | 你的 environment | 工程 |
+| `tests/` | 你的 success_criteria | 工程写验证器 |
+| `solution/` | 你的金标答案 | 工程封装 |
+
+专家不写这些文件。专家要把十块写到工程能直接转的程度。
+
+### 0.9 不要照抄什么
+
+- 不要照抄法律内容、案件金额、费率规则。
+- 不要照抄官方任务的正文、答案或评分代码。
+- 不要以为每条任务都必须长成法律任务。结构和分离方式要学，领域内容要是你自己的。
+- 不要用简化的小数据替代真实材料。三份角色样例是应用练习，不是难度上限。
 
 ## 样例一：商业会计——从两家年报到可复算的收入与应收勾稽
+
+> 这是一份应用练习。它展示怎么把第 0 节的结构落到会计领域。正式生产要按 02a 的难度门槛，把材料、步骤、判断点和交付物扩到 50+ 步、10–20 份材料的规模。
 
 ### 1. 起点资料
 
@@ -126,6 +244,8 @@
 6. memo 写成投资建议，超出任务边界。
 
 ## 样例二：神经影像——从合成 DICOM 到可验证的 BIDS 目录
+
+> 这是一份应用练习。正式生产按 02a 的难度门槛，把材料、步骤、判断点和交付物扩到 50+ 步、10–20 份材料的规模。
 
 ### 1. 起点资料
 
@@ -253,6 +373,8 @@
 6. 把“validator 通过”当成“数据正确”。
 
 ## 样例三：建筑节能——从示例模型到可重算的节能量
+
+> 这是一份应用练习。正式生产按 02a 的难度门槛，把材料、步骤、判断点和交付物扩到 50+ 步、10–20 份材料的规模。
 
 ### 1. 起点资料
 
@@ -386,7 +508,7 @@
 | 证据 | 页码 + 公式 + 差异表 | validator 日志 + QC 图 | 模型文件 + 可重算 CSV |
 | 最大失败 | 把增长当质量 | 只改文件名 | 边界不一致 |
 
-三份都遵守同一条：**任务不是“做一个专业动作”，而是“在约束下做出一套别人能检查的交付物”**。
+三份都遵守同一条：**任务不是“做一个专业动作”，而是“在约束下做出一套别人能检查的交付物”**。三份都是应用练习，不是难度上限。正式生产按 02a 的 50+ 步、10–20 份材料、模型试做得分 ≤40 执行。
 
 ## 附录：法律供应方包检查（不占试点位）
 
