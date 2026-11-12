@@ -101,7 +101,7 @@ health_medicine、life_sciences、physical_sciences、agriculture_env。
 
 business_finance、visual_media，另有 engineering 的 5 条 Windows。
 
-- business_finance 有 3 条 Windows staged-local（Metabase、Odoo 加 psql、taxform）；首批 2 条会计与企业分析任务走 Linux，不受影响。
+- business_finance 有 3 条 Windows staged-local（Metabase、Odoo 加 psql、taxform）；首批 1 条会计核对任务走 Linux，不受影响。
 - visual_media 有 9 条 Windows，占该域 11 条的大头。
 - 平台动作：`environment.os=windows` 正常保存，风险层自动升 medium；交接包标注 `windows_required`。任务能不能跑由工程侧决定，平台不承诺。
 
@@ -201,9 +201,9 @@ business_finance、visual_media，另有 engineering 的 5 条 Windows。
 
 ### 首批三个类目
 
-商业分析、神经影像、建筑节能（属 engineering 的 `energy_power` 子域）。选择理由在专家 v5 的试点安排：三名专家各带 1 个方向，商业与神经各交 2 条。
+商业分析、神经影像、建筑节能（属 engineering 的 `energy_power` 子域）。选择理由在专家 v5 的试点安排：三名专家各带 1 个方向，各交 1 条。
 
-首批覆盖 3 个 domain_code、4 个子域、5 条任务。两条商业任务分别测会计核对与企业分析，两条神经影像任务分别测 DICOM 到 BIDS 的转换和公开 BIDS 的预处理。这只占 14 个类目的 21%，不能当成覆盖结论。法律 42 条由供应方包导入，只做路径 B 回归，不占全流程试点位。
+首批覆盖 3 个 domain_code、3 个子域、3 条任务。商业任务测会计核对，神经影像任务测 DICOM 到 BIDS 的转换，建筑任务测能耗模型校核。这只占 14 个类目的 21%，不能当成覆盖结论。法律 42 条由供应方包导入，只做路径 B 回归，不占全流程试点位。
 
 ### 平台能力覆盖的时间线
 

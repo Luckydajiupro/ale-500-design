@@ -12,7 +12,9 @@
 | 平台不碰运行 | 环境只描述意图，验证在工程侧 | 平台不能承诺任务可跑 |
 | 单机优先 | 一台 Linux 加对象存储，Docker Compose 部署 | 横向扩展要改架构 |
 
-规模上限按 500 条任务、40 个账号、2 TiB 资产设计。超过这个量再谈集群。
+规模上限按 500 条任务、62 个账号、2 TiB 资产设计。超过这个量再谈集群。
+
+62 个账号的算法：峰值 44 名核心加 8 名后备，再加 10 个审核、工程、负责人、管理员席位。500 条任务分四批，每批 22 名核心加 4 名后备，相邻两批重叠 2 周，所以在册人数到 52 就够，不必按 104 份合同算人头。
 
 ## 2. 架构
 
@@ -27,14 +29,14 @@ Postgres 16         对象存储（S3 兼容）
 元数据、状态、审计    资料原件、快照 zip
       |
    后台任务（同机 cron worker）
-   自动检查、邮件、备份、快照构建
+   自动检查、派单与 SLA 扫描、邮件、备份、快照构建
 ```
 
 ### 技术栈
 
 | 层 | 选择 | 理由 |
 | --- | --- | --- |
-| Web | FastAPI + Jinja2 SSR | 40 人内部系统，SSR 足够，前端复杂度低 |
+| Web | FastAPI + Jinja2 SSR | 60 人内部系统，SSR 足够，前端复杂度低 |
 | 数据库 | Postgres 16，JSONB 存任务源 | 十块结构半结构化，JSONB 加快照哈希稳定 |
 | 对象存储 | S3 兼容（MinIO 或云对象存储） | 大文件不进数据库，便于异地备份 |
 | 队列 | Postgres 表加 cron worker | 不引入 Redis，少一个组件 |
@@ -44,7 +46,7 @@ Postgres 16         对象存储（S3 兼容）
 
 ### 为什么不上集群
 
-500 条任务、40 个账号、峰值 10 个并发页面请求。单台 8 vCPU、32 GiB 的机器足够。集群会带来服务发现、分布式事务、日志聚合三套运维负担，与两周 MVP 冲突。
+500 条任务、62 个账号、峰值 10 个并发页面请求。页面请求峰值不随账号数线性涨，评审待办是低频操作，按 10 路算有余量。单台 8 vCPU、32 GiB 的机器足够。集群会带来服务发现、分布式事务、日志聚合三套运维负担，与两周 MVP 冲突。
 
 ## 3. 模块
 
@@ -53,7 +55,7 @@ Postgres 16         对象存储（S3 兼容）
 | M1 认证与权限 | 登录、角色、任务级授权、会话 | 邮箱链接，角色表，中间件校验 |
 | M2 任务源编辑器 | 十块表单、校验、版本、提交门禁 | 服务端渲染表单，JSONB 存版本 |
 | M3 资料上传 | 分片上传、哈希、许可、扫描 | 直传对象存储，服务端签发临时凭证 |
-| M4 评审队列 | 检查结果、风险路由、意见、争议 | 待办列表加结构化表单 |
+| M4 评审队列 | 检查结果、风险路由、自动派单、SLA、意见、争议 | 待办列表加结构化表单，花名册加按规则排序的派单与超时扫描 |
 | M5 冻结与导出 | 快照、校验、交接包、回执 | 后台任务构建 zip，清单含哈希 |
 | M6 审计与报表 | 审计、看板、导出 | 审计表加只读 SQL 视图 |
 | M7 Agent 接口 | 建议、检查、摘要 | 独立 token，只写建议表 |
@@ -74,9 +76,10 @@ Postgres 16         对象存储（S3 兼容）
 | `task_versions` | id, task_id, version, source, source_hash, created_by, created_at, frozen | 唯一 (task_id, version)，frozen 后不可写 |
 | `materials` | id, task_id, version, material_id, kind, path, sha256, bytes, license, pii_level, scan_status | 唯一 (task_id, material_id, version) |
 | `checks` | id, task_id, version, check_code, status, evidence_path, duration_ms, created_at | 唯一 (task_id, version, check_code, created_at) |
-| `reviews` | id, task_id, version, reviewer_id, review_role, verdict, submitted_at, due_at | verdict 取 pass, return, escalate |
+| `reviews` | id, task_id, version, reviewer_id, review_role, verdict, submitted_at, due_at, sample_of, hours_logged | verdict 取 pass, return, escalate；`sample_of` 指向被复核的评审 |
 | `review_items` | id, review_id, block, field, severity, evidence_level, comment, resolved | severity 取 blocking, non_blocking |
-| `assignments` | id, task_id, reviewer_id, review_role, due_at, status | 唯一 (task_id, reviewer_id, review_role) |
+| `assignments` | id, task_id, version, reviewer_id, review_role, slot, assigned_at, assigned_by, due_at, status, attempt, algorithm_version, score, candidate_pool, excluded, reassigned_from, remind_count, completed_at | 唯一 (task_id, version, reviewer_id, review_role, attempt)，`attempt` 是这条任务这一版第几次派单，改派时新行加 1；status 取 offered, accepted, submitted, expired, reassigned, cancelled |
+| `reviewers` | user_id, domains, subdomains, tier, weekly_task_cap, weekly_hour_cap, status, error_rate, sample_count, last_assigned_at, paused_until, removed_reason, removed_at | user_id 外键到 users；tier 取 senior, standard；status 取 active, paused, removed |
 | `snapshots` | id, task_id, version, manifest, zip_sha256, bytes, created_by, created_at | 唯一 (task_id, version) |
 | `handoffs` | id, snapshot_id, target_format, status, receipt, gaps, updated_at | status 取 pending, accepted, rejected |
 | `batches` | id, name, due_date, state, released_by, released_at | state 取 open, released, closed |
@@ -91,10 +94,14 @@ Postgres 16         对象存储（S3 兼容）
 
 - `tasks(state, domain_code)` 支持看板。
 - `assignments(reviewer_id, status, due_at)` 支持评审待办。
+- `assignments(status, due_at)` 支持 SLA 扫描与超时改派。
+- `reviewers(status, tier)` 支持派单候选过滤。
 - `audit_events(object_type, object_id, ts)` 支持时间线还原。
 - `materials(task_id, sha256)` 支持引用完整性检查。
 - `import_packages(status, received_at)` 支持导入队列。
 - `conversions(task_id, created_at)` 支持版本追溯。
+
+两个视图不落表，避免同一个数字两处存。`reviewer_load_v` 汇总本周已派条数、已记工时与未完成槽位；`reviewer_quality_v` 汇总最近 20 次复核的不一致率，回填 `reviewers.error_rate` 与 `sample_count`。
 
 ### 任务标识
 
@@ -111,8 +118,8 @@ Postgres 16         对象存储（S3 兼容）
 | --- | --- | --- |
 | `draft` | 专家编辑中 | 作者 |
 | `submitted` | 已提交，等待自动检查 | 作者 |
-| `auto_checked` | 自动检查完成，等待路由 | 系统 |
-| `in_review` | 评审中 | 系统，或管理员手工指派 |
+| `auto_checked` | 自动检查完成，等待派单 | 系统 |
+| `in_review` | 评审中，槽位已自动派单 | 系统；无候选或改派失败时由管理员手工指派 |
 | `approved` | 评审通过，等待批次放行 | 系统 |
 | `frozen` | 已冻结，快照不可变 | 负责人或质量审核人 |
 | `handed_off` | 工程已接收 | 工程回执 |
@@ -127,7 +134,7 @@ Postgres 16         对象存储（S3 兼容）
 | --- | --- | --- | --- | --- |
 | draft | submitted | 作者 | 十块齐全，必填项通过，资料许可齐全 | 生成版本，跑九项检查 |
 | submitted | auto_checked | 系统 | 检查任务完成 | 写检查结果，算风险层 |
-| auto_checked | in_review | 系统 | 无阻断项 | 按风险层建评审槽位 |
+| auto_checked | in_review | 系统 | 无阻断项 | 按风险层建评审槽位，同一事务内派单并在第 3、第 5 个工作日触发提醒与改派 |
 | auto_checked | returned | 系统 | 存在阻断项 | 退回理由指向字段 |
 | in_review | approved | 系统 | 所需评审全部通过，无未决阻断项 | 写批准时间 |
 | in_review | returned | 评审人 | 至少 1 条阻断项 | 进入下一轮 |
@@ -159,7 +166,7 @@ Postgres 16         对象存储（S3 兼容）
 | 改类目配置 | 否 | 否 | 否 | 否 | 是 | 是 |
 | 看审计 | 自己的任务 | 自己的评审 | 全部 | 相关任务 | 全部 | 全部 |
 
-规则：一个人不能在同一任务上既是作者又是评审人。同机构评审人默认回避，负责人可书面豁免。
+规则：一个人不能在同一任务上既是作者又是评审人。同机构评审人默认回避，负责人可书面豁免。评审人只能看被派给自己的任务，看不到同批其他人的结论。同一对作者与评审人不在相邻两次派单中重复配对。豁免、改派、移出都要写理由，理由进审计。
 
 ## 7. 任务源十块
 
@@ -343,7 +350,7 @@ Postgres 16         对象存储（S3 兼容）
 ### 新类目上线步骤
 
 1. 管理员新增 `categories` 行与 `subdomains` 行。
-2. 指定评审池与备用评审人。
+2. 指定可评这个子域的花名册人员、后备人选与 senior 人选。
 3. 设定资产上限与风险规则。
 4. 用一条样例任务走完 `draft` 到 `frozen`。
 5. 记录配置变更审计。
@@ -354,7 +361,23 @@ Postgres 16         对象存储（S3 兼容）
 
 500 条任务跨 14 个 domain_code。每类一套状态机意味着 14 套测试、14 套权限、14 套导出。改动一次要回归 14 次。固定状态机加配置，代价是个别类目要接受统一流程。这个代价可以接受。
 
-## 9. 评审路由
+## 9. 评审派单
+
+评审不另招一批人。每批 22 名核心加 4 名后备，同一批人既生产也评审，平台按花名册派单。工程复核与执业签字不进这个池，仍由工程与合作方外部做。
+
+派单跑在现有评审队列上，不新增独立模块。新增的只有一张评审人花名册、`assignments` 的派单字段，以及一个按 SLA 扫描的后台任务。`assignments` 就是派单账本，一行一个槽位，改派与超时都留旧行。
+
+### 评审人花名册
+
+| 列 | 用途 |
+| --- | --- |
+| `user_id` | 主键，外键到 `users` |
+| `domains`, `subdomains` | 可评的域与子域，子域精确匹配优先 |
+| `tier` | `senior` 或 `standard`，高风险与无同子域候选时用 `senior` |
+| `weekly_task_cap`, `weekly_hour_cap` | 每周 5 条、4 小时，任一先到即停派 |
+| `status` | `active`、`paused`、`removed` |
+| `error_rate`, `sample_count` | 最近 20 次复核的不一致率，由视图回填 |
+| `last_assigned_at`, `paused_until` | 负载与暂停 |
 
 ### 风险层判定
 
@@ -367,19 +390,51 @@ Postgres 16         对象存储（S3 兼容）
 
 抽样率在试点期设为 100%。docs/03 尚未冻结抽样率，平台把抽样率做成配置项，默认 30%，试点期手动改 100%。这不违反"试点前不冻结审核比例"。
 
-### 分配规则
+### 派单顺序
 
-1. 按 `subdomain_code` 找评审池。
-2. 排除作者、同机构、近 90 天有合作记录的人。
-3. 按当前负载取最闲的 1 到 2 人。
-4. 无可用评审人时，升级给质量审核人手工指派。
+一次派单跑五步，顺序固定，每步只缩小候选集，不做交叉打分。同一候选集重放必须得到同一结果。
 
-### 时限
+1. 资格过滤。保留 `status='active'`、`paused_until` 已过、本周剩余额度大于零、可评范围覆盖任务子域的候选。只覆盖到域级的候选留下，做下一轮的降级人选。
+2. 冲突排除。排除作者本人、同机构人员、90 天内共同署名或同项目的人、本任务当前版本已经评过的人。评审人或作者可主动申报其他利益冲突，申报即回避，理由入库，主管可查。同一对（作者与评审人）在最近一次已完成的派单中已经配对，本次不再配对；任务退回后的下一轮由原评审人复评，算同一次配对，不重复计入。
+3. 同子域优先。子域精确匹配的候选排在域级匹配之前。没有子域匹配时，只取 `tier='senior'` 且该域已评 5 条以上的候选，否则不进第 4 步。
+4. 负载均衡。按本周已派条数、本周已记工时、`last_assigned_at`、`user_id` 哈希四个键依次升序。最后一个键保证重放稳定，不靠数据库返回顺序。
+5. 名额与升级。high 取前 2 名，medium 与 low 取第 1 名，low 另按抽样率决定是否加 1 名抽检。候选为空时槽位标 `no_candidate`，升级质量审核人手工指派，原因入库。
 
-- 领域评审 3 个工作日。
-- 质量审核 2 个工作日。
-- 工程回执 5 个工作日。
-- 超时进入负责人看板的红色列表。
+工程复核槽位不进这个算法，由工程按自己的排班接。执业签字由合作方外部签，平台只记签署状态。
+
+### 时限与改派
+
+| 时点 | 动作 |
+| --- | --- |
+| 派单时 | `due_at` 等于派单时间加 5 个工作日，工作日历取配置，含节假日表 |
+| 第 3 个工作日 09:00 | 邮件加站内提醒，`remind_count` 加 1，不扣额度 |
+| 第 5 个工作日 18:00 | 未提交则槽位置 `expired`，把原评审人排除后重跑一次派单，取次优候选自动改派，任务优先级升一档 |
+| 改派后 | 新槽位重新计 5 个工作日。原行不改写，新行的 `reassigned_from` 指向原行 |
+| 超时累计 | 同一人一个自然月 2 次超时进 `paused` 7 天，3 次转质量审核复核 |
+
+质量审核 2 个工作日、工程回执 5 个工作日不变。SLA 只约束领域评审这一环，超时不清零任务已积累的轮次。
+
+### 校准与双评
+
+- 每批第 1 周用 3 条已冻结任务做盲评校准。评审人看不到原结论，交卷后系统比对，偏差项由领域负责人讲评，讲评记录进批次档案。
+- 每批前 10 条由领域负责人逐条复核，复核结论写进 `reviews.sample_of`，与本人结论并列保存。
+- 之后按任务 id 哈希抽 10% 双评。抽样率是配置项 `sample_rate`，默认 0.10。两名评审人互相看不到对方的结论与意见，双方提交后才解锁。
+- 双评不一致时，差异项自动生成裁决待办，2 个工作日内由质量审核裁决，裁决理由必须引用证据。
+- 抽样按任务 id 哈希而不是按时间窗，同一批任务重放时抽到同一批样本。
+
+### 移出与复入
+
+错误率按最近 20 次复核算，漏项、错判、结论反转都计入不一致。不一致率达到 20% 时系统生成移出建议，质量审核确认后 `status='removed'`，原因与证据入库。移出即时生效，该人名下未完成槽位当天改派。
+
+移出 90 天后可申请复入，须通过一次 3 条盲评校准，校准由领域负责人主持。移出不改历史评审记录，只影响后续派单。
+
+### 派单留痕
+
+派单、提醒、超时、改派、抽样、复核、裁决、移出全部写 `audit_events`。一条派单审计含候选池、每名候选的排除原因、四个排序键的取值、算法版本、最终人选。
+
+算法版本随代码入库，排序键或阈值一改就升版本。旧派单按当时的版本解释，不按新规则回溯。
+
+任取一条任务，能还原谁在第几天被派、为什么是他、提醒过几次、有没有改派。
 
 ## 10. 快照与导出
 
@@ -439,7 +494,9 @@ snapshot.zip
 - 审计只插入，不更新，不删除。保留期暂定 3 年，待负责人确认。
 - 导出提供 CSV 与 JSON 两种格式，字段与页面一致。
 
-审计覆盖的最小集合：登录、失败登录、角色变更、任务创建、字段修改、资料上传与删除、提交、评审、裁决、冻结、导出、回执、配置变更。
+审计覆盖的最小集合：登录、失败登录、角色变更、任务创建、字段修改、资料上传与删除、提交、评审、裁决、冻结、导出、回执、配置变更、派单、改派、提醒、移出与复入。
+
+派单类事件额外记候选池、每名候选的排除原因、四个排序键取值与算法版本，目的是事后能解释某条任务为什么派给了这个人。
 
 ## 12. Agent 工具边界
 
@@ -649,7 +706,7 @@ fixture 的七个 PDF 是占位字节，文件名保持中文原名；真实包�
 ## 15. 第一版不做的
 
 - 不做富文本协同编辑。
-- 不做自动评审分配算法，管理员手工指派。
+- 不做基于模型打分的评审分配。派单只用可解释、可重放的规则排序，同输入必须同输出。
 - 不做多语言界面。
 - 不做移动端适配。
 - 不做单点登录，邮箱链接够用。
