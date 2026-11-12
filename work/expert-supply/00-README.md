@@ -13,13 +13,13 @@ STATUS: v6
 | `00-README.md`（本文件） | 假设、决定、待拍板、冲突 | 项目负责人、评审人 |
 | `01-quota-allocation-500.md` | 500 条怎么分到 13 域、56 子域、四批 | 出题、排产 |
 | `02-expert-recruitment-plan.md` | 招多少人、从哪招、怎么筛、怎么签 | 招募、采购 |
-| `02a-ale-context-and-data.md` | ALE 是什么、任务怎么跑、专家交什么、数据与难度标准、AI 边界、官方包导读 | 专家、审稿人、招募 |
+| `02a-ale-context-and-data.md` | ALE 是什么、任务怎么跑、专家交什么、官方数据基线、难度标准、AI 边界、官方包导读 | 专家、审稿人、招募 |
 | `03-annotation-manual-general.md` | 十块字段怎么写；难度校准、数据规则、退回原因、提交前检查 | 专家、审稿人 |
 | `04-annotation-manual-by-category.md` | 商业会计、神经、建筑怎么写；法律供应方包怎么检 | 专家、审稿人 |
 | `05-sample-annotation-walkthroughs.md` | 官方完整包逐文件导读；唯一完整样例；三份迁移练习：会计、神经、建筑；法律附录 | 专家、试点评审 |
 | `06-expert-onboarding-and-quality.md` | 入驻、培训、认证、shadow、返修、争议、绩效 | 运营、领域负责人 |
 | `07-compressed-delivery-plan.md` | 4.5 个月怎么排、和平台/导入怎么并行 | 项目负责人、工程 |
-| `08-reference-alignment-notes.md` | 参考标注文档对照、采用与未采用的标准、待确认项 | 项目负责人、领域负责人 |
+| `08-reference-alignment-notes.md` | 标准来源、官方数据包实测、采用与未采用的外部标准、待确认项 | 项目负责人、领域负责人 |
 | `data/quota-allocation.csv` | 14 域配额（机器可读） | 脚本、校对 |
 | `data/quota-by-subdomain.csv` | 56 行二级配额（机器可读，本次未改） | 脚本、校对 |
 | `data/quota-by-subdomain.md` | 56 行二级配额（人读版，本次未改） | 校对 |
