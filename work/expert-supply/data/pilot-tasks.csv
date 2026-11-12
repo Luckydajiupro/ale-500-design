@@ -1,6 +1,4 @@
 pilot_id,domain_code,subdomain_code,workflow_family_id,materials,task_shape,os,gpu,network,expert_profile
-P1-01,psychology_neuro,comp_neuro,WF-NEUROIMAGING,合成 DICOM；DICOM→BIDS 转换与 QC,见 05 走查,Linux,no,offline (public data pre-staged),神经影像数据工程，3 年以上
-P1-02,psychology_neuro,comp_neuro,WF-NEUROIMAGING,OpenNeuro 公开 BIDS（CC0）；合成事件表,见 05 走查,Linux,no,offline (public data pre-staged),神经影像数据工程，3 年以上
-P1-03,engineering,energy_power,WF-BUILDING-ENERGY,EnergyPlus 官方示例 IDF + 公开 TMY3 + 合成账单；校准,见 05 走查,Linux,no,offline (public data pre-staged),建筑能耗模拟，5 年以上，CMVP/BEMP 优先
-P1-04,business_finance,accounting,WF-FIN-REPORT,公开上市公司年报（10-K/年度报告）+ 合成总账；授权/脱敏说明,见 04 第 4 节,Linux,no,offline (public data pre-staged),会计/审计/财务分析，3 年以上；CPA 优先
-P1-05,business_finance,enterprise_analytics,WF-PREDICTIVE,公开 10-K/行业数据 + 合成销售明细；授权/脱敏说明,见 04 第 4 节,Linux,no,offline (public data pre-staged),企业分析/数据科学，3 年以上
+P1-01,business_finance,accounting,WF-FIN-REPORT,公开上市公司年报（10-K/年度报告）+ 合成总账；授权/脱敏说明,勾稽表 + 异常说明,Linux,no,offline (public data pre-staged),会计/审计/财务分析，3 年以上；CPA 优先
+P1-02,engineering,energy_power,WF-BUILDING-ENERGY,EnergyPlus 官方示例 IDF + 公开 TMY3 + 合成账单；基线校准,能耗对标 + 节能量表,Linux,no,offline (public data pre-staged),建筑能耗模拟，5 年以上，CMVP/BEMP 优先；试点不需执业签字
+P1-03,psychology_neuro,comp_neuro,WF-NEUROIMAGING,合成 DICOM；DICOM→BIDS 转换与 QC,转换报告 + QC + 异常清单,Linux,no,offline (public data pre-staged),神经影像数据工程，3 年以上

@@ -1,42 +1,68 @@
 param_id,param,value,unit,formula_or_basis,source,sensitivity
-P01,tasks_total,500,条,项目交付口径；computing_math=0，官方 122 条不计入,m00001；docs/01-charter.md,固定
-P02,expert_hours_per_task_weighted,16.9,小时/条,按域配额加权：Σ(quota×domain_hours)/500,本文件 D01–D13,12–28 小时/条
-P03,expert_hours_total,8452,小时,"按域配额加权求和：Σ(quota×domain_hours)=8,452",P01×P02,"6,000–14,000"
+P01,tasks_total,500,条,项目交付口径；computing_math=0；官方 122 条不计入,00-README D17,固定
+P02,expert_hours_per_task_weighted,16.9,小时/条,按域配额加权：Σ(quota×domain_hours)/500,D01-D14,12-28 小时/条
+P03,expert_hours_total,8452,小时,"Σ(quota×domain_hours)=8,452",P01×P02,"6,000-14,000"
+P03b,expert_writing_tasks,458,条,500 − 法律 42（供应方导入）,P01、D05,—
+P03c,expert_writing_hours,7742,小时,"458 × 16.904 = 7,742",P03b×P02,"5,496-12,824"
 P04,fte_month_hours,160,小时/人月,1 FTE = 40 小时/周 × 4 周,项目假设,—
-P05,expert_fte_months,52.8,人月,"8,452 ÷ 160",P03÷P04,37.5–87.5
-D01,hours_per_task_business_finance,14,小时/条,business_finance 配额 50 条；专业复杂度与资料准备假设,配额表 business_finance,±40%
-D02,hours_per_task_education_info,16,小时/条,education_info 配额 32 条；专业复杂度与资料准备假设,配额表 education_info,±40%
-D03,hours_per_task_engineering,22,小时/条,engineering 配额 50 条；专业复杂度与资料准备假设,配额表 engineering,±40%
-D04,hours_per_task_health_medicine,20,小时/条,health_medicine 配额 60 条；专业复杂度与资料准备假设,配额表 health_medicine,±40%
-D05,hours_per_task_legal,12,小时/条,legal 配额 42 条（供应方）；专业复杂度与资料准备假设,配额表 legal,±40%
-D06,hours_per_task_life_sciences,18,小时/条,life_sciences 配额 48 条；专业复杂度与资料准备假设,配额表 life_sciences,±40%
-D07,hours_per_task_other,14,小时/条,other 配额 28 条；专业复杂度与资料准备假设,配额表 other,±40%
-D08,hours_per_task_physical_sciences,18,小时/条,physical_sciences 配额 46 条；专业复杂度与资料准备假设,配额表 physical_sciences,±40%
-D09,hours_per_task_psychology_neuro,16,小时/条,psychology_neuro 配额 34 条；专业复杂度与资料准备假设,配额表 psychology_neuro,±40%
-D10,hours_per_task_social_sciences,14,小时/条,social_sciences 配额 28 条；专业复杂度与资料准备假设,配额表 social_sciences,±40%
-D11,hours_per_task_transport_safety,18,小时/条,transport_safety 配额 30 条；专业复杂度与资料准备假设,配额表 transport_safety,±40%
-D12,hours_per_task_visual_media,16,小时/条,visual_media 配额 36 条；专业复杂度与资料准备假设,配额表 visual_media,±40%
-D13,hours_per_task_agriculture_env,18,小时/条,agriculture_env 配额 16 条；专业复杂度与资料准备假设,配额表 agriculture_env,±40%
-D14,hours_per_task_computing_math,0,小时/条,computing_math 配额 0 条；专业复杂度与资料准备假设,配额表 computing_math,±40%
-P06,expert_hours_per_month,40,小时/人月,10 小时/周 × 4 周；对应 0.25 FTE,v0 招募计划 8–16 小时/周，取中位偏低,24–64
-P07,tasks_per_expert_month,2.37,条/人月,40 ÷ 16.90,P06÷P02,1.4–3.3
-P08,expert_calendar_months,211.3,人月（日历）,"8,452 ÷ 40",P03÷P06,—
-P09,concurrent_experts,26,人,4 个 13 人 cohort，2 个 cohort 并行,批次模型 B1–B4,20–30
-P10,production_months_gross,8.1,月,"8,452 ÷ (26×40)",P03÷(P09×P06),6.2–10.5
-P11,ramp_factor,1.15,系数,首月 1.2 条、稳态 2.37 条；含交接与返修,假设,1.10–1.25
-P12,production_months_calendar,9.3,月,8.1 × 1.15,P10×P11,7.1–13.1
-P13,cohort_size,13,人/批,125 条 ÷ (4 月 × 2.37 条/人月),批次规模,11–15
-P14,cohorts,4,批,B1 120 / B2 128 / B3 126 / B4 126,配额表 batch 列,—
-P15,experts_signed,52,人,4 × 13；按 4 个月 engagement 计，不是 4 个年度 FTE,P13×P14,—
-P16,attrition_rate,0.15,比例,未完成首个任务、退出、失联的合并假设,假设,0.10–0.25
-P17,recruit_target,62,人,ceil(52 ÷ 0.85),P15÷(1−P16),58–70
-P18,review_hours_per_task,3,小时/条,领域评审 2 + 质量审核 1；不计入专家产能,docs/03 风险分层,2–5
-P19,engineering_hours_per_task,4,小时/条,环境构建、转换、validator、smoke；工程侧,docs/02 阶段 2,3–8
-S120,sensitivity_hours,12,小时/条,若均值=12：总 6000 小时；37.5 人月；6.6 日历月,敏感性,
-S169,sensitivity_hours,16.9,小时/条,"若均值=16.9：总 8,452 小时；52.8 人月；9.3 日历月",敏感性,
-S220,sensitivity_hours,22,小时/条,若均值=22：总 11000 小时；68.8 人月；12.2 日历月,敏感性,
-S280,sensitivity_hours,28,小时/条,若均值=28：总 14000 小时；87.5 人月；15.5 日历月,敏感性,
-A06,sensitivity_availability,6,小时/周,若每周 6 小时：1.42 条/人月；500 条需 352 专家月；26 人需 13.5 月,敏感性,
-A10,sensitivity_availability,10,小时/周,若每周 10 小时：2.37 条/人月；500 条需 211 专家月；26 人需 8.1 月,敏感性,
-A15,sensitivity_availability,15,小时/周,若每周 15 小时：3.55 条/人月；500 条需 141 专家月；26 人需 5.4 月,敏感性,
-A20,sensitivity_availability,20,小时/周,若每周 20 小时：4.73 条/人月；500 条需 106 专家月；26 人需 4.1 月,敏感性,
+P05,expert_fte_months,52.8,人月,"8,452 ÷ 160",P03÷P04,37.5-87.5
+D01,hours_per_task_business_finance,14,小时/条,配额 50 条；专业复杂度与资料准备假设,配额表 business_finance,±40%
+D02,hours_per_task_education_info,16,小时/条,配额 32 条,配额表 education_info,±40%
+D03,hours_per_task_engineering,22,小时/条,配额 50 条,配额表 engineering,±40%
+D04,hours_per_task_health_medicine,20,小时/条,配额 60 条,配额表 health_medicine,±40%
+D05,hours_per_task_legal,12,小时/条,配额 42 条，供应方导入，不占专家写作,配额表 legal,±40%
+D06,hours_per_task_life_sciences,18,小时/条,配额 48 条,配额表 life_sciences,±40%
+D07,hours_per_task_other,14,小时/条,配额 28 条,配额表 other,±40%
+D08,hours_per_task_physical_sciences,18,小时/条,配额 46 条,配额表 physical_sciences,±40%
+D09,hours_per_task_psychology_neuro,16,小时/条,配额 34 条,配额表 psychology_neuro,±40%
+D10,hours_per_task_social_sciences,14,小时/条,配额 28 条,配额表 social_sciences,±40%
+D11,hours_per_task_transport_safety,18,小时/条,配额 30 条,配额表 transport_safety,±40%
+D12,hours_per_task_visual_media,16,小时/条,配额 36 条,配额表 visual_media,±40%
+D13,hours_per_task_agriculture_env,18,小时/条,配额 16 条,配额表 agriculture_env,±40%
+D14,hours_per_task_computing_math,0,小时/条,配额 0 条,配额表 computing_math,±40%
+P06,expert_hours_per_week,20,小时/周,合同口径；试点期 10-12,00-README H2,18-24
+P07,expert_hours_per_month,80,小时/人月,20 小时/周 × 4 周,P06×4,72-96
+P08,tasks_per_expert_month,4.73,条/人月,80 ÷ 16.904,P07÷P02,4.0-5.3
+P09,core_per_batch,22,人/批,单批需求 ÷ (20 h × 6.5 周),P10÷P11,20-24
+P10,capacity_per_batch_hours,2860,小时/批,22 × 20 × 6.5,P09×P06×P11,"2,640-2,860"
+P11,batch_weeks,6.5,周,W1/W2/W4 各 6.5 周；W3 只有 6 周,批次窗口,6.0-7.0
+P12,contract_hours_cap,130,小时/份,20 × 6.5,P06×P11,120-140
+P12b,contract_hours_planned,111-117,小时/份,写作 92-98 + 评审 13-14 + 入驻 6,P12,—
+P13,contracts_total,104,份,4 批 × (22 核心 + 4 后备),P09、P18,88-130
+P14,peak_experts,44,人,相邻两批各 22 人重叠 2 周,批次窗口,44-66
+P15,tasks_per_contract_low,4,条/份,W1 5.45、W2 5.82、W3 5.73、W4 5.73 的下限,P16,—
+P16,tasks_per_contract_high,6,条/份,上限；超过 6 条拆合同或换人,P13,—
+P16b,tasks_per_batch,120;128;126;126,条/批,四批合计 500,配额表 batch 列,—
+P17,attrition_rate,0.15,比例,未完成首个任务、退出、失联的合并假设,00-README H10,0.10-0.25
+P18,backup_per_batch,4,人/批,18% 缓冲，覆盖 15% 流失,P09×P17,2-6
+P18b,backup_hours_total,2080,小时,16 份 × 130 h,P18×P12,—
+P19,review_hours_per_task,2.35,小时/条,"主评 2 + 双评 0.2 + 校准 0.15；500 条全评审上限 1,175 h",07 第 7 节,2.0-3.0
+P20,review_hours_total,1175,小时,"上限：500 × 2.35；实际约 1,073",P01×P19,"1,000-1,500"
+P21,onboarding_hours_per_expert,6,小时/人,入驻培训 + 工具与模板,06 手册,4-8
+P29,rework_factor_plan,1.30,系数,返修 30% 的首轮假设；容量上限 1.16,00-README H12,1.15-1.40
+P30,rework_hours_needed,2323,小时,"7,742 × 0.30",P03c×P29,—
+P31,delivery_window_days,15,天,2027-04-16 至 04-30，评测/修补/打包,00-README D5,10-20
+S120,sensitivity_hours,12,小时/条,"写作 5,496 h；22 人需 3.1 月",敏感性,
+S169,sensitivity_hours,16.9,小时/条,"写作 7,742 h；22 人需 4.4 月",敏感性,
+S220,sensitivity_hours,22,小时/条,"写作 10,076 h；22 人需 5.7 月",敏感性,
+S280,sensitivity_hours,28,小时/条,"写作 12,824 h；22 人需 7.3 月",敏感性,
+A06,sensitivity_availability,6,小时/周,1.54 条/人月；458 条需 297 专家月；22 人需 13.5 月,敏感性,
+A10,sensitivity_availability,10,小时/周,2.56 条/人月；458 条需 179 专家月；22 人需 8.1 月,敏感性,
+A15,sensitivity_availability,15,小时/周,3.85 条/人月；458 条需 119 专家月；22 人需 5.4 月,敏感性,
+A20,sensitivity_availability,20,小时/周,5.13 条/人月；458 条需 89 专家月；22 人需 4.06 月,敏感性,
+P32,expert_rate_blended,16.9,小时/条,含法律 12 h/条的加权均值；跨批可比口径,P02,—
+P33,expert_rate_excluding_legal,17.3,小时/条,"7,936 ÷ 458",P03c、D01-D14,16.5-18.5
+P20b,review_hours_actual,1073,小时,191 + 294×3；法律 42 条不排评审、W2-W4 每批封顶 294,P19、P20,"1,000-1,175"
+P20c,review_hours_w1,191,小时,78 条专家任务 ×2.35 = 183 + 法律导入 8 条 ×1 h 抽检 = 8,P19、P03b,—
+P20d,review_hours_per_person_w1,8.7,小时/人,191 ÷ 22,P20c、P09,—
+P20e,review_hours_per_person_w2_w4,13.4,小时/人,294 ÷ 22,P20b、P09,—
+P22,demand_hours_w1,1642,小时,"写作 1,319 + 入驻 132 + 评审 191",P03c、P21、P20c,±15%
+P23,demand_hours_w2,2590,小时,"写作 2,164 + 入驻 132 + 评审 294",P03c、P21、P20b,±15%
+P24,demand_hours_w3,2556,小时,"写作 2,130 + 入驻 132 + 评审 294",P03c、P21、P20b,±15%
+P25,demand_hours_w4,2556,小时,"写作 2,130 + 入驻 132 + 评审 294",P03c、P21、P20b,±15%
+P26,capacity_actual_total,10700,小时,"2,340（W1 爬坡）+2,860+2,640（W3 6 周）+2,860",P10、P11,—
+P27,load_overall_pct,87.3,百分比,"9,344 ÷ 10,700（评审按上限 1,175 时 88.3）",P22-P25、P26,87.3-96.8
+P28,buffer_core_hours,1356,小时,"10,700 − 9,344",P26、P27,—
+P34,demand_hours_w3_domain_based,2902,小时,"按域工时 2,476 + 入驻 132 + 评审 294",D01-D14、P21、P19,±15%
+P35,capacity_w3_with_backups,3120,小时,26 × 20 × 6,P09、P18、P11,—
+P36,load_w3_with_backups_pct,93.0,百分比,"2,902 ÷ 3,120",P34÷P35,—
