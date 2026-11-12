@@ -130,7 +130,7 @@ STATUS: v5
 | C17 | 法律 scope exception | `docs/` 要求所有任务走同一冻结流程 | 法律 42 条走 import 旁路 | 需在评审记录里写明例外 |
 | C18 | 旧漏斗 | 旧稿 1,160 触达 / 348 回复 / 62 签约 | 1,946 / 584 / 104 | 旧表作废 |
 | C19 | 56 行表的批次列 | `data/quota-by-subdomain.csv` 的 batch 列仍写 B1-B4 | 本次不改，语义按 W1-W4 读 | 下次同步时改列值 |
-| C20 | 56 行表与一级表的标记列 | `quota-by-subdomain.csv` 的 `pilot_tasks`（4 子域 5 条）、`first_30_50_subdomain_flag`（9 子域）与 `quota-allocation.csv` 的 `first_30_50`（5 域 yes）仍是“5 条试点、30/50 首批、跨类目首批”的旧选择 | 两张表按 brief 冻结，本次不改标记列；首批 30 与 3 条试点以 `01` 的第 7、8 节和 `data/pilot-tasks.csv`、`data/batch-plan.csv` 为准 | 若按旧标记执行，首批会混入心理/工程/教育，试点会跑成 5 条 |
+| C20 | 56 行表与一级表的标记列 | 旧稿 `quota-by-subdomain.csv` 的 `pilot_tasks`（4 子域 5 条）、`first_30_50_subdomain_flag`（9 子域）与 `quota-allocation.csv` 的 `first_30_50`（5 域 yes）都按“5 条试点、30/50 首批、跨类目首批”标的 | 已按 3 条试点收口：`pilot_tasks` = accounting / comp_neuro / energy_power 各 1、其余 0；`first_30_50_subdomain_flag` = accounting / enterprise_analytics / compliance / litigation / legal_research / economics 共 6 个子域（同步改了 `quota-by-subdomain.md`）；`quota-allocation.csv` 的 `first_30_50` 未改，首批 30 以 `01` 第 8 节为准 | `quota-allocation.csv` 的 `first_30_50` 仍是旧 5 域，读到该列时不要当成首批 30 |
 
 ## 6. 数字自检
 
