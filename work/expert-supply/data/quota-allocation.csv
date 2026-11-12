@@ -1,70 +1,15 @@
-domain_code,domain_name_zh,subdomain_code,subdomain_name_zh,workflow_family_id,family_name_zh,tasks,share_pct,batch,official_count_domain,domain_quota,basis,auth_risk_level,auth_note,eng_risk_level,expert_supply_risk,first_batch,notes
-business_finance,商业与金融,accounting,会计与财务,WF-FIN-REPORT,财务报告与 XBRL,4,0.8,B1,19,50,官方 19 条、候选 28 条、15 族；资料多为公开报表/合成台账，工程风险低；配额 50 保持草案值。,medium,AUTH-02/03 客户与员工数据；公开或合成财务数据可解,low_medium,低,,
-business_finance,商业与金融,accounting,会计与财务,WF-AUDIT,财务报表审计与舞弊风险,4,0.8,B1,19,50,官方 19 条、候选 28 条、15 族；资料多为公开报表/合成台账，工程风险低；配额 50 保持草案值。,medium,AUTH-02/03 客户与员工数据；公开或合成财务数据可解,low_medium,低,,
-business_finance,商业与金融,actuarial_risk,精算与风险建模,WF-ACTUARIAL,精算定价、偿付与准备金,6,1.2,B1,19,50,官方 19 条、候选 28 条、15 族；资料多为公开报表/合成台账，工程风险低；配额 50 保持草案值。,medium,AUTH-02/03 客户与员工数据；公开或合成财务数据可解,low_medium,低,,
-business_finance,商业与金融,enterprise_analytics,企业分析与规划,WF-PREDICTIVE,业务预测建模与异常检测,4,0.8,B1,19,50,官方 19 条、候选 28 条、15 族；资料多为公开报表/合成台账，工程风险低；配额 50 保持草案值。,medium,AUTH-02/03 客户与员工数据；公开或合成财务数据可解,low_medium,低,,
-business_finance,商业与金融,enterprise_analytics,企业分析与规划,WF-FORECAST,时间序列需求预测,4,0.8,B1,19,50,官方 19 条、候选 28 条、15 族；资料多为公开报表/合成台账，工程风险低；配额 50 保持草案值。,medium,AUTH-02/03 客户与员工数据；公开或合成财务数据可解,low_medium,低,,
-business_finance,商业与金融,compliance,合规与监管,WF-FINCRIME,制裁、反洗钱与 KYC,6,1.2,B1,19,50,官方 19 条、候选 28 条、15 族；资料多为公开报表/合成台账，工程风险低；配额 50 保持草案值。,medium,AUTH-02/03 客户与员工数据；公开或合成财务数据可解,low_medium,低,,
-business_finance,商业与金融,hr_pm,人力资源与项目管理,WF-DATA-PROTECT,个人信息处理与营销同意,3,0.6,B1,19,50,官方 19 条、候选 28 条、15 族；资料多为公开报表/合成台账，工程风险低；配额 50 保持草案值。,medium,AUTH-02/03 客户与员工数据；公开或合成财务数据可解,low_medium,低,,
-business_finance,商业与金融,hr_pm,人力资源与项目管理,WF-HR-GOV,员工数据与绩效公平,2,0.4,B1,19,50,官方 19 条、候选 28 条、15 族；资料多为公开报表/合成台账，工程风险低；配额 50 保持草案值。,medium,AUTH-02/03 客户与员工数据；公开或合成财务数据可解,low_medium,低,,
-business_finance,商业与金融,hr_pm,人力资源与项目管理,WF-PROJECT-MGMT,项目管理方法落地,2,0.4,B1,19,50,官方 19 条、候选 28 条、15 族；资料多为公开报表/合成台账，工程风险低；配额 50 保持草案值。,medium,AUTH-02/03 客户与员工数据；公开或合成财务数据可解,low_medium,低,,
-business_finance,商业与金融,sales_marketing,销售与市场,WF-MARKETING,市场研究与销售管道,3,0.6,B1,19,50,官方 19 条、候选 28 条、15 族；资料多为公开报表/合成台账，工程风险低；配额 50 保持草案值。,medium,AUTH-02/03 客户与员工数据；公开或合成财务数据可解,low_medium,低,,
-business_finance,商业与金融,quant_finance,量化金融与交易,WF-QUANT-VALID,模型验证与回测,4,0.8,B1,19,50,官方 19 条、候选 28 条、15 族；资料多为公开报表/合成台账，工程风险低；配额 50 保持草案值。,medium,AUTH-02/03 客户与员工数据；公开或合成财务数据可解,low_medium,低,,
-business_finance,商业与金融,quant_finance,量化金融与交易,WF-INVEST-COMPLIANCE,GIPS 投资绩效合规,2,0.4,B1,19,50,官方 19 条、候选 28 条、15 族；资料多为公开报表/合成台账，工程风险低；配额 50 保持草案值。,medium,AUTH-02/03 客户与员工数据；公开或合成财务数据可解,low_medium,低,,
-business_finance,商业与金融,quant_finance,量化金融与交易,WF-DATA-LICENSING,市场数据许可盘点,1,0.2,B1,19,50,官方 19 条、候选 28 条、15 族；资料多为公开报表/合成台账，工程风险低；配额 50 保持草案值。,medium,AUTH-02/03 客户与员工数据；公开或合成财务数据可解,low_medium,低,,
-business_finance,商业与金融,supply_chain,供应链与物流,WF-TRADE-COMPLIANCE,HS 归类与贸易合规,2,0.4,B1,19,50,官方 19 条、候选 28 条、15 族；资料多为公开报表/合成台账，工程风险低；配额 50 保持草案值。,medium,AUTH-02/03 客户与员工数据；公开或合成财务数据可解,low_medium,低,,
-business_finance,商业与金融,supply_chain,供应链与物流,WF-SUPPLY-CHAIN,SCOR 流程建模,3,0.6,B1,19,50,官方 19 条、候选 28 条、15 族；资料多为公开报表/合成台账，工程风险低；配额 50 保持草案值。,medium,AUTH-02/03 客户与员工数据；公开或合成财务数据可解,low_medium,低,,
-social_sciences,社会科学,economics,经济与定量社会研究,WF-SURVEY-STATS,复杂抽样与方差估计,17,3.4,B1,1,34,官方 1 条、候选 4 条、2 族；公开统计与政策评估可离线复现。配额 34 保持草案值（覆盖下限）。,medium,AUTH-02/03 调查微观数据；公开统计与合成数据优先,low,低,,
-social_sciences,社会科学,economics,经济与定量社会研究,WF-ECON-EVAL,政策评估与复现,17,3.4,B1,1,34,官方 1 条、候选 4 条、2 族；公开统计与政策评估可离线复现。配额 34 保持草案值（覆盖下限）。,medium,AUTH-02/03 调查微观数据；公开统计与合成数据优先,low,低,,
-legal,法律,legal_research,法理法律检索,WF-LEGAL-RESEARCH,法律检索与权威分析,20,4.0,B1,2,36,官方 2 条、8 候选；纯文本、Linux 可跑，是首批主力。配额 36 保持草案值，研究/诉讼 20/16。,high,AUTH-03/05 特权与在办案件；只用公开裁判文书或合成卷宗,low,中高,yes,
-legal,法律,litigation,诉讼支持与取证,WF-LITIGATION,电子取证与诉讼支持,16,3.2,B1,2,36,官方 2 条、8 候选；纯文本、Linux 可跑，是首批主力。配额 36 保持草案值，研究/诉讼 20/16。,high,AUTH-03/05 特权与在办案件；只用公开裁判文书或合成卷宗,low,中高,yes,
-psychology_neuro,心理与神经科学,comp_neuro,计算神经科学,WF-NEUROIMAGING,神经影像预处理与合规,12,2.4,B2,3,34,官方 3 条、候选 7 条、4 族；神经影像首批 2 条。配额 34 保持草案值。,high,AUTH-03/04 人类被试影像与心理数据；公开仓库需再识别审查,medium,中,yes,
-psychology_neuro,心理与神经科学,comp_neuro,计算神经科学,WF-COG-MODEL,认知计算建模,6,1.2,B2,3,34,官方 3 条、候选 7 条、4 族；神经影像首批 2 条。配额 34 保持草案值。,high,AUTH-03/04 人类被试影像与心理数据；公开仓库需再识别审查,medium,中,,
-psychology_neuro,心理与神经科学,exp_psychology,实验心理学与神经影像,WF-BEHAV-RESEARCH,心理实验设计与测量,10,2.0,B2,3,34,官方 3 条、候选 7 条、4 族；神经影像首批 2 条。配额 34 保持草案值。,high,AUTH-03/04 人类被试影像与心理数据；公开仓库需再识别审查,medium,中,,
-psychology_neuro,心理与神经科学,exp_psychology,实验心理学与神经影像,WF-EVIDENCE-SYNTH,系统综述与元分析,6,1.2,B2,3,34,官方 3 条、候选 7 条、4 族；神经影像首批 2 条。配额 34 保持草案值。,high,AUTH-03/04 人类被试影像与心理数据；公开仓库需再识别审查,medium,中,,
-life_sciences,生命科学,biomolecular,分子结构与设计,WF-STRUCT-BIO,实验结构解析与沉积,6,1.2,B2,12,48,官方 12 条、候选 18 条、8 族；公开组学与结构数据充足。配额 48 保持草案值。,high,AUTH-04 研究伦理与受试者数据；公开数据集优先,medium,中,,
-life_sciences,生命科学,biomolecular,分子结构与设计,WF-COMP-STRUCT-BIO,分子模拟、对接与结构预测,8,1.6,B2,12,48,官方 12 条、候选 18 条、8 族；公开组学与结构数据充足。配额 48 保持草案值。,high,AUTH-04 研究伦理与受试者数据；公开数据集优先,medium,中,,
-life_sciences,生命科学,genomics,基因组与序列分析,WF-GENOMICS,基因组、转录组与变异解读,10,2.0,B2,12,48,官方 12 条、候选 18 条、8 族；公开组学与结构数据充足。配额 48 保持草案值。,high,AUTH-04 研究伦理与受试者数据；公开数据集优先,medium,中,,
-life_sciences,生命科学,cell_imaging,细胞与成像生物学,WF-CELL-IMAGING,细胞成像与流式细胞术,8,1.6,B2,12,48,官方 12 条、候选 18 条、8 族；公开组学与结构数据充足。配额 48 保持草案值。,high,AUTH-04 研究伦理与受试者数据；公开数据集优先,medium,中,,
-life_sciences,生命科学,cell_imaging,细胞与成像生物学,WF-RESEARCH-DATA,研究数据元数据与沉积,6,1.2,B2,12,48,官方 12 条、候选 18 条、8 族；公开组学与结构数据充足。配额 48 保持草案值。,high,AUTH-04 研究伦理与受试者数据；公开数据集优先,medium,中,,
-life_sciences,生命科学,systems_microbial,系统与微生物生物学,WF-CLIN-MICRO,临床微生物与药敏,3,0.6,B2,12,48,官方 12 条、候选 18 条、8 族；公开组学与结构数据充足。配额 48 保持草案值。,high,AUTH-04 研究伦理与受试者数据；公开数据集优先,medium,中,,
-life_sciences,生命科学,systems_microbial,系统与微生物生物学,WF-SYSTEMS-BIO,基因组尺度代谢重建,3,0.6,B2,12,48,官方 12 条、候选 18 条、8 族；公开组学与结构数据充足。配额 48 保持草案值。,high,AUTH-04 研究伦理与受试者数据；公开数据集优先,medium,中,,
-life_sciences,生命科学,systems_microbial,系统与微生物生物学,WF-MICROBIOME,微生物组分析与报告,4,0.8,B2,12,48,官方 12 条、候选 18 条、8 族；公开组学与结构数据充足。配额 48 保持草案值。,high,AUTH-04 研究伦理与受试者数据；公开数据集优先,medium,中,,
-physical_sciences,自然科学,physics,物理学,WF-RADIATION-PROT,辐射防护屏蔽设计,2,0.4,B2,14,46,官方 14 条、候选 16 条、7 族；公开观测与计算数据多，供给中等；配额 46 保持草案值。,low_medium,AUTH-06 商业软件与仪器数据；公开观测数据优先,medium,中,,
-physical_sciences,自然科学,chemistry_materials,化学与材料计算,WF-MATERIALS,材料表征与计算热力学,10,2.0,B2,14,46,官方 14 条、候选 16 条、7 族；公开观测与计算数据多，供给中等；配额 46 保持草案值。,low_medium,AUTH-06 商业软件与仪器数据；公开观测数据优先,medium,中,,
-physical_sciences,自然科学,chemistry_materials,化学与材料计算,WF-CHEM-REG,计算毒理与化学品注册,4,0.8,B2,14,46,官方 14 条、候选 16 条、7 族；公开观测与计算数据多，供给中等；配额 46 保持草案值。,low_medium,AUTH-06 商业软件与仪器数据；公开观测数据优先,medium,中,,
-physical_sciences,自然科学,astronomy,天文与天体物理,WF-ASTRO-OBS,天文观测数据生产,7,1.4,B2,14,46,官方 14 条、候选 16 条、7 族；公开观测与计算数据多，供给中等；配额 46 保持草案值。,low_medium,AUTH-06 商业软件与仪器数据；公开观测数据优先,medium,中,,
-physical_sciences,自然科学,astronomy,天文与天体物理,WF-ASTRO-INFER,天文物理参数推断,7,1.4,B2,14,46,官方 14 条、候选 16 条、7 族；公开观测与计算数据多，供给中等；配额 46 保持草案值。,low_medium,AUTH-06 商业软件与仪器数据；公开观测数据优先,medium,中,,
-physical_sciences,自然科学,earth_atmo,地球与大气科学,WF-ATMOS,数值天气预报与再分析,8,1.6,B2,14,46,官方 14 条、候选 16 条、7 族；公开观测与计算数据多，供给中等；配额 46 保持草案值。,low_medium,AUTH-06 商业软件与仪器数据；公开观测数据优先,medium,中,,
-physical_sciences,自然科学,earth_atmo,地球与大气科学,WF-GEOPHYS,地震监测与遥感定标,8,1.6,B2,14,46,官方 14 条、候选 16 条、7 族；公开观测与计算数据多，供给中等；配额 46 保持草案值。,low_medium,AUTH-06 商业软件与仪器数据；公开观测数据优先,medium,中,,
-health_medicine,健康与医学,clinical_diagnostics,临床诊断与影像,WF-DIAG-IMAGING,诊断影像结构化报告,10,2.0,B3,19,60,官方 19 条、候选 23 条、7 族；配额 60 保持草案值，靠公开影像/合成病历降授权风险。,high,AUTH-03/04/08 患者数据、IRB 与临床数据二次使用,high,高,,
-health_medicine,健康与医学,clinical_diagnostics,临床诊断与影像,WF-PATHOLOGY,病理报告与实验室能力验证,8,1.6,B3,19,60,官方 19 条、候选 23 条、7 族；配额 60 保持草案值，靠公开影像/合成病历降授权风险。,high,AUTH-03/04/08 患者数据、IRB 与临床数据二次使用,high,高,,
-health_medicine,健康与医学,therapeutic_oncology,治疗与肿瘤,WF-ONCOLOGY,肿瘤治疗执行与评估,10,2.0,B3,19,60,官方 19 条、候选 23 条、7 族；配额 60 保持草案值，靠公开影像/合成病历降授权风险。,high,AUTH-03/04/08 患者数据、IRB 与临床数据二次使用,high,高,,
-health_medicine,健康与医学,therapeutic_oncology,治疗与肿瘤,WF-MED-PHYSICS,放疗物理 QA 与计划复核,2,0.4,B3,19,60,官方 19 条、候选 23 条、7 族；配额 60 保持草案值，靠公开影像/合成病历降授权风险。,high,AUTH-03/04/08 患者数据、IRB 与临床数据二次使用,high,高,,
-health_medicine,健康与医学,clinical_informatics,临床信息学与照护,WF-CLIN-INFORMATICS,临床决策支持与互操作,10,2.0,B3,19,60,官方 19 条、候选 23 条、7 族；配额 60 保持草案值，靠公开影像/合成病历降授权风险。,high,AUTH-03/04/08 患者数据、IRB 与临床数据二次使用,high,高,,
-health_medicine,健康与医学,public_health,公共卫生与流行病学,WF-PUBLIC-HEALTH,公共卫生监测与调查,11,2.2,B3,19,60,官方 19 条、候选 23 条、7 族；配额 60 保持草案值，靠公开影像/合成病历降授权风险。,high,AUTH-03/04/08 患者数据、IRB 与临床数据二次使用,high,高,,
-health_medicine,健康与医学,clinical_trials,临床研究与试验运营,WF-CLIN-TRIALS,临床试验监查、数据与安全,9,1.8,B3,19,60,官方 19 条、候选 23 条、7 族；配额 60 保持草案值，靠公开影像/合成病历降授权风险。,high,AUTH-03/04/08 患者数据、IRB 与临床数据二次使用,high,高,,
-engineering,工程与建筑,aerospace_mech,航空航天与机械工程,WF-STRUCT-FEA,结构有限元分析与裕度校核,6,1.2,B3,16,50,官方 16 条、候选 34 条、12 个在用族；仿真与执业签署风险高，但专业密度必须保留。配额 50 保持草案值。,medium,AUTH-05/06 执业签署与商业软件；仿真报告需工程师签字,high,高,,
-engineering,工程与建筑,aerospace_mech,航空航天与机械工程,WF-THERMAL,热控与热流体系统设计,3,0.6,B4,16,50,官方 16 条、候选 34 条、12 个在用族；仿真与执业签署风险高，但专业密度必须保留。配额 50 保持草案值。,medium,AUTH-05/06 执业签署与商业软件；仿真报告需工程师签字,high,高,,
-engineering,工程与建筑,aerospace_mech,航空航天与机械工程,WF-METRO-QUALITY,计量、公差与质量工程,3,0.6,B4,16,50,官方 16 条、候选 34 条、12 个在用族；仿真与执业签署风险高，但专业密度必须保留。配额 50 保持草案值。,medium,AUTH-05/06 执业签署与商业软件；仿真报告需工程师签字,high,高,,
-engineering,工程与建筑,manufacturing,制造与工业系统,WF-METRO-QUALITY,计量、公差与质量工程,3,0.6,B4,16,50,官方 16 条、候选 34 条、12 个在用族；仿真与执业签署风险高，但专业密度必须保留。配额 50 保持草案值。,medium,AUTH-05/06 执业签署与商业软件；仿真报告需工程师签字,high,高,,
-engineering,工程与建筑,electronics,电子工程,WF-ELECTRONICS-HW,板级电子与电源设计,4,0.8,B3,16,50,官方 16 条、候选 34 条、12 个在用族；仿真与执业签署风险高，但专业密度必须保留。配额 50 保持草案值。,medium,AUTH-05/06 执业签署与商业软件；仿真报告需工程师签字,high,高,,
-engineering,工程与建筑,semiconductor,半导体与微电子设计,WF-SEMI-EDA,数字芯片实现与 DFT,6,1.2,B3,16,50,官方 16 条、候选 34 条、12 个在用族；仿真与执业签署风险高，但专业密度必须保留。配额 50 保持草案值。,medium,AUTH-05/06 执业签署与商业软件；仿真报告需工程师签字,high,高,,
-engineering,工程与建筑,robotics,机器人与自主系统,WF-ROBOTICS,机器人控制、规划与抓取,5,1.0,B4,16,50,官方 16 条、候选 34 条、12 个在用族；仿真与执业签署风险高，但专业密度必须保留。配额 50 保持草案值。,medium,AUTH-05/06 执业签署与商业软件；仿真报告需工程师签字,high,高,,
-engineering,工程与建筑,civil_geo,土木、建筑与地理空间工程,WF-WATER,水文水力与供水管网建模,5,1.0,B3,16,50,官方 16 条、候选 34 条、12 个在用族；仿真与执业签署风险高，但专业密度必须保留。配额 50 保持草案值。,medium,AUTH-05/06 执业签署与商业软件；仿真报告需工程师签字,high,高,,跨域族：工程口径 5 条（civil_geo），农业口径 16 条（env_water）。族不重复计入 72 族统计。
-engineering,工程与建筑,civil_geo,土木、建筑与地理空间工程,WF-GEOSPATIAL,测绘、点云与空间分析,3,0.6,B3,16,50,官方 16 条、候选 34 条、12 个在用族；仿真与执业签署风险高，但专业密度必须保留。配额 50 保持草案值。,medium,AUTH-05/06 执业签署与商业软件；仿真报告需工程师签字,high,高,,
-engineering,工程与建筑,urban_planning,城市与空间规划,WF-TRANSPORT,交通信号与需求预测,2,0.4,B3,16,50,官方 16 条、候选 34 条、12 个在用族；仿真与执业签署风险高，但专业密度必须保留。配额 50 保持草案值。,medium,AUTH-05/06 执业签署与商业软件；仿真报告需工程师签字,high,高,,
-engineering,工程与建筑,energy_power,能源、电力与核工程,WF-POWER-SYS,配电系统潮流与可靠性分析,5,1.0,B3,16,50,官方 16 条、候选 34 条、12 个在用族；仿真与执业签署风险高，但专业密度必须保留。配额 50 保持草案值。,medium,AUTH-05/06 执业签署与商业软件；仿真报告需工程师签字,high,高,,
-engineering,工程与建筑,energy_power,能源、电力与核工程,WF-BUILDING-ENERGY,建筑能耗模拟与校准,3,0.6,B3,16,50,官方 16 条、候选 34 条、12 个在用族；仿真与执业签署风险高，但专业密度必须保留。配额 50 保持草案值。,medium,AUTH-05/06 执业签署与商业软件；仿真报告需工程师签字,high,高,yes,
-engineering,工程与建筑,energy_power,能源、电力与核工程,WF-NUCLEAR-SAFETY,核反应堆与临界安全分析,2,0.4,B3,16,50,官方 16 条、候选 34 条、12 个在用族；仿真与执业签署风险高，但专业密度必须保留。配额 50 保持草案值。,medium,AUTH-05/06 执业签署与商业软件；仿真报告需工程师签字,high,高,,
-agriculture_env,农业与环境,env_water,环境建模、工程与水资源,WF-WATER,水文水力与供水管网建模,16,3.2,B3,0,16,旧表漏项；官方 0 条、候选 9 条（env_water 4 / precision 5）、1 个活跃子域。新增 16，全部 env_water；precision 按未覆盖子域默认 0。,low_medium,AUTH-02 水文与气象数据；公开流域数据优先,medium,高,,旧表漏项；计入农业与环境域，保持 env_water 活跃子域有交付。
-education_info,教育与信息,library_info,图书馆与信息科学,WF-LIBRARY,编目、数字化与保存,16,3.2,B4,2,32,官方仅 2 条、9 候选全为 B3；图书馆与本地化可离线做，教育技术子域未覆盖先给 0。配额由 36 降到 32，为农业腾挪。,high,AUTH-01/03/07 教材、课程与字幕版权；只用公开或自制内容,medium,高,,
-education_info,教育与信息,translation,翻译与本地化,WF-L10N,笔译、本地化与字幕,16,3.2,B4,2,32,官方仅 2 条、9 候选全为 B3；图书馆与本地化可离线做，教育技术子域未覆盖先给 0。配额由 36 降到 32，为农业腾挪。,high,AUTH-01/03/07 教材、课程与字幕版权；只用公开或自制内容,medium,高,,
-visual_media,视觉与媒体艺术,animation_3d,三维、动画与互动媒体,WF-3D-ANIM,三维动画与实时资产,10,2.0,B4,11,36,官方 11 条但 9 条 Windows；Linux 开源替代可行但需验证。配额由 40 降到 36。,medium,AUTH-01/07 品牌、字体、音乐与素材许可,high,高,,
-visual_media,视觉与媒体艺术,graphic_design,平面、视觉与产品设计,WF-PRINT,包装与书刊印前,8,1.6,B4,11,36,官方 11 条但 9 条 Windows；Linux 开源替代可行但需验证。配额由 40 降到 36。,medium,AUTH-01/07 品牌、字体、音乐与素材许可,high,高,,
-visual_media,视觉与媒体艺术,graphic_design,平面、视觉与产品设计,WF-A11Y,无障碍修复与合规,6,1.2,B4,11,36,官方 11 条但 9 条 Windows；Linux 开源替代可行但需验证。配额由 40 降到 36。,medium,AUTH-01/07 品牌、字体、音乐与素材许可,high,高,,
-visual_media,视觉与媒体艺术,audio_music,音频、音乐与后期,WF-AUDIO,音乐与广播混音,8,1.6,B4,11,36,官方 11 条但 9 条 Windows；Linux 开源替代可行但需验证。配额由 40 降到 36。,medium,AUTH-01/07 品牌、字体、音乐与素材许可,high,高,,
-visual_media,视觉与媒体艺术,audio_music,音频、音乐与后期,WF-AV-ARCHIVE,音像载体转移与存档,4,0.8,B4,11,36,官方 11 条但 9 条 Windows；Linux 开源替代可行但需验证。配额由 40 降到 36。,medium,AUTH-01/07 品牌、字体、音乐与素材许可,high,高,,
-transport_safety,交通与安全,fire_safety,消防与公共安全,WF-FIRE,消防疏散、火灾风险与喷淋水利,30,6.0,B4,2,30,官方 2 条、9 候选但航空/海事未覆盖；首批只做消防 30。配额由 34 降到 30。,high,AUTH-05 执业签署与事故调查；消防规范公开、项目数据受限,medium,高,,
-other,其他,sports,体育,WF-OTHER-SPORTS,体育赛事与运动表现分析（临时族）,14,2.8,B3,2,28,官方 2 条、0 候选、无 72 族依据；体育 + 兜底各 14，兜底不自动批准。配额由 32 降到 28。,medium,AUTH-01 体育与赛事内容；逐条审批，不自动归类,medium,高,,无 72 族依据；临时族，放行前需登记。
-other,其他,other,other,WF-OTHER-CATCHALL,跨域兜底工作流（临时族）,14,2.8,B4,2,28,官方 2 条、0 候选、无 72 族依据；体育 + 兜底各 14，兜底不自动批准。配额由 32 降到 28。,medium,AUTH-01 体育与赛事内容；逐条审批，不自动归类,medium,高,,无 72 族依据；临时族，放行前需登记。
+domain_code,domain_name_zh,official_tasks,subdomain_count,active_subdomain_count,proposed_tasks,share_pct,quota_per_official,research_candidates,quota_per_candidate,batches,first_30_50,notes
+engineering,工程与建筑,16,10,8,50,10.0,3.13,34,1.47,B3;B4,yes,8 活跃 + 2 零覆盖；B3/B4 拆分
+transport_safety,交通与安全,1,3,1,30,6.0,30.0,9,3.33,B4,no,fire 10；aviation/maritime 零覆盖但各有 3 个候选；B4
+education_info,教育与信息,2,3,2,32,6.4,16.0,9,3.56,B4,yes,edu_tech 零覆盖但 3 个候选；B4
+agriculture_env,农业与环境,1,2,1,16,3.2,16.0,9,1.78,B3,no,env_water 7 / precision_agriculture 9；B3
+social_sciences,社会科学,4,1,1,34,6.8,8.5,4,8.5,B1,no,单一子域承载 34 条，集中风险最高
+other,其他,2,1,1,28,5.6,14.0,0,,B3;B4,no,sports 14 + catchall 14；两者候选均为 0
+physical_sciences,自然科学,11,4,4,46,9.2,4.18,16,2.88,B2,no,chemistry 官方 7 条，配额 12；B2
+life_sciences,生命科学,14,4,4,48,9.6,3.43,18,2.67,B2,no,4 个子域均衡；B2
+health_medicine,健康与医学,17,5,5,60,12.0,3.53,23,2.61,B3,no,5 个子域均有候选；B3 最大单域
+psychology_neuro,心理与神经,2,2,2,34,6.8,17.0,7,4.86,B2,yes,comp_neuro 15 / exp_psychology 19；首批试点 2 条
+business_finance,商业与金融,18,8,8,50,10.0,2.78,28,1.79,B1,yes,8 个子域均有候选；B1 主力
+legal,法律,2,2,2,36,7.2,18.0,8,4.5,B1,yes,两个子域各 18；首批试点 2 条
+visual_media,视觉与媒体,14,3,3,36,7.2,2.57,9,4.0,B4,no,3 个子域各 12；B4
+computing_math,计算、数据与数学,18,7,7,0,0.0,0.0,0,,,no,项目口径排除；官方 18 条仅作参考

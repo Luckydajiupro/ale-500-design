@@ -1,6 +1,6 @@
 batch,window,domains,tasks,experts,inputs,dependency,release_gate,counts_in_500
-B0,2026-11-24 至 2026-12-12,legal;psychology_neuro;engineering,5,3→5,P1-01..P1-05,人工/离线,试点 5 条不计入 500；4/5 通过才放 B1,否
-B1,生产月 1–4,legal;business_finance;social_sciences,120,13,B0 复盘、模板冻结、公开/合成资料,2 个 cohort 并行,B0 4/5 通过、合同 13 人（首批 5 人已签）、评审排班就绪,是
-B2,生产月 1–4,psychology_neuro;life_sciences;physical_sciences,128,13,B1 自动检查、Linux 科学栈、公开数据集,与 B1 并行,B0 4/5 通过、13 人认证完成、B1 前 20 条预检无阻断,是
-B3,生产月 5–8,health_medicine;engineering;agriculture_env;other,126,13,B2 运行日志、环境镜像、授权清单,与 B4 并行,B2 交接无阻断、授权清单清零,是
-B4,生产月 5–8,education_info;visual_media;transport_safety;other,126,13,B3 复杂资产、Windows 替代路径评估,与 B3 并行,B3 前 10 条预检无阻断；Windows 缺省关闭；版权清单逐条 cleared,是
+B0,2026-11-24 至 2026-12-19,legal;psychology_neuro;engineering,5,3→5,P1-01..P1-05,人工/离线,试点 5 条 2026-12-19 前完成；4/5 通过才放 B1；5 条不计入 500,否
+B1,2027-01-11 至 2027-04-30,legal;business_finance;social_sciences,120,13,B0 复盘、模板冻结、公开/合成资料,2 个 cohort 并行,B0 4/5 通过、合同 13 人（试点 5 人已签）、评审排班就绪,是
+B2,2027-01-11 至 2027-04-30,psychology_neuro;life_sciences;physical_sciences,128,13,B1 自动检查、Linux 科学栈、公开数据集,与 B1 并行,B0 4/5 通过、13 人认证完成、B1 前 20 条预检无阻断,是
+B3,2027-05-01 至 2027-08-31,health_medicine;engineering;agriculture_env;other,126,13,B2 运行日志、环境镜像、授权清单,与 B4 并行,B2 交接无阻断、授权清单清零,是
+B4,2027-05-01 至 2027-08-31,education_info;visual_media;transport_safety;other,126,13,B3 复杂资产、Windows 替代路径评估,与 B3 并行,B3 前 10 条预检无阻断；Windows 缺省关闭；版权清单逐条 cleared,是
