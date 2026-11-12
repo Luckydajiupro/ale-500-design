@@ -1,6 +1,6 @@
 batch,window,domains,tasks,experts,inputs,dependency,release_gate,counts_in_500
-B0,2026-11-12 至 2026-11-30,legal;psychology_neuro;engineering,5,3,P1-01..P1-05,人工/离线,5 条试点 11-30 前完成（11-20 才签 3 人则 3/5 +2 条 12-04）；4/5 PASS + 最小平台通路可重复；未过则 30 条最早 2027-01-08/01-15；5 条不计入 500,否
-B1,2026-12-01 至 2027-02-28,legal;business_finance;social_sciences,120,10→13（50 档 15）,B0 复盘、模板冻结、公开/合成资料,2 个 cohort 并行,12 月前 30-50 条为 B1 提前子集；B0 4/5 通过、30 条 12-31 达成、15 人认证完成,是
+B0,2026-11-12 至 2026-11-30,legal;psychology_neuro;engineering,5,3,P1-01..P1-05,人工/离线,方案 A 3 条 11-27 前 3/3；方案 B 5 条 12-04 前 5/5；平台 11-30 六件事；未过则 30 条最早 2027-01-08/01-15；试点不计入 500,否
+B1,2026-12-01 至 2027-02-28,legal;business_finance;social_sciences,120,10→13（50 档 15）,A 3/3 或 B 5/5、模板冻结、公开/合成资料,2 个 cohort 并行,12 月前 30 条为 B1 提前子集；A 30 12-31 / B 30 01-08、15 人认证完成,是
 B2,2027-01-11 至 2027-04-30,psychology_neuro;life_sciences;physical_sciences,128,13,B1 自动检查、Linux 科学栈、公开数据集,与 B1 并行,B0 4/5 通过、13 人认证完成、B1 前 20 条预检无阻断,是
 B3,2027-05-01 至 2027-08-31,health_medicine;engineering;agriculture_env;other,126,13,B2 运行日志、环境镜像、授权清单,与 B4 并行,B2 交接无阻断、授权清单清零,是
 B4,2027-05-01 至 2027-08-31,education_info;visual_media;transport_safety;other,126,13,B3 复杂资产、Windows 替代路径评估,与 B3 并行,B3 前 10 条预检无阻断；Windows 缺省关闭；版权清单逐条 cleared,是
