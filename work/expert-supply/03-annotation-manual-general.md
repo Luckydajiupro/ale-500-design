@@ -48,6 +48,97 @@ ALE 是 Agents' Last Exam，一个长流程、有经济价值、结果可验证�
 
 十块背后是一条 ALE 任务的三段合同。`instruction` 是 Agent 看到的指令。`initial context` 是它启动时能看到的资料和环境。`verification` 是独立验证器怎么判分。你写的每一块，最终都要落到这三段里。写不出对应的落点，这一块就是空的。
 
+### 2.1 任务源最小 schema
+
+下面是最小字段集。平台可以多存，不能少这些。字段名区分大小写，空值写 `null`，不要省略键。
+
+```yaml
+task_id: FIN-ACC-2024-001
+title_zh: ""
+title_en: ""
+instruction:
+  file: instruction.md
+  sha256: ""
+task_brief:
+  one_line: ""
+  audience: ""
+  deliverable_paths: []
+identity:
+  domain: ""
+  subdomain: ""
+  task_family: ""
+  difficulty: easy | medium | hard
+  estimated_hours: 0
+  deliverable_types: []
+scenario: |
+materials:
+  - material_id: M-01
+    file: ""
+    type: ""
+    bytes: 0
+    sha256: ""
+    source: ""
+    acquired: "YYYY-MM-DD"
+    license: ""
+    real_status: real | desensitized_real | synthetic | mixed
+    use: ""
+    required: required | optional
+    desensitization: ""
+    directory: "input/"
+operations:
+  - step: 1
+    tool: ""
+    input: ""
+    output: ""
+    check: ""
+deliverables:
+  - path: ""
+    format: ""
+    schema: ""
+success_criteria:
+  - id: SC-01
+    observable: ""
+    expected: ""
+    check: ""
+    tolerance: ""
+    evidence: ""
+environment:
+  os: ""
+  cpu: ""
+  ram_gb: 0
+  disk_gb: 0
+  network: offline | allowlist
+  software: []
+review:
+  risk: low | medium | high
+  questions: []
+provenance:
+  source_summary: ""
+  author: ""
+  date: "YYYY-MM-DD"
+  license: ""
+  synthetic_exemption: false
+handoff:
+  package: ""
+  known_limits: []
+  open_items: []
+evidence:
+  - criterion_id: SC-01
+    type: source | process | result
+    source_file: ""
+    source_location: ""
+    gl_entry_ids: ""
+    corroborating_files: ""
+```
+
+字段规则：
+
+- `task_id` 唯一；`task_family` 是同类任务组，不是任务编号，两者不能写成同一个值。新 family 在 provenance 写归组理由。
+- `instruction.file` 是唯一权威文本。`task_brief` 不重复存全文；如果平台要求副本，副本必须与文件逐字一致，不一致时以文件为准。
+- `materials` 只写每个文件的事实；`provenance` 只写任务级来源、作者、日期、许可。同一事实不要在两处各写一套。
+- `source_manifest.csv` 不包含自己的哈希；把 manifest 的哈希写进 `handoff`。
+- 金额写单位，日期写 ISO 8601，路径写相对路径，ID 用大写字母数字和连字符。
+
 ## 3. 什么算合格，什么不算
 
 | 合格 | 不合格 |
@@ -281,6 +372,46 @@ deliverables:
 
 常见错误：用形容词；阈值不可测；把“评审喜欢”写进标准；成功标准与交付物数量不一致。
 
+### 10.1 答案键最小 schema
+
+答案键不是评分卡，但必须能直接生成评分卡。至少包含：
+
+```yaml
+answer_key:
+  task_id: ""
+  version: 1
+  max_points: 100
+  tolerance:
+    usd: 1
+    percent_pp: 0.01
+    days: 0.01
+  adjustments:
+    - adjustment_id: ADJ-001
+      issue: ""
+      gl_entries: [JE-029, JE-030]
+      revenue_effect_usd: -24000
+      ar_effect_usd: -24000
+      evidence:
+        - file: ""
+          location: ""
+      points: 10
+  excluded_items:
+    - issue: ""
+      reason: ""
+      evidence: ""
+  scoring:
+    - criterion_id: SC-01
+      points: 10
+      check: ""
+```
+
+规则：
+
+- 每个调整都有 ID、带符号影响、对应分录、至少一条证据、分值。
+- 排除项必须写进 `excluded_items`，说明为什么排除；否则评审会把它当漏项。
+- 容差按单位声明；没有声明默认值。分值合计必须等于 `max_points`。
+- 答案键和 `success_criteria` 的 ID 要能互相映射。
+
 ## 11. environment：写清能不能离线、要不要 GUI/GPU
 
 **必须写**：OS、架构、CPU/内存/磁盘、软件与版本、依赖安装方式、网络要求、是否需要 GUI/GPU/Windows、预计运行时间。
@@ -380,19 +511,45 @@ deliverables:
 
 常见错误：证据与成功标准不对应；只给结论不给命令；日志被截断；证据文件路径在交付包里不存在；把受限数据截图当证据。
 
+### 15.1 证据索引合同
+
+`evidence_index.csv` 一行一个调整或一条成功标准，不按证据文件拆行。字段至少：
+
+`criterion_id, adjustment_id, evidence_type, source_file, source_location, gl_entry_ids, corroborating_files, note`
+
+- `source_file` 只放一个主证据文件；其余放 `corroborating_files`，分号分隔。
+- `source_location` 用 `file!sheet!cell`、`file#Lstart-Lend` 或 `file#section`。
+- `evidence_type` 取 `source`、`process`、`result`；过程证据放 `evidence/`，在 note 里写相对路径。
+- 路径全部相对，不写绝对路径；一个调整只占一行。
+
 ## 16. 资料与授权：五条硬规则
 
 1. 公开：政府、法院、官方统计、开放期刊、CC0/CC-BY；保存 URL、获取日期、许可文本。
-2. 合成：自己造，明确标“合成”，不用真实人名/机构名。合成件只补缺口，不能整条任务都用合成数据。
+2. 合成：自己造，明确标“合成”，不用真实人名/机构名。合成件只补缺口，不能替代整条正式生产任务；压力测试和纯合成练习按 16.1 豁免。
 3. 脱敏：只用于必须的真实结构；删除直接标识符，处理准标识符，写清方法。脱敏必须人工做，不能 AI 脱敏。
 4. 禁止：患者影像、客户合同、在办案卷、业主能耗、未公开招标文件、付费数据库内容。
 5. 真实形态：保留扫描件倾斜、水印、修订痕迹、合并单元格、错行、邮件原始头。不要为了“干净”把材料整理成教科书。
 
 资料数量按 02a 的标准。数量由工作决定。官方 122 条中输入文件中位 7 份，p90 85 份，1 份的也有 11 条；不要用 10 到 20 份当门槛。可以有干扰材料，但不要用垃圾文件凑数。正式生产至少一份是真实来源文件。
 
-压力测试或纯合成练习可以整包合成，但必须每个文件标 `synthetic`，写 `real_source_files: 0`，并在 provenance 里写豁免理由。这个豁免只用于测试，不用于正式生产。自建合成件的 license 写 `CC0-1.0, author-created, no third-party content`，并给创建记录。
+### 16.1 合成、真实来源与 AI 边界
 
-AI 可以辅助翻译、格式、检索、一致性检查和试做。AI 不得生成或改写任务事实、输入材料、金标答案、成功标准，不得做脱敏。所有 AI 输出要由专家逐条核实。
+正式生产：
+
+- 每条任务至少一份真实或脱敏真实来源。合成件只补缺口，每个文件标 `synthetic`，写补了什么、为什么补，并由专家确认。
+- 整条任务都用合成数据，只在无法获得真实数据、且领域负责人书面同意时允许；任务写 `synthetic_exemption: true`，不进自动低风险通道。
+- 自建合成件的 license 写 `CC0-1.0, author-created, no third-party content`，并给创建记录。
+
+压力测试或纯合成练习：
+
+- 允许整包合成；每个文件标 `synthetic`，写 `real_source_files: 0`，在 provenance 写豁免理由和“仅用于测试”。
+- 这种包不能作为正式生产任务提交；要转正式，必须补真实来源或取得书面豁免。
+
+AI 边界：
+
+- AI 可以翻译、排版、检索、一致性检查、试做，也可以起草；但必须有具名专家逐条核实，并对事实、金标、成功标准负责。
+- AI 不得生成或改写任务事实、输入材料、金标答案、成功标准，不得做脱敏。
+- 本项目用 AI 做手册压测，不等于允许 AI 生产任务。AI 生成的包不能直接进正式生产。
 
 不确定时，默认不用。授权问题在评审阶段发现，整条任务退回，不计工时。
 
