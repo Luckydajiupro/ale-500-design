@@ -1,0 +1,53 @@
+{
+  "documents": [
+    {
+      "document_id": "doc_01",
+      "filename": "《北京仲裁委员会北京国际仲裁院关于小时费率计收仲裁员报酬的操作指引》.pdf",
+      "format": "PDF",
+      "relative_path": "documents/《北京仲裁委员会北京国际仲裁院关于小时费率计收仲裁员报酬的操作指引》.pdf",
+      "sha256": "794abaa4f6f06fc519895c22944a0ab43ad02b4fb32bdefa1952ce81613cb47b"
+    },
+    {
+      "document_id": "doc_02",
+      "filename": "《北京仲裁委员会案件收费标准》.pdf",
+      "format": "PDF",
+      "relative_path": "documents/《北京仲裁委员会案件收费标准》.pdf",
+      "sha256": "794abaa4f6f06fc519895c22944a0ab43ad02b4fb32bdefa1952ce81613cb47b"
+    },
+    {
+      "document_id": "doc_03",
+      "filename": "《北京仲裁委员会案件收费标准》实施细则.pdf",
+      "format": "PDF",
+      "relative_path": "documents/《北京仲裁委员会案件收费标准》实施细则.pdf",
+      "sha256": "794abaa4f6f06fc519895c22944a0ab43ad02b4fb32bdefa1952ce81613cb47b"
+    },
+    {
+      "document_id": "doc_04",
+      "filename": "《北京仲裁委员会案件退费标准》.pdf",
+      "format": "PDF",
+      "relative_path": "documents/《北京仲裁委员会案件退费标准》.pdf",
+      "sha256": "794abaa4f6f06fc519895c22944a0ab43ad02b4fb32bdefa1952ce81613cb47b"
+    },
+    {
+      "document_id": "doc_05",
+      "filename": "《北京仲裁委员会调仲对接快速程序规则撤案退费标准》.pdf",
+      "format": "PDF",
+      "relative_path": "documents/《北京仲裁委员会调仲对接快速程序规则撤案退费标准》.pdf",
+      "sha256": "794abaa4f6f06fc519895c22944a0ab43ad02b4fb32bdefa1952ce81613cb47b"
+    },
+    {
+      "document_id": "doc_06",
+      "filename": "《北京仲裁委员会调仲对接快速程序规则案件收费标准》.pdf",
+      "format": "PDF",
+      "relative_path": "documents/《北京仲裁委员会调仲对接快速程序规则案件收费标准》.pdf",
+      "sha256": "794abaa4f6f06fc519895c22944a0ab43ad02b4fb32bdefa1952ce81613cb47b"
+    },
+    {
+      "document_id": "doc_07",
+      "filename": "北京仲裁委员会收费标准及细则操作指引.pdf",
+      "format": "PDF",
+      "relative_path": "documents/北京仲裁委员会收费标准及细则操作指引.pdf",
+      "sha256": "794abaa4f6f06fc519895c22944a0ab43ad02b4fb32bdefa1952ce81613cb47b"
+    }
+  ]
+}

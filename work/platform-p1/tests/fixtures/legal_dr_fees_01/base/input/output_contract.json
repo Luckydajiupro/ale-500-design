@@ -1,0 +1,25 @@
+{
+  "case_fields": {
+    "amount_in_dispute_rmb": "string or number, optional but recommended",
+    "arbitrator_remuneration_rmb": "RMB amount to two decimals",
+    "case_id": "case_1 through case_5",
+    "institution_fee_rmb": "RMB amount to two decimals",
+    "notes": "optional explanation or citation notes",
+    "total_fee_rmb": "RMB amount to two decimals"
+  },
+  "example_shape": {
+    "cases": [
+      {
+        "amount_in_dispute_rmb": "5800000.00",
+        "arbitrator_remuneration_rmb": "0.00",
+        "case_id": "case_1",
+        "institution_fee_rmb": "0.00",
+        "notes": "Replace the zeroes with your calculated values.",
+        "total_fee_rmb": "0.00"
+      }
+    ]
+  },
+  "output_path": "output/arbitration_fee_results.json",
+  "required_top_level_key": "cases",
+  "root": "object"
+}

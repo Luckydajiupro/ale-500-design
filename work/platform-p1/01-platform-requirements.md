@@ -93,7 +93,7 @@
 
 ## 3. 需求怎么编号、怎么验收
 
-- 功能需求用 `FR-n`，非功能需求用 `NFR-n`。
+- 工作流功能需求用 `FR-n`，交付格式需求用 `FR-ALE-n`，非功能需求用 `NFR-n`。
 - 每条需求有一个验收测试 `AT-nn`。测试步骤在 `05-pilot-and-rollout.md` 第 3 节。
 - 优先级只有两档：`MVP` 是两周试点必须有的，`后续` 是满产前补的。
 - 追溯链是 目标 → 需求 → 模块 → 测试，机器可读版本在 `data/requirements-traceability.csv`。
@@ -168,6 +168,18 @@
 | --- | --- | --- | --- |
 | FR-28 | 管理后台可新增类目、评审池、资产上限，带变更审计 | 新增类目后 30 分钟内可建任务，配置变更可回滚 | 后续 |
 
+### M9 ale-data 导入与 Harbor 兼容
+
+交合作方的 500 条最终要转成 ALE 最新 Harbor 格式；专家与供应方交来的数据包要与 `ale-data` v1.1 对齐。这一组需求只管格式、映射与校验，不管运行。
+
+| 编号 | 需求 | 验收标准 | 优先级 |
+| --- | --- | --- | --- |
+| FR-ALE-01 | 导入包基础校验：`<domain>/<task>/base/` 布局，必填 `input/task_brief.md`、`input/output_contract.json`、`reference/answer_key.json`、`PACKAGE.json`；缺一项即拒，错误码定位到文件 | 合法 fixture 通过；删 `output_contract.json` 后返回 `IMPORT_MISSING_FILE` | MVP |
+| FR-ALE-02 | 固定 ale-data → Harbor 映射：生成 `task.toml`、`instruction.md`、`environment/Dockerfile`、`tests/`、`solution/`，Harbor schema 为 `1.4+ale.1` | 转换 fixture 后 `task.toml` 的 name、os、artifacts、network_mode 与映射表一致；`instruction.md` 与 `task_brief.md` 逐字节相同 | MVP |
+| FR-ALE-03 | 哈希清单：`PACKAGE.files` 覆盖除 `PACKAGE.json` 外每个文件，`document_manifest.json` 覆盖 `documents/`；导入时逐文件复算 | 改一字节返回 `IMPORT_HASH_MISMATCH`；未登记文件同拒 | MVP |
+| FR-ALE-04 | 版本 pin：包声明 `ale_data_version=task-data-v1.1`；转换记录 Harbor schema 与引擎 commit；不支持的版本拒绝 | 改成 `task-data-v1.0` 返回 `IMPORT_VERSION_UNSUPPORTED`；`conversions` 行含三个版本字段 | MVP |
+| FR-ALE-05 | 往返测试：合法包导入 → 转 Harbor → 回转 ale-data → 再校验，文件哈希集合一致；无 oracle 的供应方包标 `NO_ORACLE` 但仍生成目录 | `python3 tests/test_roundtrip.py` 13 项全过，往返前后 canonical hash 相同 | MVP |
+
 ## 5. 非功能需求
 
 | 编号 | 需求 | 验收标准 | 优先级 |
@@ -187,7 +199,7 @@
 
 ## 6. 追溯矩阵
 
-目标到需求的对应关系如下。O1 到 O3 是平台目标，G1 到 G11 是为追溯拆出的 11 个子目标。逐条版本在 `data/requirements-traceability.csv`，含验收测试编号。
+目标到需求的对应关系如下。O1 到 O3 是平台目标，G1 到 G12 是为追溯拆出的 12 个子目标。逐条版本在 `data/requirements-traceability.csv`，含验收测试编号。
 
 | 目标 | 需求 |
 | --- | --- |
@@ -202,16 +214,18 @@
 | G9 Agent 可追责 | FR-25 |
 | G10 授权与隐私可审计 | FR-3, FR-10, FR-11, NFR-1, NFR-10 |
 | G11 负责人按批次放行 | FR-26, NFR-8 |
+| G12 交付格式对齐 ale-data 与 Harbor | FR-ALE-01, FR-ALE-02, FR-ALE-03, FR-ALE-04, FR-ALE-05, NFR-5 |
 
 ## 7. 硬边界
 
-下面五类请求，平台应拒绝，不是排期问题。
+下面六类请求，平台应拒绝，不是排期问题。
 
 1. 请求在平台内跑任务或验证器。答复：运行在工程侧，平台只交接快照。
 2. 请求让专家填 Dockerfile、验证器命令、任务目录结构。答复：专家填 `environment` 的意图字段，工程补实现。
 3. 请求把官方 122 条导入任务表凑数。答复：官方任务只作参考，单独表存储，不计入 500。
 4. 请求在平台上做评分模型或排行榜。答复：判分在评测侧，平台不产出分数。
 5. 请求把冻结快照原地修改。答复：改就出新版本，旧版本永久保留。
+6. 请求把 Harbor 当平台库内格式，或让平台构建镜像、跑转换。答复：库内存规范化 JSON，导出 ale-data 包，Harbor 转换在工程侧执行。
 
 ## 8. 取舍记录
 
@@ -233,5 +247,6 @@
 | A3 | 平台与任务运行环境分离，平台不接触 GPU 与 Windows 宿主 | 若合并，安全边界与预算都要改 |
 | A4 | 每任务平均 3.5 次评审动作 | 评审队列容量与 SLA 要重估 |
 | A5 | 500 条在 9 个月内生产完 | 峰值并发与存储爬坡要重排 |
+| A6 | `ale-data` 冻结在 `task-data-v1.1`，Harbor 冻结在 schema `1.4+ale.1`、引擎 commit `73517c2` | 版本一变，导入校验与映射表要重新对，已完成包要重转 |
 
 风险：专家低估字段工作量导致提交拖延。对策是首条任务由平台管理员陪跑，并把必填项压到 10 块以内。评审人不足导致积压。对策是首轮只开 3 个类目，评审池按子域预建。

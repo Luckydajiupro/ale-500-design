@@ -9,8 +9,8 @@ STATUS: v1
 | 文件 | 回答什么 | 谁看 |
 | --- | --- | --- |
 | `00-README.md` | 有哪些文件、假设是什么、决定了什么、还差谁拍板 | 负责人 |
-| `01-platform-requirements.md` | 平台为谁解决什么问题，28 条功能需求与 12 条非功能需求 | 负责人、工程 |
-| `02-platform-design.md` | 怎么开发：架构、数据模型、状态机、权限、十块 schema、快照 | 工程 |
+| `01-platform-requirements.md` | 平台为谁解决什么问题，33 条功能需求（28 条工作流 + 5 条 ale-data）与 12 条非功能需求 | 负责人、工程 |
+| `02-platform-design.md` | 怎么开发：架构、数据模型、状态机、权限、十块 schema、快照、ale-data 导入与 Harbor 转换 | 工程 |
 | `03-category-coverage-validation.md` | 14 个类目怎么被覆盖，缺口在哪，后续类目怎么不被堵死 | 负责人、专家管理 |
 | `04-equipment-and-infrastructure-plan.md` | 三套环境、容量、设备、分期、成本 | 负责人、采购 |
 | `05-pilot-and-rollout.md` | 两周 MVP、5 条试点、验收测试、go/no-go、扩容 | 负责人、工程 |
@@ -21,6 +21,9 @@ STATUS: v1
 | `data/equipment-options.csv` | 12 项设备的规格、数量、买租、预算 | 采购 |
 | `data/cost-scenarios.csv` | 低中高三档首年成本 | 负责人 |
 | `data/requirements-traceability.csv` | 目标到需求的逐条追溯 | 评审 |
+| `tests/ale_data_format.py` | ale-data 包校验与 Harbor 转换的可执行契约，约 500 行，只用标准库 | 工程 |
+| `tests/test_roundtrip.py` | 13 项往返测试，`python3 tests/test_roundtrip.py` | 工程 |
+| `tests/fixtures/legal_dr_fees_01/base/` | 结构化 fixture，取自 `legal_dr_fees_01` | 工程 |
 
 ## 关键数字
 
@@ -48,13 +51,14 @@ STATUS: v1
 | A6 | 平台与运行环境物理分离 | 安全边界与预算 |
 | A7 | 首批 5 名专家，每人 1 条 | 试点范围 |
 | A8 | 不考虑多租户与对外服务 | 架构简化 |
+| A9 | `ale-data` 冻结在 `task-data-v1.1`，Harbor 冻结在 `1.4+ale.1` | 版本一变，导入校验与映射表要重对 |
 
 ## 我做的决定
 
 | 编号 | 决定 | 理由 |
 | --- | --- | --- |
 | D1 | 八个状态加 `void`，共九个 | `void` 处理重复与退出，不计入 500，比删除安全 |
-| D2 | 不引入工作流引擎，用固定状态机加代码守卫 | 13 个类目各一套流程会让回归成本失控 |
+| D2 | 不引入工作流引擎，用固定状态机加代码守卫 | 14 个 domain_code 各一套流程会让回归成本失控 |
 | D3 | 交接物是 zip 加快照清单，工程不连平台 | 减少接口耦合，平台停机不影响转换 |
 | D4 | 类目差异只进配置：必填项、资产上限、评审角色、风险规则 | 新增类目不改状态机，30 分钟上线 |
 | D5 | 单机 Docker Compose，不上集群 | 500 条、40 人，集群是过度设计 |
@@ -63,6 +67,8 @@ STATUS: v1
 | D8 | 首批法律、神经影像、建筑节能，共 5 条 | 沿用招募计划 v0，三类目都在 Linux 路径 |
 | D9 | 配额建议给 `agriculture_env` 补 16 条 | 08 草案漏了这个域，不能按 12 类做覆盖；与专家供给 v1 对齐 |
 | D10 | 试点 500 GiB，前 100 条升 1 TiB，按 70% 水位升 2 TiB | 中档 live 321 GiB，512 GiB 会到 70% 水位；低档 137 GiB 仍放得下 |
+| D11 | 库内存规范化 JSON，导出 ale-data 包，Harbor 只在工程侧转换 | Harbor 是运行格式，字段随引擎变；存进库会把版本升级变成全库迁移 |
+| D12 | 供应方包走 B 路径：导入 → 校验 → 隔离区 → 人工确认 → 转换；A/B 共用同一校验器与 `PACKAGE.json` 边车 | 官方 ale-data 没有 license/provenance，边车补字段又不改数据布局；隔离区让坏包不污染任务表 |
 
 ## 待项目负责人拍板
 
@@ -76,6 +82,7 @@ STATUS: v1
 | GPU 是否进 500 | 不进，3 条标不可交付，不占编号 | 2026-11-25 | 3 条任务的编号与验收口径 |
 | 平台代码放哪个仓库 | 新建 `apps/platform` 或独立仓 | 阶段 3 开工前 | 开发无法启动 |
 | 首年基础设施预算上限 | 默认 116,420 元，上限按中档 128,420 元 | 2026-11-20 | 采购无法下单 |
+| Q7 格式与版本基线：ale-data 用 `task-data-v1.1`，Harbor 用 schema `1.4+ale.1`、引擎 commit `73517c2`；法律 42 条供应方包是否计入 500 | 版本按上述 pin；42 条计入 legal 配额，但 legal 现配额 36，需负责人决定扩到 42 还是从别域调剂，平台不自动改配额 | 2026-11-20（首批导入前） | 导入校验没有基线，包无法判定合格；42 条不知算不算数，500 的计数口径会分叉 |
 
 六项都有默认走法。默认执行不算批准，变更要写决策记录。
 
@@ -87,6 +94,8 @@ STATUS: v1
 4. `docs/02-plan.md` 把阶段 2（技术可行性）排在阶段 3（平台设计）之前。本方案是并行推进，不替代阶段 2。阶段 2 出口仍要五条任务四段全 PASS。
 5. `docs/03-quality-and-acceptance.md` 未冻结抽样率与风险阈值。本方案把抽样率做成配置，默认 30%，试点 100%，不替 docs/03 做制度决定。
 6. 设计定稿放 `docs/` 还是 `stages/s3-platform/` 尚未定。本方案暂放 `work/platform-p1/`，定稿后建议迁 `stages/s3-platform/` 并保留本目录作为工作稿。
+7. `docs/` 的交接合同只写冻结快照，未写 ale-data 包与 Harbor 转换。本方案在 `01` 的 FR-ALE-01..05 与 `02` 第 14 节补上，定稿时要并回 `docs/03-quality-and-acceptance.md`。
+8. `03-category-coverage-validation.md` 给 legal 的配额是 36，但供应方法律包有 42 条。两者对不上，已在 Q7 提出，不擅自改配额。
 
 ## 怎么用这套文件
 
@@ -97,7 +106,7 @@ STATUS: v1
 
 ## 下一步
 
-1. 负责人对六项待拍板给意见，尤其是 `agriculture_env` 配额。
-2. 工程按 `02` 做两周 MVP，按 `05` 的 AT 列表验收。
+1. 负责人对七项待拍板给意见，尤其是 `agriculture_env` 配额与 Q7 的 legal 42 条口径。
+2. 工程按 `02` 做两周 MVP，按 `05` 的 AT 列表验收；导入校验先用 `tests/test_roundtrip.py` 做契约测试。
 3. 试点结束后把实际数字回填到 `04` 的容量模型与 `data/cost-scenarios.csv`。
 4. 定稿后迁入 `stages/s3-platform/`，本目录保留为 v1 工作稿。

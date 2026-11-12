@@ -1,0 +1,40 @@
+{
+  "cases": {
+    "case_1": {
+      "amount_in_dispute_rmb": "5800000.00",
+      "arbitrator_remuneration_rmb": "59000.00",
+      "institution_fee_rmb": "27100.00",
+      "total_fee_rmb": "86100.00"
+    },
+    "case_2": {
+      "amount_in_dispute_rmb": "65902536.17",
+      "arbitrator_remuneration_rmb": "270297.86",
+      "institution_fee_rmb": "205756.34",
+      "total_fee_rmb": "476054.20"
+    },
+    "case_3": {
+      "amount_in_dispute_rmb": "882480634.38",
+      "arbitrator_remuneration_rmb": "2353953.52",
+      "institution_fee_rmb": "1749465.14",
+      "total_fee_rmb": "4103418.66"
+    },
+    "case_4": {
+      "amount_in_dispute_rmb": "251620139.47",
+      "arbitrator_remuneration_rmb": "197553.09",
+      "institution_fee_rmb": "147269.57",
+      "total_fee_rmb": "344822.66"
+    },
+    "case_5": {
+      "amount_in_dispute_rmb": "3215.00",
+      "arbitrator_remuneration_rmb": "12000.00",
+      "institution_fee_rmb": "5000.00",
+      "total_fee_rmb": "17000.00"
+    }
+  },
+  "component_weights": {
+    "arbitrator_remuneration_rmb": 7,
+    "institution_fee_rmb": 7,
+    "total_fee_rmb": 6
+  },
+  "tolerance_rmb": "0.01"
+}

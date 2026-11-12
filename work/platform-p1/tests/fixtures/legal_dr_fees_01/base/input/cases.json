@@ -1,0 +1,29 @@
+{
+  "cases": [
+    {
+      "amount_in_dispute_rmb": "5800000.00",
+      "case_id": "case_1",
+      "special_condition": null
+    },
+    {
+      "amount_in_dispute_rmb": "65902536.17",
+      "case_id": "case_2",
+      "special_condition": null
+    },
+    {
+      "amount_in_dispute_rmb": "882480634.38",
+      "case_id": "case_3",
+      "special_condition": null
+    },
+    {
+      "amount_in_dispute_rmb": "251620139.47",
+      "case_id": "case_4",
+      "special_condition": "The parties reached a settlement agreement regarding the dispute before applying for arbitration."
+    },
+    {
+      "amount_in_dispute_rmb": "3215.00",
+      "case_id": "case_5",
+      "special_condition": null
+    }
+  ]
+}

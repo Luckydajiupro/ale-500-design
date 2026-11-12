@@ -1,0 +1,99 @@
+{
+  "ale_data_version": "task-data-v1.1",
+  "domain_code": "legal",
+  "files": [
+    {
+      "bytes": 702,
+      "path": "input/cases.json",
+      "sha256": "0d9d012a45ee0082efee5b0d6f2ff1f920e51273b04b938fe5d59e7d2b1a056d"
+    },
+    {
+      "bytes": 2449,
+      "path": "input/document_manifest.json",
+      "sha256": "1680be03867a16969ce6779bfd25251050d7bc2c401358edd325d86dffaebd76"
+    },
+    {
+      "bytes": 193,
+      "path": "input/documents/《北京仲裁委员会北京国际仲裁院关于小时费率计收仲裁员报酬的操作指引》.pdf",
+      "sha256": "794abaa4f6f06fc519895c22944a0ab43ad02b4fb32bdefa1952ce81613cb47b"
+    },
+    {
+      "bytes": 193,
+      "path": "input/documents/《北京仲裁委员会案件收费标准》.pdf",
+      "sha256": "794abaa4f6f06fc519895c22944a0ab43ad02b4fb32bdefa1952ce81613cb47b"
+    },
+    {
+      "bytes": 193,
+      "path": "input/documents/《北京仲裁委员会案件收费标准》实施细则.pdf",
+      "sha256": "794abaa4f6f06fc519895c22944a0ab43ad02b4fb32bdefa1952ce81613cb47b"
+    },
+    {
+      "bytes": 193,
+      "path": "input/documents/《北京仲裁委员会案件退费标准》.pdf",
+      "sha256": "794abaa4f6f06fc519895c22944a0ab43ad02b4fb32bdefa1952ce81613cb47b"
+    },
+    {
+      "bytes": 193,
+      "path": "input/documents/《北京仲裁委员会调仲对接快速程序规则撤案退费标准》.pdf",
+      "sha256": "794abaa4f6f06fc519895c22944a0ab43ad02b4fb32bdefa1952ce81613cb47b"
+    },
+    {
+      "bytes": 193,
+      "path": "input/documents/《北京仲裁委员会调仲对接快速程序规则案件收费标准》.pdf",
+      "sha256": "794abaa4f6f06fc519895c22944a0ab43ad02b4fb32bdefa1952ce81613cb47b"
+    },
+    {
+      "bytes": 193,
+      "path": "input/documents/北京仲裁委员会收费标准及细则操作指引.pdf",
+      "sha256": "794abaa4f6f06fc519895c22944a0ab43ad02b4fb32bdefa1952ce81613cb47b"
+    },
+    {
+      "bytes": 807,
+      "path": "input/output_contract.json",
+      "sha256": "1185a8769588772fd2e32a0cdca2d675bf134fe733c268ef75decd25aa223147"
+    },
+    {
+      "bytes": 144,
+      "path": "input/runtime_env/pyproject.toml",
+      "sha256": "857c17d426f2a79c5691f16bbba63e0507f93c79e7bfb3c6bd46bb883224740e"
+    },
+    {
+      "bytes": 1546,
+      "path": "input/task_brief.md",
+      "sha256": "24932048d1df6caa18d662f1a071a35c3fa643d0830bd4ad6a18838fde200f5c"
+    },
+    {
+      "bytes": 1141,
+      "path": "reference/answer_key.json",
+      "sha256": "26df2dd9c5a77eb84236a7a39b3a7a94e6ea78f201d805b5ba47a06094e6da94"
+    }
+  ],
+  "known_gaps": [],
+  "license": {
+    "id": "CC-BY-4.0",
+    "redistributable": true,
+    "url": "https://creativecommons.org/licenses/by/4.0/"
+  },
+  "oracle": true,
+  "package_version": "ale-pkg-1.0",
+  "provenance": {
+    "collected_at": "2026-11-12",
+    "source": "supplier",
+    "source_url": "https://huggingface.co/datasets/agents-last-exam/task-data-v1.1",
+    "supplier_id": "legal-42"
+  },
+  "sandbox": {
+    "cpus": 2,
+    "gpus": 0,
+    "input_root": "/media/user/data/agenthle/legal_compliance/legal_dr_fees_01/base/input",
+    "memory_mb": 4096,
+    "network": "no-network",
+    "os": "linux",
+    "output_root": "/media/user/data/agenthle/legal_compliance/legal_dr_fees_01/base",
+    "timeout_sec": 7200
+  },
+  "subdomain_code": "legal_research",
+  "summary": "Calculate Beijing Arbitration Commission fees for five cases from staged PDF schedules.",
+  "task_id": "legal/legal_dr_fees_01",
+  "title": "BAC Arbitration Fee Calculation"
+}

@@ -39,3 +39,8 @@ G4,冻结快照可复现,docs/02 §两个解耦决定,NFR-9,日备保留 30 天�
 G10,授权与隐私可审计,docs/03 §证据怎么写,NFR-10,数据境内存储，PII 最小化，删除请求 30 天内执行,M1,AT-17,MVP
 G3,专家不碰工程实现,docs/01 §关键约束,NFR-11,单机 Docker Compose 部署，1 名工程师可运维，升级 30 分钟内,M0,AT-23,MVP
 G1,500 条新任务可计数、可验收,docs/01 §500 条怎么算,NFR-12,Chrome 与 Edge 最近两个大版本，键盘可完成提交与评审,M2,AT-24,后续
+G12,交付格式对齐 ale-data 与 Harbor,负责人新增,FR-ALE-01,导入包基础校验：布局与四个必填文件，错误码定位到文件,M9 ale-data 导入与 Harbor 兼容,AT-ALE-01,MVP
+G12,交付格式对齐 ale-data 与 Harbor,负责人新增,FR-ALE-02,固定 ale-data 到 Harbor 的字段映射，生成六类 Harbor 文件,M9 ale-data 导入与 Harbor 兼容,AT-ALE-02,MVP
+G12,交付格式对齐 ale-data 与 Harbor,负责人新增,FR-ALE-03,哈希清单覆盖全部文件与 documents，导入时逐文件复算,M9 ale-data 导入与 Harbor 兼容,AT-ALE-03,MVP
+G12,交付格式对齐 ale-data 与 Harbor,负责人新增,FR-ALE-04,版本 pin：ale_data_version、harbor_schema_version、engine_commit,M9 ale-data 导入与 Harbor 兼容,AT-ALE-04,MVP
+G12,交付格式对齐 ale-data 与 Harbor,负责人新增,FR-ALE-05,往返测试：导入、转换、回转、再校验，哈希集合一致,M9 ale-data 导入与 Harbor 兼容,AT-ALE-05,MVP

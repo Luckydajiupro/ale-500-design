@@ -70,7 +70,7 @@ Postgres 16         对象存储（S3 兼容）
 | `users` | id, email, name, org, roles, status, created_at | email 唯一，status 取 active, disabled |
 | `categories` | domain_code PK, name_zh, profile, active | domain_code 取 14 个枚举值 |
 | `subdomains` | domain_code, subdomain_code, name_zh, active | 联合主键，外键到 categories |
-| `tasks` | id, task_id, domain_code, subdomain_code, owner_id, batch_id, state, current_version, risk_tier, void_reason | task_id 唯一，state 取 9 个枚举值 |
+| `tasks` | id, task_id, domain_code, subdomain_code, owner_id, batch_id, state, current_version, risk_tier, void_reason, ale_data_version, import_package_id, harbor_schema_version | task_id 唯一，state 取 9 个枚举值 |
 | `task_versions` | id, task_id, version, source, source_hash, created_by, created_at, frozen | 唯一 (task_id, version)，frozen 后不可写 |
 | `materials` | id, task_id, version, material_id, kind, path, sha256, bytes, license, pii_level, scan_status | 唯一 (task_id, material_id, version) |
 | `checks` | id, task_id, version, check_code, status, evidence_path, duration_ms, created_at | 唯一 (task_id, version, check_code, created_at) |
@@ -82,6 +82,10 @@ Postgres 16         对象存储（S3 兼容）
 | `batches` | id, name, due_date, state, released_by, released_at | state 取 open, released, closed |
 | `audit_events` | id, actor_id, action, object_type, object_id, before_hash, after_hash, ts, request_id, prev_hash, hash | 只插入，不更新 |
 | `agent_suggestions` | id, task_id, version, block, field, value, model, model_version, prompt_hash, confidence, status, confirmed_by | status 取 pending, accepted, rejected |
+| `ale_data_versions` | version PK, package_schema, harbor_schema, engine_commit, released_at, is_current | 同一时间只有一行 is_current |
+| `import_packages` | id, package_key, task_id, domain_code, source, supplier_id, status, manifest_sha256, license, provenance, byte_size, file_count, report, received_at, decided_at | package_key 唯一；status 取 received, validating, rejected, validated, converted, quarantined |
+| `import_files` | package_id, relpath, sha256, bytes, kind | 联合主键 (package_id, relpath) |
+| `conversions` | id, task_id, task_version, direction, package_id, ale_data_version, harbor_schema_version, engine_commit, source_hash, output_hash, status, log_path, created_at | direction 取 to_harbor, from_harbor；status 取 done, failed |
 
 ### 索引
 
@@ -89,6 +93,8 @@ Postgres 16         对象存储（S3 兼容）
 - `assignments(reviewer_id, status, due_at)` 支持评审待办。
 - `audit_events(object_type, object_id, ts)` 支持时间线还原。
 - `materials(task_id, sha256)` 支持引用完整性检查。
+- `import_packages(status, received_at)` 支持导入队列。
+- `conversions(task_id, created_at)` 支持版本追溯。
 
 ### 任务标识
 
@@ -346,7 +352,7 @@ Postgres 16         对象存储（S3 兼容）
 
 ### 为什么不做成每类目一套状态机
 
-500 条任务跨 13 个类目。每类一套状态机意味着 13 套测试、13 套权限、13 套导出。改动一次要回归 13 次。固定状态机加配置，代价是个别类目要接受统一流程。这个代价可以接受。
+500 条任务跨 14 个 domain_code。每类一套状态机意味着 14 套测试、14 套权限、14 套导出。改动一次要回归 14 次。固定状态机加配置，代价是个别类目要接受统一流程。这个代价可以接受。
 
 ## 9. 评审路由
 
@@ -473,7 +479,174 @@ snapshot.zip
 | 重复冻结请求 | 幂等键，第二次返回同一快照 |
 | 邮件失败 | 出站表重试 3 次，失败进管理员待办 |
 
-## 14. 第一版不做的
+## 14. ale-data 导入与 Harbor 转换
+
+任务在库里存规范化 JSON，导出时组装成 `ale-data` 包，转 Harbor 在工程侧做。平台不把 Harbor 当库内格式，也不构建镜像。
+
+### 14.1 两条路径
+
+```
+路径 A（专家新生产）
+任务源 → 评审 → 冻结 → 导出 ale-data 包 → 工程转 Harbor → 运行
+
+路径 B（供应方包）
+ale-data 包 → 导入校验 → 隔离区 → 人工确认 → 转 Harbor → 运行
+```
+
+两条路径共用同一套包格式与校验器。区别只有三点：A 的包由平台导出，B 的包由外部提交；A 必须有 oracle，B 可以没有；B 多一步人工确认，确认前不进任务表。
+
+### 14.2 包格式
+
+```
+<domain_code>/<task_slug>/base/
+  PACKAGE.json                  # 平台边车，ale-data 没有的字段放这里
+  input/
+    task_brief.md               # 必填
+    output_contract.json        # 必填
+    document_manifest.json      # documents/ 存在时必填
+    documents/                  # 资料，文件名保持原样
+    runtime_env/                # 可选
+    ...                         # 任务数据
+  software/                     # 可选，可执行程序与包装脚本
+  reference/
+    answer_key.json             # 必填
+    ...                         # 可选
+```
+
+`PACKAGE.json` 字段：
+
+| 字段 | 必填 | 说明 |
+| --- | --- | --- |
+| `package_version` | 是 | 固定 `ale-pkg-1.0` |
+| `ale_data_version` | 是 | 固定 `task-data-v1.1` |
+| `task_id` | 是 | `<domain_code>/<slug>`，与目录一致 |
+| `domain_code`, `subdomain_code` | 是 | 取 14 个域与 55 个子域 |
+| `title`, `summary` | 是 | 映射到 Harbor `[task].description` |
+| `license.id`, `license.redistributable` | 是 | 缺一即拒；不可再分发的包不能进 500 |
+| `provenance.source`, `provenance.collected_at` | 是 | 供应方包另填 `supplier_id`、`source_url` |
+| `sandbox.os` | 否 | `linux` 默认，可 `windows`、`macos` |
+| `sandbox.input_root` | 是 | 沙箱内输入目录绝对路径 |
+| `sandbox.output_root` | 是 | `output_contract.output_path` 的相对根 |
+| `sandbox.network` | 否 | `no-network` 默认 |
+| `sandbox.cpus`, `memory_mb`, `gpus`, `timeout_sec` | 否 | 默认 1、4096、0、900 |
+| `oracle` | 否 | `true` 默认；`false` 时生成 `NO_ORACLE` 占位 |
+| `files[]` | 是 | 除 `PACKAGE.json` 外每个文件的 `path`、`sha256`、`bytes` |
+
+目录用 `input/`、`software/`、`reference/` 三块，和 `task-data-v1.1` 一致。文件名不改写，中文名按 NFC 归一化后比较。
+
+官方 122 条没有 `PACKAGE.json`。它们只作回归样本，导入前由工程补边车，不进 500；供应方包必须自带边车。
+
+### 14.3 导入校验
+
+校验分五层，任一失败即拒；体量是单独的警告项，不阻断。
+
+| 层 | 规则 | 失败码 |
+| --- | --- | --- |
+| 布局 | `base/input` 与 `base/reference` 存在；`PACKAGE.json` 可解析；路径不含绝对路径或 `..` | `IMPORT_LAYOUT`、`IMPORT_PACKAGE_JSON`、`IMPORT_PATH_UNSAFE` |
+| 契约 | 域在 14 个枚举内；slug 匹配 `^[a-z0-9][a-z0-9_]{2,60}$`；`task_id` 以域开头；版本等于 `task-data-v1.1` | `IMPORT_DOMAIN_UNKNOWN`、`IMPORT_SLUG_INVALID`、`IMPORT_VERSION_UNSUPPORTED` |
+| 必填 | `task_brief.md`、`output_contract.json`、`answer_key.json`；`documents/` 存在时 `document_manifest.json` | `IMPORT_MISSING_FILE` |
+| 内容 | `output_contract` 含 `root`、`required_top_level_key`、`output_path`；`answer_key` 非空且可解析；许可与来源齐全 | `IMPORT_SCHEMA`、`IMPORT_ORACLE_MISSING`、`IMPORT_LICENSE_MISSING`、`IMPORT_PROVENANCE_MISSING` |
+| 哈希 | `files[]` 复算一致且覆盖全部文件；`documents/` 与 manifest 一致 | `IMPORT_HASH_MISMATCH` |
+| 体量 | 单包超过 5 GiB 拒绝；超过 1 GiB 警告 | `IMPORT_SIZE_LARGE`（警告） |
+
+一次校验返回全部发现，不只第一条。每条含 `code`、`path`、`message`。拒绝的包留在隔离区，保留原文件与报告，供供应方修正后重交；不覆盖已通过的同名包。
+
+### 14.4 状态与表
+
+导入包有独立状态，不占用任务状态机：
+
+```
+received → validating → validated → converted
+                ↓            ↓
+             rejected     quarantined
+```
+
+- `received`：包已落对象存储，记录 sha256。
+- `validating`：校验器在跑，通常小于 5 分钟。
+- `validated`：全部通过，等待负责人确认是否计入 500。
+- `rejected`：有阻断项，报告可下载。
+- `quarantined`：版本或来源可疑，保留但不处理。
+- `converted`：已生成 Harbor 目录，`conversions` 有对应行。
+
+转换写 `conversions`，记录 `ale_data_version`、`harbor_schema_version`、`engine_commit`、源与产物的哈希。三个版本字段任一为空，转换不得标记 `done`。
+
+### 14.5 字段映射
+
+| ale-data | Harbor 产物 | 规则 |
+| --- | --- | --- |
+| `PACKAGE.task_id` | `task.toml` `[task].name` | `agentslastexam/<slug>` |
+| `PACKAGE.title` | `[task].description` | 原样，不截断 |
+| `sandbox.os` | `[environment].os` | 非 linux 时 `vm_base` 由工程侧补 |
+| `sandbox.cpus`、`memory_mb`、`gpus` | `[environment]` | 整数；`gpus` 大于 0 时须声明 `gpu_types` |
+| `sandbox.network` | `[agent].network_mode` | `no-network`、`allowlist`、`public` |
+| `sandbox.timeout_sec` | `[agent].timeout_sec` | 默认 900 |
+| `input/**` | `environment/task_data/input/**`，再由 Dockerfile `COPY` 到 `sandbox.input_root` | 运行时数据进镜像，不用挂载 |
+| `software/**` | `environment/task_data/software/**`，`COPY` 到 `/home/user/software` | 保留可执行位 |
+| `input/task_brief.md` | `instruction.md` | 逐字节复制，不改路径 |
+| `input/output_contract.json` | `artifacts` 与 `tests/reference/` | 提交路径 = `output_root + output_path` |
+| `reference/**` | `tests/reference/**` | 只进验证侧，不进 agent 镜像 |
+| `reference/answer_key.json` | 生成的 `tests/verify.py` 的期望值 | 数值比较，容差取 `tolerance_rmb` |
+| `PACKAGE.files` | `SHA256SUMS` 与 `conversion.json` | 转换后再复算一次 |
+| `PACKAGE.ale_data_version` | `conversions.ale_data_version` | 与 `harbor_schema_version`、`engine_commit` 同时写 |
+
+Harbor 侧的必填文件是 `task.toml`、`instruction.md`、`tests/test.sh`、`solution/solve.sh`，Linux 另有 `environment/Dockerfile`。转换器生成全部六项；缺 oracle 时 `solve.sh` 写入 `NO_ORACLE` 并以非零退出，避免被当成已知解。
+
+### 14.6 导出包结构
+
+```
+export/<domain_code>/<task_slug>/<version>/
+  base/
+    PACKAGE.json
+    input/ software/ reference/
+  SHA256SUMS
+  export_manifest.json
+  conversion/
+    task/                 # 可选，已转好的 Harbor 目录
+```
+
+`export_manifest.json` 记录 `task_id`、`version`、`ale_data_version`、`package_hash`、`file_count`、`exported_at`、`exported_by`。包按路径排序，时间戳统一，同一版本重复导出 `package_hash` 必须一致。
+
+十块任务源落到包里的位置固定，导出器不自由发挥：
+
+| 任务源块 | 包内位置 | 规则 |
+| --- | --- | --- |
+| identity | `PACKAGE.json` 的 `task_id`、`domain_code`、`subdomain_code`、`title` | slug 冻结后不改 |
+| scenario | `input/task_brief.md` 的开头段落 | 由场景字段渲染，专家不手写 Harbor |
+| materials | `input/documents/` 与 `input/document_manifest.json` | 每份资料一条 manifest，含 sha256 |
+| operations | `input/task_brief.md` 的任务步骤 | 与 deliverables 的路径一致 |
+| deliverables | `input/output_contract.json` | 输出路径、字段、示例结构 |
+| success_criteria | `reference/answer_key.json` | 期望值与容差；判分口径在评测侧 |
+| environment | `PACKAGE.sandbox` | OS、资源、网络、输入输出根 |
+| review | 不进包，留在快照 | 评审是平台证据，不是任务数据 |
+| provenance | `PACKAGE.provenance` 加 `input/document_manifest.json` | 来源、采集时间、供应方 |
+| handoff | `export_manifest.json` 与 `conversion/` | 版本、哈希、转换记录 |
+
+### 14.7 往返测试
+
+`tests/test_roundtrip.py` 是契约的可执行版本，fixture 取 `legal/legal_dr_fees_01` 的结构。13 个用例覆盖以下断言：
+
+1. 合法包通过校验。
+2. 缺 `output_contract.json` 返回 `IMPORT_MISSING_FILE`。
+3. 缺 `answer_key.json` 同上。
+4. 改一字节返回 `IMPORT_HASH_MISMATCH`。
+5. 未登记文件同拒。
+6. 缺许可、版本不符、slug 非法分别拒绝。
+7. 转换生成六类 Harbor 文件。
+8. `task.toml` 的 schema、name、os、artifacts、network_mode 与映射表一致。
+9. `instruction.md` 与 `task_brief.md` 逐字节相同。
+10. 导入 → 转 Harbor → 回转 ale-data，canonical hash 不变。
+11. 无 oracle 的包仍生成目录并标 `NO_ORACLE`。
+
+fixture 的七个 PDF 是占位字节，文件名保持中文原名；真实包导入前用 `document_manifest.json` 复算，占位件不能进正式批次。
+
+### 14.8 边界
+
+- 平台不构建镜像、不装依赖、不跑 `ale prepare`、不跑验证器。
+- 平台不修改包内 `input/` 的内容；要改就出新版本。
+- Harbor 版本升级只改 `ale_data_versions.harbor_schema` 与转换器，不改库内规范化 JSON。
+- 官方 122 条可以走 B 路径做回归样本，但不计入 500，也不占用任务编号。
+
+## 15. 第一版不做的
 
 - 不做富文本协同编辑。
 - 不做自动评审分配算法，管理员手工指派。

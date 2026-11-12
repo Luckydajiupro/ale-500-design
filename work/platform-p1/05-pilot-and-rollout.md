@@ -95,6 +95,11 @@
 | AT-22 | 成本核对 | 试点期月账单不超过 4,000 元，按年末推算不超过中档 | P0 |
 | AT-23 | 从零部署 | 新机器 4 小时内完成部署并通过冒烟 | P0 |
 | AT-24 | 键盘操作 | 无鼠标完成一次提交与一次评审 | P1 |
+| AT-ALE-01 | 导入基础校验 | 合法 fixture 通过；删 `output_contract.json` 返回 `IMPORT_MISSING_FILE` | P0 |
+| AT-ALE-02 | 字段映射 | 转换后 `task.toml` 的 name/os/artifacts/network_mode 与映射表一致，`instruction.md` 逐字节相同 | P0 |
+| AT-ALE-03 | 哈希清单 | 改一字节与未登记文件都返回 `IMPORT_HASH_MISMATCH` | P0 |
+| AT-ALE-04 | 版本 pin | 版本改成 v1.0 返回 `IMPORT_VERSION_UNSUPPORTED`；转换记录三版本字段 | P0 |
+| AT-ALE-05 | 往返 | `python3 tests/test_roundtrip.py` 13 项全过，往返 canonical hash 相同 | P0 |
 
 P0 全过才算试点通过。P1 允许最多 2 项带临时绕行，但要有修复日期。
 
@@ -126,7 +131,8 @@ P0 全过才算试点通过。P1 允许最多 2 项带临时绕行，但要有�
 | 产物 | 内容 | 校验 |
 | --- | --- | --- |
 | 冻结快照 | `snapshot.zip`，含十块任务源、资料、评审、检查、清单 | `hashes.sha256` 可复算 |
-| 交接合同 | `handoff/contract.json`，含目标格式、schema 版本、引擎 commit | 字段齐全，无空值 |
+| ale-data 包 | `base/{input,software,reference}` 加 `PACKAGE.json`，与 `task-data-v1.1` 布局一致 | `PACKAGE.files` 逐文件复算，`document_manifest.json` 复算 |
+| 交接合同 | `handoff/contract.json`，含 `ale_data_version`、`harbor_schema_version`、引擎 commit、目标格式 | 三个版本字段齐全，无空值 |
 | 任务标识 | `task_id@version`，全域唯一 | 与快照清单一致 |
 | 缺口清单 | `known_gaps`，工程不需要再问 | 每条有原因与影响 |
 
@@ -138,12 +144,27 @@ P0 全过才算试点通过。P1 允许最多 2 项带临时绕行，但要有�
 | 缺口 | `handoff_gap`，字段、原因、建议 | 任务退回 `approved`，作者补字段 |
 | 运行证据 | 日志位置、失败原因 | 只存引用，不存大文件 |
 
+### 导出包与 Harbor 转换
+
+平台在冻结后导出 ale-data 包，包结构与 `03_ale-data/task-data-v1.1` 相同，多一个 `PACKAGE.json` 边车。工程拿到包后自己转 Harbor，转换器不连平台。
+
+```
+冻结快照 → export/<domain>/<task>/<version>/base/ + SHA256SUMS + export_manifest.json
+         → 工程转换器 → task.toml + instruction.md + environment/ + tests/ + solution/
+         → 运行 → 回执
+```
+
+转换的字段映射以 `02-platform-design.md` 第 14.5 节为准。平台的验收只到"包能通过同版本校验器"，不验"镜像能构建"。镜像构建失败算工程侧缺口，走 `handoff_gap` 回平台补字段。
+
+试点期转换两条包：P-01 是路径 A，由专家从零生产；另拿 `legal_dr_fees_01` 做路径 B 的导入回归。两条都必须通过 AT-ALE-01..05。
+
 ### 平台不做什么
 
 - 不读转换器源码，不调转换命令。
 - 不启动容器，不连 Windows 虚拟机，不申请 GPU。
 - 不跑验证器，不产生分数。
 - 不修改 ALE 目标格式。
+- 不把 Harbor 当库内格式，不构建镜像，不装任务依赖。
 
 这条边界写进交接合同，双方签字。
 
