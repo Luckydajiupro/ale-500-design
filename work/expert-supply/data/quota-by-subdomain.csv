@@ -1,4 +1,4 @@
-level1_code,level1_name_zh,level1_official_tasks,level1_subdomain_count,level1_active_subdomains,level1_quota,level1_share_pct,level2_code,level2_name_zh,level2_official_tasks,coverage_status,research_candidates,proposed_tasks,quota_share_pct,quota_per_official,quota_per_candidate,batch,pilot_tasks,first_30_50,notes
+level1_code,level1_name_zh,level1_official_tasks,level1_subdomain_count,level1_active_subdomains,level1_quota,level1_share_pct,level2_code,level2_name_zh,level2_official_tasks,coverage_status,research_candidates,proposed_tasks,quota_share_pct,quota_per_official,quota_per_candidate,batch,pilot_tasks,first_30_50_subdomain_flag,notes
 engineering,工程与建筑,16,10,8,50,10.0,aerospace_mech,航空航天与机械,1,active_observed,3,5,1.0,5.0,1.67,B3,0,0,
 engineering,工程与建筑,16,10,8,50,10.0,urban_planning,城市与空间规划,2,active_observed,3,5,1.0,2.5,1.67,B3,0,0,
 engineering,工程与建筑,16,10,8,50,10.0,robotics,机器人与自主系统,2,active_observed,3,5,1.0,2.5,1.67,B4,0,0,
