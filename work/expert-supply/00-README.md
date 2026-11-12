@@ -16,7 +16,7 @@ STATUS: v6
 | `02a-ale-context-and-data.md` | ALE 是什么、任务怎么跑、专家交什么、数据与难度标准、AI 边界、官方包导读 | 专家、审稿人、招募 |
 | `03-annotation-manual-general.md` | 十块字段怎么写；难度校准、数据规则、退回原因、提交前检查 | 专家、审稿人 |
 | `04-annotation-manual-by-category.md` | 商业会计、神经、建筑怎么写；法律供应方包怎么检 | 专家、审稿人 |
-| `05-sample-annotation-walkthroughs.md` | 官方完整包逐文件导读；三份角色样例：会计、神经、建筑；法律附录 | 专家、试点评审 |
+| `05-sample-annotation-walkthroughs.md` | 官方完整包逐文件导读；唯一完整样例；三份迁移练习：会计、神经、建筑；法律附录 | 专家、试点评审 |
 | `06-expert-onboarding-and-quality.md` | 入驻、培训、认证、shadow、返修、争议、绩效 | 运营、领域负责人 |
 | `07-compressed-delivery-plan.md` | 4.5 个月怎么排、和平台/导入怎么并行 | 项目负责人、工程 |
 | `08-reference-alignment-notes.md` | 参考标注文档对照、采用与未采用的标准、待确认项 | 项目负责人、领域负责人 |
