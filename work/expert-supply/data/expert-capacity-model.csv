@@ -8,12 +8,12 @@ D01,hours_per_task_business_finance,14,小时/条,business_finance 配额 50 条
 D02,hours_per_task_education_info,16,小时/条,education_info 配额 32 条；专业复杂度与资料准备假设,配额表 education_info,±40%
 D03,hours_per_task_engineering,22,小时/条,engineering 配额 50 条；专业复杂度与资料准备假设,配额表 engineering,±40%
 D04,hours_per_task_health_medicine,20,小时/条,health_medicine 配额 60 条；专业复杂度与资料准备假设,配额表 health_medicine,±40%
-D05,hours_per_task_legal,12,小时/条,legal 配额 36 条；专业复杂度与资料准备假设,配额表 legal,±40%
+D05,hours_per_task_legal,12,小时/条,legal 配额 42 条（供应方）；专业复杂度与资料准备假设,配额表 legal,±40%
 D06,hours_per_task_life_sciences,18,小时/条,life_sciences 配额 48 条；专业复杂度与资料准备假设,配额表 life_sciences,±40%
 D07,hours_per_task_other,14,小时/条,other 配额 28 条；专业复杂度与资料准备假设,配额表 other,±40%
 D08,hours_per_task_physical_sciences,18,小时/条,physical_sciences 配额 46 条；专业复杂度与资料准备假设,配额表 physical_sciences,±40%
 D09,hours_per_task_psychology_neuro,16,小时/条,psychology_neuro 配额 34 条；专业复杂度与资料准备假设,配额表 psychology_neuro,±40%
-D10,hours_per_task_social_sciences,14,小时/条,social_sciences 配额 34 条；专业复杂度与资料准备假设,配额表 social_sciences,±40%
+D10,hours_per_task_social_sciences,14,小时/条,social_sciences 配额 28 条；专业复杂度与资料准备假设,配额表 social_sciences,±40%
 D11,hours_per_task_transport_safety,18,小时/条,transport_safety 配额 30 条；专业复杂度与资料准备假设,配额表 transport_safety,±40%
 D12,hours_per_task_visual_media,16,小时/条,visual_media 配额 36 条；专业复杂度与资料准备假设,配额表 visual_media,±40%
 D13,hours_per_task_agriculture_env,18,小时/条,agriculture_env 配额 16 条；专业复杂度与资料准备假设,配额表 agriculture_env,±40%

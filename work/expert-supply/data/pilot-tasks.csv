@@ -1,6 +1,6 @@
 pilot_id,domain_code,subdomain_code,workflow_family_id,materials,task_shape,os,gpu,network,expert_profile
-P1-01,legal,legal_research,WF-LEGAL-RESEARCH,公开法规与公开裁判文书；3 份合成解除通知,见 05 走查,Linux,no,offline (public data pre-staged),法律检索/诉讼支持，3 年以上
-P1-02,legal,litigation,WF-LITIGATION,合成卷宗；证据时间线与争点表,见 05 走查,Linux,no,offline (public data pre-staged),法律检索/诉讼支持，3 年以上（诉讼 5 年优先）
+P1-01,legal,legal_research,WF-LEGAL-RESEARCH,公开法规与公开裁判文书；3 份合成解除通知；授权/脱敏说明,见 05 走查,Linux,no,offline (public data pre-staged),法律供应方（不招），3 年以上；授权/脱敏说明随任务交
+P1-02,legal,litigation,WF-LITIGATION,合成卷宗；证据时间线与争点表；授权/脱敏说明,见 05 走查,Linux,no,offline (public data pre-staged),法律供应方（不招），3 年以上；授权/脱敏说明随任务交
 P1-03,psychology_neuro,comp_neuro,WF-NEUROIMAGING,合成 DICOM；DICOM→BIDS 转换与 QC,见 05 走查,Linux,no,offline (public data pre-staged),神经影像数据工程，3 年以上
 P1-04,psychology_neuro,comp_neuro,WF-NEUROIMAGING,OpenNeuro 公开 BIDS（CC0）；合成事件表,见 05 走查,Linux,no,offline (public data pre-staged),神经影像数据工程，3 年以上
 P1-05,engineering,energy_power,WF-BUILDING-ENERGY,EnergyPlus 官方示例 IDF + 公开 TMY3 + 合成账单；校准,见 05 走查,Linux,no,offline (public data pre-staged),建筑能耗模拟，5 年以上，CMVP/BEMP 优先
