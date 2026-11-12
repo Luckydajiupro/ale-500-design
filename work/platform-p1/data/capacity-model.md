@@ -20,9 +20,10 @@
 ```
 base_d = clamp(0.6 × official_median_d, 5, 2048)   MiB
 footprint_d = base_d × scenario_factor              MiB
-live = Σ(quota_d × footprint_d × layer) / 1024      GiB
-backup = live × 1.2
-provisioned_hot = ceil_to_512(live × 1.3 + 100)
+live = Σ(quota_d × footprint_d × layer) / 1024      GiB  # 资产
+hot = live + DB + log                                GiB  # 热占用
+backup = hot × 1.2
+provisioned_hot = ceil_to_512(hot × 1.3 + 100)
 ```
 
 `official_median_d` 取 `stages/s0-baseline/08_coverage_matrix_draft.csv` 的中位。`agriculture_env` 没有官方样本，按 2048 MiB 上限估，这是最保守的假设。
@@ -35,36 +36,36 @@ provisioned_hot = ceil_to_512(live × 1.3 + 100)
 | education_info | 32 | 0.3 | 5.0 | 0.55 |
 | engineering | 50 | 12.1 | 7.26 | 1.24 |
 | health_medicine | 60 | 9.0 | 5.4 | 1.11 |
-| legal | 36 | 0.6 | 5.0 | 0.62 |
+| legal | 42 | 0.6 | 5.0 | 0.72 |
 | life_sciences | 48 | 178.5 | 107.1 | 17.57 |
 | other | 28 | 97.3 | 58.38 | 5.59 |
 | physical_sciences | 46 | 10.2 | 6.12 | 0.96 |
 | psychology_neuro | 34 | 1542 | 925.2 | 107.52 |
-| social_sciences | 34 | 447.6 | 268.56 | 31.21 |
+| social_sciences | 28 | 447.6 | 268.56 | 25.70 |
 | transport_safety | 30 | 85.1 | 51.06 | 5.24 |
 | visual_media | 36 | 7.4 | 5.0 | 0.62 |
 | agriculture_env | 16 | 无样本 | 2048 | 112.00 |
-| 合计 | 500 |  |  | 321.06 |
+| 合计（资产 live） | 500 |  |  | 279.67 |
 
 ## 三档结果
 
-| 档 | live GiB | 备份 GiB | DB | 日志 | 已开通热存储 |
-| --- | --- | --- | --- | --- | --- |
-| 低 | 137.17 | 164.60 | 3 | 12 | 512 GiB |
-| 中 | 321.06 | 385.28 | 6 | 30 | 1024 GiB |
-| 高 | 622.42 | 746.90 | 6 | 30 | 1024 GiB |
+| 档 | 资产 live GiB | DB | 日志 | 热占用 GiB | 备份 GiB | 已开通热存储 |
+| --- | --- | --- | --- | --- | --- | --- |
+| 低 | 119.84 | 3 | 12 | 134.84 | 161.81 | 512 GiB |
+| 中 | 279.67 | 6 | 30 | 315.67 | 378.80 | 1024 GiB |
+| 高 | 575.30 | 6 | 30 | 611.30 | 733.56 | 1024 GiB |
 
-中档热占用约 357 GiB，1 TiB 留 65% 余量。高档热占用约 658 GiB，1 TiB 留 36% 余量。
+中档热占用约 316 GiB，1 TiB 留 69% 余量。高档热占用约 611 GiB，1 TiB 留 40% 余量。公式对中档给 512 GiB 下限；导出包保留 90 天、快照双份，采购仍取 1 TiB。
 
 ## 敏感性
 
 | 变化 | 影响 | 结果 |
 | --- | --- | --- |
-| 基础中位翻倍 | live ×2 | 274 / 642 / 1245 GiB |
-| 任务 800 | live ×1.6 | 219 / 514 / 996 GiB |
+| 基础中位翻倍 | 资产 live ×2，热占用加固定开销 | 255 / 595 / 1187 GiB |
+| 任务 800 | 资产 live ×1.6，热占用加固定开销 | 207 / 483 / 956 GiB |
 | 单条 12 GiB | 该条占 42 GiB | 中档 +13% |
 | 快照保留 3 份 | live +50% | 不建议 |
-| agriculture 中位降到 50 MiB | 该项从 112 降到 2 GiB | 中档 -34% |
+| agriculture 中位降到 50 MiB | 该项从 112 降到 2 GiB | 中档 -35% |
 
 ## 结论
 

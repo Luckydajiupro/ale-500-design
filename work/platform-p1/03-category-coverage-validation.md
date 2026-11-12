@@ -15,12 +15,12 @@
 | education_info | 教育与信息 | 3 | 2 | 36 | 32 | -4 |
 | engineering | 工程 | 10 | 16 | 50 | 50 | 0 |
 | health_medicine | 健康与医学 | 5 | 19 | 60 | 60 | 0 |
-| legal | 法律 | 2 | 2 | 36 | 36 | 0 |
+| legal | 法律 | 2 | 2 | 36 | 42 | +6 |
 | life_sciences | 生命科学 | 4 | 12 | 48 | 48 | 0 |
 | other | 其他 | 1 | 2 | 32 | 28 | -4 |
 | physical_sciences | 物理科学 | 4 | 14 | 46 | 46 | 0 |
 | psychology_neuro | 心理与神经 | 2 | 3 | 34 | 34 | 0 |
-| social_sciences | 社会科学 | 1 | 1 | 34 | 34 | 0 |
+| social_sciences | 社会科学 | 1 | 1 | 34 | 28 | -6 |
 | transport_safety | 交通与安全 | 3 | 2 | 34 | 30 | -4 |
 | visual_media | 视觉与媒体 | 3 | 11 | 40 | 36 | -4 |
 | agriculture_env | 农业与环境 | 2 | 0 | 无行 | 16 | 新增 |
@@ -30,9 +30,18 @@
 
 `08_coverage_matrix_draft.csv` 的 12 个非 CS 类目配额合计正好 500，但 `agriculture_env` 不在表里。它不是 CS 域，也不该按 0 处理。按 12 类做覆盖，等于把一个官方域从 500 条里静默删掉。
 
-建议补 16 条，全部给 `env_water`。`precision_agriculture` 没有官方样本，暂不分配配额，留在手工组做后续扩样。来源从四个覆盖最薄的类目各减 4 条：education 36 减 4，other 32 减 4，transport 34 减 4，visual 40 减 4。总数仍是 500，08 其余不动。这组数字与 `work/expert-supply/01-quota-allocation-500.md` 的 v1 一致。
+建议补 16 条，全部给 `env_water`。`precision_agriculture` 没有官方样本，暂不分配配额，留在手工组做后续扩样。来源从四个覆盖最薄的类目各减 4 条：education 36 减 4，other 32 减 4，transport 34 减 4，visual 40 减 4。总数仍是 500，08 其余不动。
 
-这条要负责人拍板。未拍板前，500 的计数模型按"13 类加 1 个待补"处理，不能报成 12 类已完成。
+同时按 `docs/04-roles-and-decisions.md` 与专家分支的 v1 配额，把 legal 从 36 调到 42（`legal_research` 21、`litigation` 21），social_sciences 从 34 调到 28（`economics` 28）。两者一增一减相抵，总数不变。14 个域合计仍为 500。
+
+| 域 | 08 草案 | 现建议 | 差 | 依据 |
+| --- | --- | --- | --- | --- |
+| legal | 36 | 42 | +6 | docs/04；legal_research 21、litigation 21 |
+| social_sciences | 34 | 28 | -6 | docs/04；economics 28 |
+| agriculture_env | 无行 | 16 | +16 | 08 漏域，见上 |
+| education、other、transport、visual | 各减 4 | 各减 4 | -16 | 补 agriculture |
+
+配额统一不等于 Q7 已决。法律供应方的 42 条包是否全部计入 500、只部分计入时是否从别域调剂，仍由负责人拍板；本文件只把配额口径统一到 500，不替 Q7 作决定。
 
 ### 缺口二：computing_math 的 A/B 口径未裁决
 
@@ -209,7 +218,7 @@ business_finance、visual_media，另有 engineering 的 5 条 Windows。
 
 1. 平台 schema 覆盖 14 个 domain_code。没有任何一类因为字段缺失而无法录入。
 2. 第一批能完整支持的是 3 个类目，能支持录入与评审但受资产、引用或 GUI 未知限制的是 7 个，需要 Windows、GPU 或在线服务才能验的是 4 个。
-3. `agriculture_env` 必须补进配额，建议 16 条，从 education、other、transport、visual 各减 4 条，总数仍 500。
+3. 配额合计 500：`agriculture_env` 补 16 条（education、other、transport、visual 各减 4），legal 调到 42、social_sciences 调到 28（两者相抵）。14 个域逐项相加为 500。
 4. 6 个空覆盖子域只能手工兜底。平台不做假样本，也不把它们计入自动流程。
 5. 后续类目不会被堵死：新增类目只加配置行，状态机、权限、快照格式都不变。
 

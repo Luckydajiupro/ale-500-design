@@ -46,26 +46,26 @@ live_gib = Σ(quota_d × footprint_d × layer) / 1024
 db_gib = 6
 log_gib = 30
 backup_gib = live_gib × 1.2
-provisioned_gib = ceil_to(512, live_gib × 1.3 + 100)
+provisioned_gib = ceil_to(512, (live_gib + DB + log) × 1.3 + 100)
 ```
 
 导出包默认保留 90 天，过期只留 manifest 与哈希，不留在 live 里。
 
 ### 2.3 结果
 
-| 档 | live | DB | 日志 | 备份 | 已开通 |
-| --- | --- | --- | --- | --- | --- |
-| 低 | 137.17 GiB | 3 GiB | 12 GiB | 164.60 GiB | 512 GiB |
-| 中 | 321.06 GiB | 6 GiB | 30 GiB | 385.28 GiB | 1024 GiB |
-| 高 | 622.42 GiB | 6 GiB | 30 GiB | 746.90 GiB | 1024 GiB |
+| 档 | 资产 live | DB | 日志 | 热占用 | 备份 | 已开通 |
+| --- | --- | --- | --- | --- | --- | --- |
+| 低 | 119.84 GiB | 3 GiB | 12 GiB | 134.84 GiB | 161.81 GiB | 512 GiB |
+| 中 | 279.67 GiB | 6 GiB | 30 GiB | 315.67 GiB | 378.80 GiB | 1024 GiB |
+| 高 | 575.30 GiB | 6 GiB | 30 GiB | 611.30 GiB | 733.56 GiB | 1024 GiB |
 
-中档热占用约 357 GiB，开通 1 TiB 留 65% 余量。高档热占用约 658 GiB，开通 1 TiB 留 36% 余量。逐类目数字在 `data/storage-sizing.csv`，公式与敏感性在 `data/capacity-model.md`。
+中档热占用约 316 GiB，开通 1 TiB 留 69% 余量。高档热占用约 611 GiB，开通 1 TiB 留 40% 余量。中档公式下限是 512 GiB，导出包保留 90 天、快照双份，所以仍按 1 TiB 采购。逐类目数字在 `data/storage-sizing.csv`，公式与敏感性在 `data/capacity-model.md`。
 
 ### 2.4 敏感性
 
 | 变化 | 影响 | 结论 |
 | --- | --- | --- |
-| 单任务中位翻倍 | live 约 274 / 642 / 1245 GiB | 中档仍在 1 TiB，高档升 2 TiB |
+| 单任务中位翻倍 | 热占用约 255 / 595 / 1187 GiB | 中档仍在 1 TiB，高档升 2 TiB |
 | 任务数从 500 到 800 | live ×1.6 | 低档升中档，高档升 2 TiB |
 | 快照保留 3 份而非 1 份 | live +50% | 不建议，快照可重建 |
 | 出现 1 条 12 GiB 任务 | 单条 live 约 42 GiB | 需要单任务上限与例外审批 |
