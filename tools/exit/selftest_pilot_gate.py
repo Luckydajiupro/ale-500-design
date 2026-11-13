@@ -33,6 +33,7 @@ def record(direction, task_id, letter):
         "direction": direction,
         "expert": {"expert_id": "E-01", "signed_at": "2026-11-18T00:00:00Z"},
         "manual_baseline": {
+            "task_id": f"{task_id}_t1",
             "started_at": "2026-11-24T00:00:00Z",
             "finished_at": "2026-11-28T00:00:00Z",
             "hours": 6.5,
@@ -41,6 +42,7 @@ def record(direction, task_id, letter):
             "annotation_spec_version": "annot-1.0",
         },
         "platform_assisted": {
+            "task_id": task_id,
             "started_at": "2026-12-08T00:00:00Z",
             "finished_at": "2026-12-12T00:00:00Z",
             "hours": 3.1,
@@ -192,6 +194,8 @@ def main():
     case("agent report missing details", 1, lambda root: set_artifact(root, "agent_report", {"path": "agent-report.json", "version": "1.0", "capabilities": 5}))
     case("smoke failed", 1, lambda root: set_artifact(root, "smoke", {"path": "smoke.json", "version": "1.0", "status": "FAIL"}))
     case("smoke skipped without reason", 1, lambda root: set_artifact(root, "smoke", {"path": "smoke.json", "version": "1.0", "status": "SKIP"}))
+    case("T1 and T2 same instance", 1, lambda root: set_nested(root, "record-business.json", "manual_baseline", "task_id", "business_finance/accounting_reconcile_01"))
+    case("T2 task id mismatch", 1, lambda root: set_nested(root, "record-business.json", "platform_assisted", "task_id", "business_finance/other_01"))
     case("stage three mode needs acceptance", 1, lambda root: None, acceptance=True)
     case("bad json", 2, lambda root: (Path(root) / "record-business.json").write_text("{", encoding="utf-8"))
 

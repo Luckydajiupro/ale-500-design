@@ -236,6 +236,8 @@ def check_record(record, task_ids):
     if not isinstance(manual, dict):
         problems.append(("manual_baseline", "missing or not an object"))
     else:
+        if not nonempty_str(manual.get("task_id")):
+            problems.append(("manual_baseline.task_id", "missing or empty"))
         start = parse_time(manual.get("started_at"))
         manual_end = parse_time(manual.get("finished_at"))
         if start is None:
@@ -258,6 +260,13 @@ def check_record(record, task_ids):
     if not isinstance(assisted, dict):
         problems.append(("platform_assisted", "missing or not an object"))
     else:
+        platform_task = assisted.get("task_id")
+        if not nonempty_str(platform_task):
+            problems.append(("platform_assisted.task_id", "missing or empty"))
+        elif platform_task != task_id:
+            problems.append(("platform_assisted.task_id", "must equal record.task_id"))
+        if isinstance(manual, dict) and nonempty_str(manual.get("task_id")) and platform_task == manual.get("task_id"):
+            problems.append(("manual_baseline.task_id", "T1 and T2 must be different instances"))
         start = parse_time(assisted.get("started_at"))
         end = parse_time(assisted.get("finished_at"))
         confirmed_at = parse_time(assisted.get("confirmed_at"))

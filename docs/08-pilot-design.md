@@ -22,7 +22,7 @@
 | 神经影像 | psychology_neuro | `psychology_neuro/dicom_to_bids_01` | 有专业工具和文件格式，能暴露平台表达不了的隐性步骤 |
 | 建筑节能 | engineering | `engineering/building_energy_baseline_01` | 有计算和外部规范，能测 Agent 追问和预检的边界 |
 
-三条试点各 1 条，不要求覆盖全部 14 个域，也不承担配额验证。每条试点只做基线复算与可验证性检查，不出具执业结论；建筑试点不要求外部注册工程师签字，500 条里的建筑任务仍按 `docs/04-roles-and-decisions.md` 第十四条签字后放行。
+三条试点线各 1 个题族，每条线做 T1 人工基线与 T2 平台辅助两个实例，共 6 个任务实例，不要求覆盖全部 14 个域，也不承担配额验证。每条试点只做基线复算与可验证性检查，不出具执业结论；建筑试点不要求外部注册工程师签字，500 条里的建筑任务仍按 `docs/04-roles-and-decisions.md` 第十四条签字后放行。
 
 试点任务用公开数据或合成资料，不接触真实客户材料。资料授权按 `docs/06-decisions-and-blockers.md` 的默认走法执行；需要新授权时，先停该条试点，不先用后补。
 
@@ -85,9 +85,9 @@ Agent 的效果指标在试点前定好，试点中只记录不改口径。
 |---|---|---|---|---|---|
 | 1 | 11-13 到 11-17 | 触达 3 名专家，确认方向 | 账号、存储、审计骨架 | 选模型与提示词基线 | 3 份意向确认 |
 | 2 | 11-18 到 11-21 | 签约、培训、任务范围冻结 | S0 表单 v0 | 访谈提纲 v0 | 合同、协议、任务范围 |
-| 3 | 11-24 到 11-28 | T1 人工基线，三条各 1 条 | S0 试用，收字段缺口 | 访谈与追问试跑 | T1 记录、字段缺口清单 |
+| 3 | 11-24 到 11-28 | T1 人工基线，三条线各 1 个实例 | S0 试用，收字段缺口 | 访谈与追问试跑 | T1 记录、字段缺口清单 |
 | 4 | 12-01 到 12-05 | T1 收尾，补资料与判断 | S1 评审与冻结 | 结构化草稿对比 | T1 完成、S1 验收 |
-| 5 | 12-08 到 12-12 | T2 平台辅助，三条各 1 条 | S2 Agent 面板、表单 v1 | 五项能力全开 | T2 记录、建议日志 |
+| 5 | 12-08 到 12-12 | T2 平台辅助，三条线各 1 个实例 | S2 Agent 面板、表单 v1 | 五项能力全开 | T2 记录、建议日志 |
 | 6 | 12-15 到 12-19 | T2 收尾，专家逐字段确认 | S3 组包 beta | 预检与审核辅助 | 确认记录、S3 验收 |
 | 7 | 12-22 到 12-25 | 配合组包与返修 | S4 校验与入库 | 失败模式复盘 | 3 个包、校验报告、入库回执 |
 | 8 | 12-28 到 12-30 | 问题清单收口 | 试点验收 | 能力报告定稿 | 试点 gate |
@@ -103,8 +103,8 @@ T1 和 T2 用同一题族的不同实例，中间至少隔 3 个工作日。专�
 单条记录至少包含：
 
 - `task_id`、`direction`、`expert`、`signed_at`。
-- `manual_baseline`：起止时间、小时数、资料清单、卡点、标注规范版本。
-- `platform_assisted`：起止时间、小时数、表单版本、Agent 调用次数、建议数、采纳数、专家确认、确认时间、人工兜底清单。
+- `manual_baseline`：`task_id`、起止时间、小时数、资料清单、卡点、标注规范版本。
+- `platform_assisted`：`task_id`、起止时间、小时数、表单版本、Agent 调用次数、建议数、采纳数、专家确认、确认时间、人工兜底清单。
 - `review`：评审人、是否独立、轮次、阻断数、解决数、批准时间。
 - `package`：路径、包哈希、文件数、ALE-data 版本、是否平台生成、重建哈希、是否一致。
 - `validation`：校验器名称与版本、检查项、通过数、阻断数、警告数、报告路径。
@@ -121,9 +121,9 @@ T1 和 T2 用同一题族的不同实例，中间至少隔 3 个工作日。专�
 - `artifacts.smoke`：`path`、`version`、`status` 取 `PASS`、`SKIP`、`FAIL`；`FAIL` 直接不通过，`SKIP` 必须有 `reason`。
 - `artifacts.issue_log`：`path`、`version`、`open_blockers` 固定 0、`fallbacks` 是人工兜底 ID 列表。
 
-单条记录的七段字段必须齐全。`manual_baseline` 的 `hours` 大于 0，`artifacts` 非空；`platform_assisted` 的 `agent_suggestions` 大于 0，`agent_accepted` 不超过建议数，`expert_confirmed` 为 true；`review.reviewers` 不含专家本人，`blockers` 等于 `resolved`；`package.package_hash` 是 64 位小写十六进制，`rebuilt_hash` 与它相等；`validation.passed` 等于 `checks`，`blockers` 为 0；`ingest.package_hash` 等于包哈希，`ingested_at` 不早于 `review.approved_at`。
+单条记录对应一条试点线，`manual_baseline.task_id` 是 T1 实例，`platform_assisted.task_id` 是 T2 实例，两者必须不同，且 T2 等于记录顶层 `task_id`。`manual_baseline` 的 `hours` 大于 0，`artifacts` 非空；`platform_assisted` 的 `agent_suggestions` 大于 0，`agent_accepted` 不超过建议数，`expert_confirmed` 为 true；`review.reviewers` 不含专家本人，`blockers` 等于 `resolved`；`package.package_hash` 是 64 位小写十六进制，`rebuilt_hash` 与它相等；`validation.passed` 等于 `checks`，`blockers` 为 0；`ingest.package_hash` 等于包哈希，`ingested_at` 不早于 `review.approved_at`。
 
-检查器自检覆盖二十四组人造记录，包括缺段、未确认、包哈希错、校验阻断、入库错配、重复方向、分工矩阵缺步或缺工时、Agent 报告缺项、冒烟 FAIL 或 SKIP 无理由、坏 JSON。自检本身不通过，检查器的通过不算证据。
+检查器自检覆盖二十六组人造记录，包括缺段、未确认、包哈希错、校验阻断、入库错配、重复方向、T1 与 T2 同实例、T2 标识错、分工矩阵缺步或缺工时、Agent 报告缺项、冒烟 FAIL 或 SKIP 无理由、坏 JSON。自检本身不通过，检查器的通过不算证据。
 
 ## 十二项证据
 
