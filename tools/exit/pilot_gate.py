@@ -354,10 +354,20 @@ def check_artifact_file(name, value, root):
         if data.get("fallbacks") != value.get("fallbacks"):
             problems.append((f"index.artifacts.{name}.fallbacks", "does not match index"))
     elif name == "smoke":
-        if data.get("status") not in ("PASS", "SKIP", "FAIL"):
+        status = data.get("status")
+        blocking = data.get("blocking")
+        if status not in ("PASS", "SKIP", "FAIL"):
             problems.append((f"index.artifacts.{name}.status", "file needs PASS, SKIP or FAIL"))
-        if data.get("status") != value.get("status"):
+        if not isinstance(blocking, bool):
+            problems.append((f"index.artifacts.{name}.blocking", "file needs true or false"))
+        if status in ("SKIP", "FAIL") and not nonempty_str(data.get("reason")):
+            problems.append((f"index.artifacts.{name}.reason", f"{status} needs a reason"))
+        if status != "FAIL" and blocking is True:
+            problems.append((f"index.artifacts.{name}.blocking", "only FAIL may be blocking"))
+        if status != value.get("status"):
             problems.append((f"index.artifacts.{name}.status", "does not match index"))
+        if blocking != value.get("blocking"):
+            problems.append((f"index.artifacts.{name}.blocking", "does not match index"))
     return problems
 
 
@@ -428,12 +438,17 @@ def check_index(index, root):
     smoke = artifact("smoke")
     if smoke is not None:
         status = smoke.get("status")
+        blocking = smoke.get("blocking")
         if status not in ("PASS", "SKIP", "FAIL"):
             problems.append(("index.artifacts.smoke.status", "need PASS, SKIP or FAIL"))
-        elif status == "FAIL":
-            problems.append(("index.artifacts.smoke.status", "smoke FAIL"))
-        elif status == "SKIP" and not nonempty_str(smoke.get("reason")):
-            problems.append(("index.artifacts.smoke.reason", "SKIP needs a reason"))
+        if not isinstance(blocking, bool):
+            problems.append(("index.artifacts.smoke.blocking", "need true or false"))
+        elif status != "FAIL" and blocking:
+            problems.append(("index.artifacts.smoke.blocking", "only FAIL may be blocking"))
+        if status in ("SKIP", "FAIL") and not nonempty_str(smoke.get("reason")):
+            problems.append(("index.artifacts.smoke.reason", f"{status} needs a reason"))
+        if status == "FAIL" and blocking:
+            problems.append(("index.artifacts.smoke", "blocking smoke FAIL"))
 
     issues = artifact("issue_log")
     if issues is not None:
@@ -446,6 +461,37 @@ def check_index(index, root):
             problems.append(("index.artifacts.issue_log.fallbacks", "duplicate ids"))
 
     return problems, task_ids
+
+
+def verify_platform_evidence(ingest, path, package_hash, approved_at):
+    problems = []
+    try:
+        data = load_json(path)
+    except InputError as exc:
+        return [("ingest.platform_evidence.path", str(exc))]
+    if data.get("source") != "platform_db_export":
+        problems.append(("ingest.platform_evidence.source", "need platform_db_export"))
+    if data.get("ingest_record_id") != ingest.get("record_id"):
+        problems.append(("ingest.platform_evidence.ingest_record_id", "does not match ingest.record_id"))
+    if data.get("package_hash") != package_hash:
+        problems.append(("ingest.platform_evidence.package_hash", "does not match package.package_hash"))
+    if data.get("state") != "ingested":
+        problems.append(("ingest.platform_evidence.state", "need ingested"))
+    if data.get("audit_event_id") != ingest.get("audit_event_id"):
+        problems.append(("ingest.platform_evidence.audit_event_id", "does not match ingest.audit_event_id"))
+    if not nonempty_str(data.get("actor")):
+        problems.append(("ingest.platform_evidence.actor", "missing or empty"))
+    occurred = parse_time(data.get("occurred_at"))
+    if occurred is None:
+        problems.append(("ingest.platform_evidence.occurred_at", "not an ISO timestamp"))
+    elif approved_at is not None and occurred < approved_at:
+        problems.append(("ingest.platform_evidence.occurred_at", "earlier than review.approved_at"))
+    exported = parse_time(data.get("exported_at"))
+    if exported is None:
+        problems.append(("ingest.platform_evidence.exported_at", "not an ISO timestamp"))
+    elif occurred is not None and exported < occurred:
+        problems.append(("ingest.platform_evidence.exported_at", "earlier than occurred_at"))
+    return problems
 
 
 def check_record(record, task_ids):
@@ -527,21 +573,30 @@ def check_record(record, task_ids):
         if not nonneg_int(runs) or runs < 1:
             problems.append(("platform_assisted.agent_runs", "need a positive integer"))
         suggestions = assisted.get("agent_suggestions")
-        accepted = assisted.get("agent_accepted")
+        adopted = assisted.get("agent_adopted_by_expert")
+        auto_adopted = assisted.get("agent_auto_adopted")
+        if "agent_accepted" in assisted:
+            problems.append(
+                ("platform_assisted.agent_accepted", "ambiguous: use agent_adopted_by_expert and agent_auto_adopted")
+            )
         if not nonneg_int(suggestions) or suggestions < 1:
             problems.append(("platform_assisted.agent_suggestions", "need a positive integer"))
-        if not nonneg_int(accepted):
-            problems.append(("platform_assisted.agent_accepted", "need a non-negative integer"))
-        elif accepted != 0:
-            problems.append(("platform_assisted.agent_accepted", "must be 0: experts confirm every field"))
+        if not nonneg_int(adopted):
+            problems.append(("platform_assisted.agent_adopted_by_expert", "need a non-negative integer"))
+        elif nonneg_int(suggestions) and adopted > suggestions:
+            problems.append(("platform_assisted.agent_adopted_by_expert", "cannot exceed agent_suggestions"))
+        if not nonneg_int(auto_adopted):
+            problems.append(("platform_assisted.agent_auto_adopted", "need a non-negative integer"))
+        elif auto_adopted != 0:
+            problems.append(
+                ("platform_assisted.agent_auto_adopted", "must be 0: no suggestion may be applied without expert confirmation")
+            )
         if not is_true(assisted.get("expert_confirmed")):
             problems.append(("platform_assisted.expert_confirmed", "need true"))
         if confirmed_at is None:
             problems.append(("platform_assisted.confirmed_at", "not an ISO timestamp"))
         elif end is not None and confirmed_at < end:
             problems.append(("platform_assisted.confirmed_at", "earlier than finished_at"))
-        if is_true(assisted.get("agent_auto_applied")):
-            problems.append(("platform_assisted.agent_auto_applied", "must be false"))
         fallbacks = assisted.get("manual_fallbacks")
         if not isinstance(fallbacks, list):
             problems.append(("platform_assisted.manual_fallbacks", "need a list"))
@@ -684,6 +739,30 @@ def check_record(record, task_ids):
         count = ingest.get("asset_index_count")
         if not nonneg_int(count) or count < 1:
             problems.append(("ingest.asset_index_count", "need a positive integer"))
+        if not nonempty_str(ingest.get("audit_event_id")):
+            problems.append(("ingest.audit_event_id", "missing or empty"))
+        evidence = ingest.get("platform_evidence")
+        if not isinstance(evidence, dict):
+            problems.append(("ingest.platform_evidence", "missing or not an object"))
+        else:
+            evidence_path = evidence.get("path")
+            evidence_sha = evidence.get("sha256")
+            if not nonempty_str(evidence_path):
+                problems.append(("ingest.platform_evidence.path", "missing or empty"))
+            elif not safe_rel(evidence_path):
+                problems.append(("ingest.platform_evidence.path", "must be a relative path inside the worktree"))
+            elif not (record["_dir"] / evidence_path).is_file():
+                problems.append(("ingest.platform_evidence.path", f"does not exist: {evidence_path}"))
+            else:
+                if not isinstance(evidence_sha, str) or not HASH64.match(evidence_sha):
+                    problems.append(("ingest.platform_evidence.sha256", "need 64 lowercase hex characters"))
+                elif sha256_file(record["_dir"] / evidence_path) != evidence_sha:
+                    problems.append(("ingest.platform_evidence.sha256", "does not match the evidence file"))
+                problems.extend(
+                    verify_platform_evidence(
+                        ingest, record["_dir"] / evidence_path, package_hash, approved_at
+                    )
+                )
 
     return problems
 

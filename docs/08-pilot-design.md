@@ -46,8 +46,8 @@
 |---|---|---|---|
 | 11-30 | S0 | 账号、任务源表单 v0、资料上传、哈希、审计 | 把人工基线的一条任务录入，找字段缺失 |
 | 12-04 | S1 | 评审队列、派单、退回返修、冻结快照 | 走一次提交和退回，记录返修轮次 |
-| 12-08 | S2 | Agent 建议面板、逐字段确认、表单 v1 | 用 Agent 起草，专家逐字段改 |
-| 12-15 | S3 | 组包器 beta、包校验 L1 到 L3、失败隔离 | 用冻结快照生成一个包，看缺件和哈希 |
+| 12-08 | S2 | Agent 建议面板、逐字段确认、表单 v0.9 | 用 Agent 起草，专家逐字段改 |
+| 12-15 | S3 | 正式规范 v1 与表单 v1、组包器 beta、包校验 L1 到 L3、失败隔离 | 用冻结快照生成一个包，看缺件和哈希 |
 | 12-22 | S4 | 包校验 L4 到 L5、幂等入库、入库回执 | 完成组包、校验、入库全链 |
 
 平台版本用功能开关控制，试点专家只看到已验收的开关。S3 和 S4 的包格式按 `plan/platform-p1` 分支 `work/platform-p1/06-p1-revision-2026-11-13.md` 第 6 节的 ALE-data 契约执行；契约变化要同时改组包器、校验器和试点记录，不能只改一边。
@@ -70,14 +70,14 @@ Agent 的效果指标在试点前定好，试点中只记录不改口径。
 
 | 指标 | 怎么量 | 试点门槛 |
 |---|---|---|
-| 建议采纳率 | 被专家接受或修改后保留的字段数除以建议字段数 | 五项都有数据；至少两项达到 40% |
+| 建议采纳率 | 被专家接受或修改后保留的字段数除以建议字段数，只算人工确认 | 五项都有数据；至少两项达到 40% |
 | 净节省时间 | 人工基线耗时减平台辅助耗时，再减专家确认耗时 | 至少两项为正 |
 | 误报率 | Agent 标阻断但专家判定不阻断的比例 | 每项都记录，不设统一门槛 |
 | 漏报 | 评审或工程发现但 Agent 没标的问题数 | 每项都记录，阻断级漏报为 0 |
 | 单条成本 | 模型调用、重试、人工确认折算 | 试点不超过 60 元一条 |
 | 延迟 | 首 token、结构化完成、预检完成 | p95 分别不超过 8 秒、60 秒、90 秒 |
 
-试点不要求五项全达标。要求五项都有样本、都有失败模式、都有成本数；至少两项对专家有净节省；阻断级漏报为 0；自动采纳为 0。达不到的项写进 Agent 能力报告，作为 M2 的 backlog，不硬推。
+试点不要求五项全达标。要求五项都有样本、都有失败模式、都有成本数；至少两项对专家有净节省；阻断级漏报为 0；未经专家确认的自动采纳为 0。专家人工采纳是正常路径，要记录采纳数。达不到的项写进 Agent 能力报告，作为 M2 的 backlog，不硬推。
 
 ## 七段链和周计划
 
@@ -120,29 +120,29 @@ T1 和 T2 用同一题族的不同实例，中间至少隔 3 个工作日。专�
 - `artifacts.division_matrix`：`path`、`version`、`steps` 固定 7、`assisted` 至少 1、`manual` 至少 1、`manual_hours` 与 `platform_hours` 均为正数。
 - `artifacts.annotation_spec`：`path`、`version`。
 - `artifacts.agent_report`：`path`、`version`、`capabilities` 固定 5、`details` 恰好 5 项；每项有 `capability`（`interview`、`follow_up`、`structuring`、`precheck`、`review_assist` 之一）、`sample_size` 正整数、`success_rate` 在 0 到 1、`cost_per_task` 非负、`failure_modes` 非空列表。
-- `artifacts.smoke`：`path`、`version`、`status` 取 `PASS`、`SKIP`、`FAIL`；`FAIL` 直接不通过，`SKIP` 必须有 `reason`。
+- `artifacts.smoke`：`path`、`version`、`status` 取 `PASS`、`SKIP`、`FAIL`，`blocking` 为布尔值。`FAIL` 只有 `blocking=true` 才直接不通过；非阻塞 `FAIL` 和 `SKIP` 都必须有 `reason`。
 - `artifacts.issue_log`：`path`、`version`、`open_blockers` 固定 0、`fallbacks` 是人工兜底 ID 列表。
 
-单条记录对应一条试点线，`manual_baseline.task_id` 是 T1 实例，`platform_assisted.task_id` 是 T2 实例，两者必须不同，且 T2 等于记录顶层 `task_id`。`manual_baseline` 的 `hours` 大于 0，`artifacts` 非空；`platform_assisted` 的 `agent_suggestions` 大于 0，`agent_accepted` 必须为 0，`expert_confirmed` 为 true；`review.reviewers` 不含专家本人，`blockers` 等于 `resolved`；`package.package_hash` 是 64 位小写十六进制，检查器会按包内文件重算，`rebuilt_hash` 与重算值相等；`package.file_count` 指 `package_hash` 覆盖的文件数，即 `base/` 全部文件（含 `PACKAGE.json`）加 `package_manifest.json`、`materials.json`、`provenance.json`、`handoff.json` 四个版本级边车；`files[]` 只列 `base/` 内容文件（不含 `PACKAGE.json`），每项要带四位八进制 `mode` 和非空 `role`。`validation` 的每条检查 `status` 必须是 PASS，`passed` 等于 `checks`，`blockers` 为 0；`ingest.package_hash` 等于包哈希，`ingested_at` 不早于 `review.approved_at`。
+单条记录对应一条试点线，`manual_baseline.task_id` 是 T1 实例，`platform_assisted.task_id` 是 T2 实例，两者必须不同，且 T2 等于记录顶层 `task_id`。`manual_baseline` 的 `hours` 大于 0，`artifacts` 非空；`platform_assisted` 的 `agent_suggestions` 大于 0，`agent_adopted_by_expert` 在 0 到建议数之间，`agent_auto_adopted` 必须为 0，`expert_confirmed` 为 true；旧的 `agent_accepted` 语义不清，出现即不通过；`review.reviewers` 不含专家本人，`blockers` 等于 `resolved`；`package.package_hash` 是 64 位小写十六进制，检查器会按包内文件重算，`rebuilt_hash` 与重算值相等；`package.file_count` 指 `package_hash` 覆盖的文件数，即 `base/` 全部文件（含 `PACKAGE.json`）加 `package_manifest.json`、`materials.json`、`provenance.json`、`handoff.json` 四个版本级边车；`files[]` 只列 `base/` 内容文件（不含 `PACKAGE.json`），每项要带四位八进制 `mode` 和非空 `role`。`validation` 的每条检查 `status` 必须是 PASS，`passed` 等于 `checks`，`blockers` 为 0；`ingest.package_hash` 等于包哈希，`ingested_at` 不早于 `review.approved_at`；`ingest.audit_event_id` 非空，`ingest.platform_evidence.path` 指向平台 `ingest_records` 和 `audit_events` 的导出文件，导出文件的 `sha256` 必须匹配，内容要写 `source=platform_db_export`、同一个入库记录 ID、同一个包哈希、`state=ingested`、同一个审计事件 ID、操作人和发生时间。
 
-检查器自检 41/41 通过，覆盖四十一组人造记录，包括缺段、未确认、包哈希错、校验阻断、入库错配、重复方向、T1 与 T2 同实例、T2 标识错、分工矩阵缺步或缺工时、Agent 报告缺项、冒烟 FAIL 或 SKIP 无理由、坏 JSON，以及空包、假哈希、空校验报告、校验项全 FAIL、冒烟文件与索引相反、标注版本不一致、缺版本级边车、包路径指到 base、包内多文件、改过包内文件、Agent 自动采纳、索引任务集与记录不一致。自检本身不通过，检查器的通过不算证据。检查器校验包、校验报告和回执文件，不连接平台数据库；入库是否真的发生，以平台审计日志和 `ingest_records` 为准，回执只是被核对的一项证据。
+检查器自检 47/47 通过，覆盖四十七组人造记录，包括缺段、未确认、包哈希错、校验阻断、入库错配、重复方向、T1 与 T2 同实例、T2 标识错、分工矩阵缺步或缺工时、Agent 报告缺项、冒烟 blocking FAIL 或 SKIP 无理由、坏 JSON，以及空包、假哈希、空校验报告、校验项全 FAIL、冒烟文件与索引相反、标注版本不一致、缺版本级边车、包路径指到 base、包内多文件、改过包内文件、Agent 人工采纳放行、Agent 自动采纳、平台入库证据哈希错、索引任务集与记录不一致；非阻塞冒烟 FAIL 会放行。自检本身不通过，检查器的通过不算证据。检查器校验包、校验报告和平台审计导出文件，不连接平台数据库；入库是否真的发生，仍以平台数据库的 `ingest_records` 和 `audit_events` 为准，导出文件是可复核的离线证据。
 
 ## 十二项证据
 
 | 证据 | 必须包含 | 缺失即失败 |
 |---|---|---|
 | E1 人工基线 | 每条起止、小时、资料、卡点、专家判断 | 任一条没有，失败 |
-| E2 平台辅助 | 表单版本、Agent 调用、建议数、采纳数、确认时间 | 任一条没有，失败 |
+| E2 平台辅助 | 表单版本、Agent 调用、建议数、专家人工采纳数、自动采纳数、确认时间 | 任一条没有，失败 |
 | E3 专家确认 | 逐字段确认标记，未确认建议不得入包 | 任一条未确认，失败 |
 | E4 独立审核 | 评审人不是作者，轮次、阻断、解决、批准时间 | 只有自评，失败 |
 | E5 ALE-data 包 | 路径、包哈希、文件数、`task-data-v1.1` | 缺包或版本不对，失败 |
 | E6 包校验 | 校验器名称与版本、检查项、阻断数、警告数 | 有阻断，失败 |
-| E7 入库记录 | 记录 ID、时间、包哈希、资产索引数 | 哈希对不上，失败 |
+| E7 入库记录 | 记录 ID、时间、包哈希、资产索引数、审计事件 ID、平台数据库导出与哈希 | 哈希对不上或缺平台导出，失败 |
 | E8 分工矩阵 | 七步各自的 auto/assisted/manual、人工小时、平台小时 | 缺矩阵或漏步，失败 |
 | E9 标注规范 | 版本、字段定义、示例、验收 rubric，三条共用 | 缺规范，失败 |
 | E10 Agent 报告 | 五项能力的样本、成功率、失败模式、单条成本 | 缺报告，失败 |
 | E11 问题清单 | 未关闭阻断为 0，人工兜底逐条申报 | 有未申报兜底，失败 |
-| E12 工程冒烟 | 包可解析、字段可映射、少量格式可转换；允许 SKIP 写理由 | 冒烟 FAIL 不直接判失败，但不能替代出口 |
+| E12 工程冒烟 | 包可解析、字段可映射、少量格式可转换；`blocking` 标明是否阻断；SKIP 和非阻塞 FAIL 写理由 | `blocking=true` 的 FAIL 失败；非阻塞 FAIL 放行，但不能替代出口 |
 
 证据不是附件堆。每条证据要能追到任务、版本、时间和责任人；包哈希、入库哈希、重建哈希三处必须能互相对上。
 
@@ -161,7 +161,7 @@ T1 和 T2 用同一题族的不同实例，中间至少隔 3 个工作日。专�
 9. 标注规范 v1 三条共用，版本与记录一致。
 10. Agent 报告覆盖五项能力，每项有样本、成功率、失败模式、单条成本。
 11. 问题清单未关闭阻断为 0。
-12. 工程冒烟记录存在；允许 SKIP，但 PASS 不能替代以上十一条。
+12. 工程冒烟记录存在，`blocking` 已标注；允许 SKIP 和非阻塞 FAIL 并写理由，但 PASS 不能替代以上十一条。
 
 任一条不满足，阶段 2 不通过。不能把“三条都做完了”当成通过；做完不等于证据齐全。
 
@@ -175,9 +175,20 @@ T1 和 T2 用同一题族的不同实例，中间至少隔 3 个工作日。专�
 
 第三种失败的处理是换任务，不换标准。建筑执业签字、客户资料授权、外部服务联网，任一项在 11-25 前没有答案，就换同方向的公开资料任务，保持三条试点方向不变。
 
+## 受控启动与能力门槛
+
+12-01 首批 30 条是受控启动，不是平台与 Agent 全能力开放，也不代表 3 条试点完成。生产环节按四段能力门槛逐段开放，任何一段未过，下一段不开。
+
+| 日期 | 平台与 Agent 能力 | 开放的生产环节 | 质量门槛 |
+|---|---|---|---|
+| 12-01 | M1a-Core v0、S0/S1 | 9 名专家、22 条自产任务、任务源与冻结 | 100% 双评；Agent 不写入 |
+| 12-08 | S2 Agent 建议、表单 v0.9 | 22 名核心入驻，Agent 只读建议 | 专家逐字段确认；自动采纳 0；100% 双评 |
+| 12-15 | M1a-R 正式规范 v1、S3 组包 beta L1 到 L3 | 30 条包可生成，不可入库 | L1 到 L3 零阻断；100% 双评 |
+| 12-22 | M1b L4 到 L5、幂等入库；12-30 试点 gate | 30 条组包入库；gate 通过后开 W1 余 90 | 入库哈希一致、平台审计导出齐全；gate PASS |
+
 ## 和首批 30 条的关系
 
-试点不是首批 30 条的硬前置。首批 30 条在 M1a-Core 通过后于 12-01 开工，用平台 S0/S1 做任务源、审核和冻结；组包和入库等 M1b 在 12-22 通过后做。试点每周的结论进 30 条的周会，不改 30 条的开工日。
+试点不是首批 30 条的硬前置。首批 30 条在 M1a-Core 通过后于 12-01 受控启动，用平台 S0/S1 做任务源、审核和冻结；12-15 前用 M1a-R 的正式规范 v1 回填并复核 12-01 到 12-14 的任务；组包和入库等 M1b 在 12-22 通过后做。试点每周的结论进 30 条的周会，不改 30 条的受控启动日，也不把 12-01 当作试点完成。
 
 首批 30 条的法律 8 条不经过试点。法律走供应方 ALE-data 导入，12-08 到包，12-12 前完成布局、契约、哈希三项预检，12-15 后用 S3 校验器复跑 L1 到 L3，12-22 后 L4 到 L5 并入 M1b 正式校验，12-22 到 12-23 入库；不通过则 30 条变 22 条，报实际数，不用别的任务顶替。
 
@@ -217,4 +228,4 @@ Agent 单条成本上限。建议试点 60 元、正式 120 元；超过上限�
 
 交给阶段 3 和阶段 4 的是六样东西：三条试点记录、十二项证据、标注规范 v1、Agent 能力报告、问题清单、阶段 2 验收结论。平台组包器、校验器、入库接口的代码和测试留在平台分支，阶段 3 继续用。
 
-阶段 2 收口不等于平台 M1 完成。M1a-Core 在 11-30 验收，M1a+ 在 12-15 前，M1b 在 12-22 验收，M2-C 在 12-31 前，M2-Full 在 2027-01-31 前；阶段 2 只用 M1a 和 M1b 的试点段，不替阶段 3 验收全部能力。
+阶段 2 收口不等于平台 M1 完成。M1a-Core 在 11-30 验收，它是 v0 初始规范；M1a-R 在 12-15 前把 T1 12-05 的发现固化成正式规范 v1；M1b 在 12-22 验收，M2-C 在 12-31 前，M2-Full 在 2027-01-31 前；阶段 2 只用 M1a 和 M1b 的试点段，不替阶段 3 验收全部能力。

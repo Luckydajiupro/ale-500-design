@@ -337,15 +337,16 @@ def check_f():
     """Keep the 2026-11-13 revision anchors from drifting out of the docs."""
     anchors = {
         "docs/02-plan.md": [
-            "M1a-Core", "M2-C", "G3-M1a", "G2-A", "12-22 到 12-23",
-            "1,892", "887", "47%", "01-31",
+            "M1a-Core", "M1a-R", "M2-C", "G3-M1a", "G2-A", "12-22 到 12-23",
+            "1,892", "916", "48.4%", "01-31", "受控启动",
         ],
         "docs/07-expert-supply.md": [
-            "477.5", "616", "1,892", "887", "235", "1,117", "01-31",
+            "477.5", "616", "1,892", "916", "48.4%", "235", "1,117", "01-31",
             "12-22 到 12-23",
         ],
         "docs/08-pilot-design.md": [
-            "41/41", "12-22 到 12-23", "M1a-Core", "M2-C",
+            "47/47", "12-22 到 12-23", "M1a-Core", "M1a-R", "M2-C",
+            "受控启动", "platform_db_export", "agent_auto_adopted",
         ],
         "docs/06-decisions-and-blockers.md": ["01-31", "12-22 到 12-23"],
     }
@@ -358,8 +359,9 @@ def check_f():
     if missing:
         return "F", "fail", "missing revision anchors: " + "; ".join(missing)
     stale = {
-        "docs/07-expert-supply.md": ["1,073", "46.3%", "880 h", "101%", "6.5 周 = 130"],
-        "docs/08-pilot-design.md": ["36/36"],
+        "docs/02-plan.md": ["887", "M1a+"],
+        "docs/07-expert-supply.md": ["1,073", "46.3%", "880 h", "101%", "6.5 周 = 130", "887"],
+        "docs/08-pilot-design.md": ["36/36", "41/41"],
     }
     left = []
     for name, needles in stale.items():

@@ -90,7 +90,8 @@ def record(direction, task_id, letter, package_hash, file_count):
             "form_version": "form-0.3",
             "agent_runs": 14,
             "agent_suggestions": 52,
-            "agent_accepted": 0,
+            "agent_adopted_by_expert": 18,
+            "agent_auto_adopted": 0,
             "expert_confirmed": True,
             "confirmed_at": "2026-12-12T01:00:00Z",
             "manual_fallbacks": [],
@@ -127,6 +128,11 @@ def record(direction, task_id, letter, package_hash, file_count):
             "ingested_at": "2026-12-22T00:00:00Z",
             "package_hash": package_hash,
             "asset_index_count": 12,
+            "audit_event_id": f"A-20261222-{direction}",
+            "platform_evidence": {
+                "path": f"ingest-evidence-{direction}.json",
+                "sha256": "",
+            },
         },
     }
 
@@ -135,7 +141,23 @@ def build(root):
     root = Path(root)
     for direction, task_id, letter in TASKS:
         package_hash, file_count = build_package(root, direction, task_id)
-        write_json(root / f"record-{direction}.json", record(direction, task_id, letter, package_hash, file_count))
+        rec = record(direction, task_id, letter, package_hash, file_count)
+        write_json(root / f"record-{direction}.json", rec)
+        evidence = {
+            "source": "platform_db_export",
+            "ingest_record_id": rec["ingest"]["record_id"],
+            "package_hash": package_hash,
+            "state": "ingested",
+            "audit_event_id": rec["ingest"]["audit_event_id"],
+            "actor": "platform-ingest",
+            "occurred_at": rec["ingest"]["ingested_at"],
+            "exported_at": "2026-12-22T01:00:00Z",
+        }
+        write_json(root / rec["ingest"]["platform_evidence"]["path"], evidence)
+        rec["ingest"]["platform_evidence"]["sha256"] = pilot_gate.sha256_file(
+            root / rec["ingest"]["platform_evidence"]["path"]
+        )
+        write_json(root / f"record-{direction}.json", rec)
         write_json(root / f"validation-{direction}.json", {
             "validator": "ale-data-validate",
             "validator_version": "1.0.0",
@@ -168,7 +190,7 @@ def build(root):
         ]
     })
     write_json(root / "issues.json", {"open_blockers": 0, "fallbacks": []})
-    write_json(root / "smoke.json", {"status": "PASS"})
+    write_json(root / "smoke.json", {"status": "PASS", "blocking": False})
 
     index = {
         "schema_version": "pilot-index-1.0",
@@ -200,7 +222,7 @@ def build(root):
                     for capability in pilot_gate.AGENT_CAPABILITY_NAMES
                 ],
             },
-            "smoke": {"path": "smoke.json", "version": "1.0", "status": "PASS"},
+            "smoke": {"path": "smoke.json", "version": "1.0", "status": "PASS", "blocking": False},
             "issue_log": {
                 "path": "issues.json",
                 "version": "1.0",
@@ -299,7 +321,29 @@ def failed_validation(root):
 
 
 def smoke_file_fails(root):
-    write(root, "smoke.json", {"status": "FAIL"})
+    write(root, "smoke.json", {"status": "FAIL", "blocking": False, "reason": "file only"})
+
+
+def smoke_blocking_fail(root):
+    payload = {"status": "FAIL", "blocking": True, "reason": "format adapter missing"}
+    write(root, "smoke.json", payload)
+    set_artifact(root, "smoke", {"path": "smoke.json", "version": "1.0", **payload})
+
+
+def smoke_nonblocking_fail(root):
+    payload = {"status": "FAIL", "blocking": False, "reason": "one optional adapter missing"}
+    write(root, "smoke.json", payload)
+    set_artifact(root, "smoke", {"path": "smoke.json", "version": "1.0", **payload})
+
+
+def evidence_field(root, field, value):
+    path = Path(root) / "ingest-evidence-business.json"
+    data = json.loads(path.read_text(encoding="utf-8"))
+    data[field] = value
+    write_json(path, data)
+    record = read(root, "record-business.json")
+    record["ingest"]["platform_evidence"]["sha256"] = pilot_gate.sha256_file(path)
+    write(root, "record-business.json", record)
 
 
 def base_path(root):
@@ -369,7 +413,8 @@ def main():
     case("agent report has four capabilities", 1, lambda root: set_nested(root, "index.json", "artifacts", "agent_report", {"path": "agent-report.json", "version": "1.0", "capabilities": 4}))
     case("matrix missing hours", 1, lambda root: set_artifact(root, "division_matrix", {"path": "division-matrix.json", "version": "1.0", "steps": 7, "assisted": 1, "manual": 1}))
     case("agent report missing details", 1, lambda root: set_artifact(root, "agent_report", {"path": "agent-report.json", "version": "1.0", "capabilities": 5}))
-    case("smoke failed", 1, lambda root: set_artifact(root, "smoke", {"path": "smoke.json", "version": "1.0", "status": "FAIL"}))
+    case("smoke blocking fail", 1, lambda root: smoke_blocking_fail(root))
+    case("smoke nonblocking fail", 0, lambda root: smoke_nonblocking_fail(root))
     case("smoke skipped without reason", 1, lambda root: set_artifact(root, "smoke", {"path": "smoke.json", "version": "1.0", "status": "SKIP"}))
     case("T1 and T2 same instance", 1, lambda root: set_nested(root, "record-business.json", "manual_baseline", "task_id", "business_finance/accounting_reconcile_01"))
     case("T2 task id mismatch", 1, lambda root: set_nested(root, "record-business.json", "platform_assisted", "task_id", "business_finance/other_01"))
@@ -381,7 +426,12 @@ def main():
     case("annotation version mismatch", 1, lambda root: annotation_version_mismatch(root))
     case("missing version sidecar", 1, lambda root: missing_sidecar(root))
     case("package path points base", 1, lambda root: base_path(root))
-    case("agent auto accepted", 1, lambda root: set_nested(root, "record-business.json", "platform_assisted", "agent_accepted", 1))
+    case("agent auto adopted", 1, lambda root: set_nested(root, "record-business.json", "platform_assisted", "agent_auto_adopted", 1))
+    case("ambiguous agent accepted", 1, lambda root: set_nested(root, "record-business.json", "platform_assisted", "agent_accepted", 1))
+    case("agent adopted exceeds suggestions", 1, lambda root: set_nested(root, "record-business.json", "platform_assisted", "agent_adopted_by_expert", 99))
+    case("bad evidence hash", 1, lambda root: set_nested(root, "record-business.json", "ingest", "platform_evidence", {"path": "ingest-evidence-business.json", "sha256": "d" * 64}))
+    case("evidence record mismatch", 1, lambda root: evidence_field(root, "ingest_record_id", "T-other"))
+    case("evidence not ingested", 1, lambda root: evidence_field(root, "state", "validated"))
     case("unlisted file", 1, lambda root: unlisted_file(root))
     case("tampered package file", 1, lambda root: tamper_package(root))
     case("index task ids mismatch", 1, lambda root: set_field(root, "index.json", "task_ids", ["business_finance/other_01", "psychology_neuro/dicom_to_bids_01", "engineering/building_energy_baseline_01"]))
