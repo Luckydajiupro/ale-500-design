@@ -115,14 +115,15 @@ T1 和 T2 用同一题族的不同实例，中间至少隔 3 个工作日。专�
 索引文件固定叫 `index.json`，三条记录固定叫 `record-*.json`，一共三个。索引字段如下。
 
 - `schema_version` 固定 `pilot-index-1.0`，`pilot_id` 非空，`task_ids` 恰好三个且不重复。
-- `artifacts.division_matrix`：`path`、`version`、`steps` 固定 7、`assisted` 至少 1、`manual` 至少 1。
+- `artifacts.division_matrix`：`path`、`version`、`steps` 固定 7、`assisted` 至少 1、`manual` 至少 1、`manual_hours` 与 `platform_hours` 均为正数。
 - `artifacts.annotation_spec`：`path`、`version`。
-- `artifacts.agent_report`：`path`、`version`、`capabilities` 固定 5。
+- `artifacts.agent_report`：`path`、`version`、`capabilities` 固定 5、`details` 恰好 5 项；每项有 `capability`（`interview`、`follow_up`、`structuring`、`precheck`、`review_assist` 之一）、`sample_size` 正整数、`success_rate` 在 0 到 1、`cost_per_task` 非负、`failure_modes` 非空列表。
+- `artifacts.smoke`：`path`、`version`、`status` 取 `PASS`、`SKIP`、`FAIL`；`FAIL` 直接不通过，`SKIP` 必须有 `reason`。
 - `artifacts.issue_log`：`path`、`version`、`open_blockers` 固定 0、`fallbacks` 是人工兜底 ID 列表。
 
 单条记录的七段字段必须齐全。`manual_baseline` 的 `hours` 大于 0，`artifacts` 非空；`platform_assisted` 的 `agent_suggestions` 大于 0，`agent_accepted` 不超过建议数，`expert_confirmed` 为 true；`review.reviewers` 不含专家本人，`blockers` 等于 `resolved`；`package.package_hash` 是 64 位小写十六进制，`rebuilt_hash` 与它相等；`validation.passed` 等于 `checks`，`blockers` 为 0；`ingest.package_hash` 等于包哈希，`ingested_at` 不早于 `review.approved_at`。
 
-检查器自检覆盖二十组人造记录，包括缺段、未确认、包哈希错、校验阻断、入库错配、重复方向、分工矩阵缺步、Agent 报告缺项和坏 JSON。自检本身不通过，检查器的通过不算证据。
+检查器自检覆盖二十四组人造记录，包括缺段、未确认、包哈希错、校验阻断、入库错配、重复方向、分工矩阵缺步或缺工时、Agent 报告缺项、冒烟 FAIL 或 SKIP 无理由、坏 JSON。自检本身不通过，检查器的通过不算证据。
 
 ## 十二项证据
 

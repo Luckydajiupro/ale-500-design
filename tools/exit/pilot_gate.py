@@ -20,6 +20,7 @@ HASH64 = re.compile(r"^[0-9a-f]{64}$")
 DIRECTIONS = ("business", "neuro", "engineering")
 STEPS = 7
 AGENT_CAPABILITIES = 5
+AGENT_CAPABILITY_NAMES = ("interview", "follow_up", "structuring", "precheck", "review_assist")
 USAGE = (
     "usage: pilot_gate.py --dir PATH "
     "[--require-platform-built] [--require-acceptance]"
@@ -84,6 +85,10 @@ def nonempty_str(value):
     return isinstance(value, str) and bool(value.strip())
 
 
+def nonneg_num(value):
+    return isinstance(value, (int, float)) and not isinstance(value, bool) and value >= 0
+
+
 def nonneg_int(value):
     return isinstance(value, int) and not isinstance(value, bool) and value >= 0
 
@@ -137,14 +142,56 @@ def check_index(index, root):
             problems.append(("index.artifacts.division_matrix.assisted", "need at least 1"))
         if not nonneg_int(matrix.get("manual")) or matrix.get("manual") < 1:
             problems.append(("index.artifacts.division_matrix.manual", "need at least 1"))
+        if not nonneg_num(matrix.get("manual_hours")) or matrix.get("manual_hours") <= 0:
+            problems.append(("index.artifacts.division_matrix.manual_hours", "need a positive number"))
+        if not nonneg_num(matrix.get("platform_hours")) or matrix.get("platform_hours") <= 0:
+            problems.append(("index.artifacts.division_matrix.platform_hours", "need a positive number"))
 
     artifact("annotation_spec")
 
     report = artifact("agent_report")
-    if report is not None and report.get("capabilities") != AGENT_CAPABILITIES:
-        problems.append(
-            ("index.artifacts.agent_report.capabilities", f"need {AGENT_CAPABILITIES}")
-        )
+    if report is not None:
+        if report.get("capabilities") != AGENT_CAPABILITIES:
+            problems.append(
+                ("index.artifacts.agent_report.capabilities", f"need {AGENT_CAPABILITIES}")
+            )
+        details = report.get("details")
+        if not isinstance(details, list) or len(details) != AGENT_CAPABILITIES:
+            problems.append(
+                ("index.artifacts.agent_report.details", f"need {AGENT_CAPABILITIES} entries")
+            )
+        else:
+            seen = set()
+            for i, item in enumerate(details):
+                if not isinstance(item, dict):
+                    problems.append((f"index.artifacts.agent_report.details[{i}]", "need an object"))
+                    continue
+                name = item.get("capability")
+                if name not in AGENT_CAPABILITY_NAMES:
+                    problems.append((f"index.artifacts.agent_report.details[{i}].capability", f"need one of {AGENT_CAPABILITY_NAMES}"))
+                elif name in seen:
+                    problems.append((f"index.artifacts.agent_report.details[{i}].capability", "duplicate"))
+                seen.add(name)
+                if not nonneg_int(item.get("sample_size")) or item.get("sample_size") <= 0:
+                    problems.append((f"index.artifacts.agent_report.details[{i}].sample_size", "need a positive integer"))
+                rate = item.get("success_rate")
+                if not nonneg_num(rate) or rate > 1:
+                    problems.append((f"index.artifacts.agent_report.details[{i}].success_rate", "need 0..1"))
+                if not nonneg_num(item.get("cost_per_task")):
+                    problems.append((f"index.artifacts.agent_report.details[{i}].cost_per_task", "need a non-negative number"))
+                modes = item.get("failure_modes")
+                if not isinstance(modes, list) or not modes:
+                    problems.append((f"index.artifacts.agent_report.details[{i}].failure_modes", "need a non-empty list"))
+
+    smoke = artifact("smoke")
+    if smoke is not None:
+        status = smoke.get("status")
+        if status not in ("PASS", "SKIP", "FAIL"):
+            problems.append(("index.artifacts.smoke.status", "need PASS, SKIP or FAIL"))
+        elif status == "FAIL":
+            problems.append(("index.artifacts.smoke.status", "smoke FAIL"))
+        elif status == "SKIP" and not nonempty_str(smoke.get("reason")):
+            problems.append(("index.artifacts.smoke.reason", "SKIP needs a reason"))
 
     issues = artifact("issue_log")
     if issues is not None:

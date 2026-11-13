@@ -109,12 +109,29 @@ def build(root):
                 "steps": 7,
                 "assisted": 1,
                 "manual": 1,
+                "manual_hours": 30.0,
+                "platform_hours": 12.0,
             },
             "annotation_spec": {"path": "annotation-spec.json", "version": "1.0"},
             "agent_report": {
                 "path": "agent-report.json",
                 "version": "1.0",
                 "capabilities": 5,
+                "details": [
+                    {
+                        "capability": capability,
+                        "sample_size": 3,
+                        "success_rate": 0.5,
+                        "cost_per_task": 10.0,
+                        "failure_modes": ["none observed"],
+                    }
+                    for capability in pilot_gate.AGENT_CAPABILITY_NAMES
+                ],
+            },
+            "smoke": {
+                "path": "smoke.json",
+                "version": "1.0",
+                "status": "PASS",
             },
             "issue_log": {
                 "path": "issues.json",
@@ -129,6 +146,7 @@ def build(root):
     (root / "annotation-spec.json").write_text("{}", encoding="utf-8")
     (root / "agent-report.json").write_text("{}", encoding="utf-8")
     (root / "issues.json").write_text("{}", encoding="utf-8")
+    (root / "smoke.json").write_text("{}", encoding="utf-8")
 
 
 def read(root, name):
@@ -170,6 +188,10 @@ def main():
     case("ingest before approval", 1, lambda root: set_nested(root, "record-business.json", "ingest", "ingested_at", "2026-12-17T00:00:00Z"))
     case("matrix has six steps", 1, lambda root: set_nested(root, "index.json", "artifacts", "division_matrix", {"path": "division-matrix.json", "version": "1.0", "steps": 6, "assisted": 1, "manual": 1}))
     case("agent report has four capabilities", 1, lambda root: set_nested(root, "index.json", "artifacts", "agent_report", {"path": "agent-report.json", "version": "1.0", "capabilities": 4}))
+    case("matrix missing hours", 1, lambda root: set_artifact(root, "division_matrix", {"path": "division-matrix.json", "version": "1.0", "steps": 7, "assisted": 1, "manual": 1}))
+    case("agent report missing details", 1, lambda root: set_artifact(root, "agent_report", {"path": "agent-report.json", "version": "1.0", "capabilities": 5}))
+    case("smoke failed", 1, lambda root: set_artifact(root, "smoke", {"path": "smoke.json", "version": "1.0", "status": "FAIL"}))
+    case("smoke skipped without reason", 1, lambda root: set_artifact(root, "smoke", {"path": "smoke.json", "version": "1.0", "status": "SKIP"}))
     case("stage three mode needs acceptance", 1, lambda root: None, acceptance=True)
     case("bad json", 2, lambda root: (Path(root) / "record-business.json").write_text("{", encoding="utf-8"))
 
@@ -212,6 +234,12 @@ def set_nested(root, name, parent, field, value):
     else:
         data[parent][field] = value
     write(root, name, data)
+
+
+def set_artifact(root, name, value):
+    data = read(root, "index.json")
+    data["artifacts"][name] = value
+    write(root, "index.json", data)
 
 
 def declare_fallback(root):
