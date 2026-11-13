@@ -1,11 +1,5 @@
 #!/usr/bin/env python3
-"""Self test for phase2_gate.py using synthetic records in a temporary directory.
-
-Each case writes a record, runs the gate as a subprocess with the current
-interpreter, and asserts the exit code. The last four cases exercise --dir: three
-good records pass, one bad record in three fails, and two or six records fail the
-exactly-three count guard.
-"""
+"""Self test for phase2_gate.py using synthetic smoke records."""
 
 import json
 import subprocess
@@ -18,45 +12,55 @@ GATE = Path(__file__).resolve().parent / "phase2_gate.py"
 
 def good_record():
     return {
-        "task_id": "task-001",
-        "target_version": {
-            "ale_commit": "a" * 40,
-            "harbor_commit": "b" * 40,
-        },
+        "task_id": "business_finance/accounting_reconcile_01",
+        "ale_data_version": "task-data-v1.1",
+        "adapter": "harbor",
+        "adapter_commit": "a" * 40,
         "stages": {
             name: {"status": "PASS", "evidence": f"{name} evidence line"}
-            for name in ("snapshot", "convert", "run", "score")
+            for name in ("package", "validate", "convert", "run", "score")
         },
     }
 
 
-def run_stage_not_run():
+def validate_fails():
     record = good_record()
-    record["stages"]["run"]["status"] = "NOT_RUN"
+    record["stages"]["validate"]["status"] = "FAIL"
     return record
 
 
-def score_evidence_empty():
+def skip_without_reason():
     record = good_record()
-    record["stages"]["score"]["evidence"] = ""
+    record["stages"]["convert"] = {"status": "SKIP"}
     return record
 
 
-def convert_stage_missing():
+def no_adapter_but_run_passes():
     record = good_record()
-    del record["stages"]["convert"]
+    record["adapter"] = "none"
+    record["adapter_commit"] = ""
     return record
 
 
-def short_ale_commit():
+def convert_fails():
     record = good_record()
-    record["target_version"]["ale_commit"] = "a" * 39
+    record["stages"]["convert"] = {"status": "FAIL", "blocking": True}
     return record
 
 
-def empty_task_id():
+def convert_fails_nonblocking():
     record = good_record()
-    record["task_id"] = ""
+    record["stages"]["convert"] = {
+        "status": "FAIL",
+        "blocking": False,
+        "reason": "optional adapter missing",
+    }
+    return record
+
+
+def convert_fails_nonblocking_no_reason():
+    record = good_record()
+    record["stages"]["convert"] = {"status": "FAIL", "blocking": False}
     return record
 
 
@@ -66,51 +70,89 @@ def write_record(path, record):
 
 
 def invoke(mode, path):
-    argv = [sys.executable, str(GATE), mode, str(path)]
-    return subprocess.run(argv, capture_output=True, text=True)
+    return subprocess.run(
+        [sys.executable, str(GATE), mode, str(path)],
+        capture_output=True,
+        text=True,
+    )
 
 
 def main():
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp)
+        cases = []
 
-        cases = [
-            ("complete record", "--record", write_record(root / "complete.json", good_record()), 0),
-            ("run stage status NOT_RUN", "--record", write_record(root / "not-run.json", run_stage_not_run()), 1),
-            ("score stage evidence empty", "--record", write_record(root / "no-evidence.json", score_evidence_empty()), 1),
-            ("convert stage missing", "--record", write_record(root / "no-convert.json", convert_stage_missing()), 1),
-            ("ale_commit 39 characters", "--record", write_record(root / "short-commit.json", short_ale_commit()), 1),
-            ("task_id empty", "--record", write_record(root / "no-task.json", empty_task_id()), 1),
-        ]
+        cases.append(
+            ("complete record", "--record", write_record(root / "complete.json", good_record()), 0)
+        )
+
+        package_missing = good_record()
+        del package_missing["stages"]["package"]
+        cases.append(
+            ("package stage missing", "--record", write_record(root / "no-package.json", package_missing), 1)
+        )
+        cases.append(
+            ("validate fails", "--record", write_record(root / "validate-fail.json", validate_fails()), 1)
+        )
+        cases.append(
+            ("skip without reason", "--record", write_record(root / "skip-no-reason.json", skip_without_reason()), 1)
+        )
+        cases.append(
+            ("adapter none but run passes", "--record", write_record(root / "none-run.json", no_adapter_but_run_passes()), 1)
+        )
+        cases.append(
+            ("convert blocking fail", "--record", write_record(root / "convert-fail.json", convert_fails()), 1)
+        )
+        cases.append(
+            (
+                "convert nonblocking fail",
+                "--record",
+                write_record(root / "convert-fail-ok.json", convert_fails_nonblocking()),
+                0,
+            )
+        )
+        cases.append(
+            (
+                "convert nonblocking fail no reason",
+                "--record",
+                write_record(root / "convert-fail-no-reason.json", convert_fails_nonblocking_no_reason()),
+                1,
+            )
+        )
+
+        empty_task = good_record()
+        empty_task["task_id"] = ""
+        cases.append(
+            ("task id empty", "--record", write_record(root / "no-task.json", empty_task), 1)
+        )
+
+        wrong_version = good_record()
+        wrong_version["ale_data_version"] = "task-data-v1.0"
+        cases.append(
+            ("wrong ale-data version", "--record", write_record(root / "wrong-version.json", wrong_version), 1)
+        )
 
         malformed = root / "malformed.json"
         malformed.write_text("{not json", encoding="utf-8")
         cases.append(("malformed JSON", "--record", malformed, 2))
 
-        batch = root / "batch"
-        batch.mkdir()
-        write_record(batch / "01-good.json", good_record())
-        write_record(batch / "02-bad.json", run_stage_not_run())
-        write_record(batch / "03-good.json", good_record())
-        cases.append(("dir with three records, one bad", "--dir", batch, 1))
-
-        passing = root / "passing"
-        passing.mkdir()
-        for index in range(3):
-            write_record(passing / f"{index:02d}-good.json", good_record())
-        cases.append(("dir with three good records", "--dir", passing, 0))
-
-        too_few = root / "too-few"
-        too_few.mkdir()
+        two = root / "two"
+        two.mkdir()
         for index in range(2):
-            write_record(too_few / f"{index:02d}-good.json", good_record())
-        cases.append(("dir with two records, one missing", "--dir", too_few, 1))
+            write_record(two / f"{index:02d}-good.json", good_record())
+        cases.append(("dir with two records", "--dir", two, 0))
 
-        too_many = root / "too-many"
-        too_many.mkdir()
-        for index in range(6):
-            write_record(too_many / f"{index:02d}-good.json", good_record())
-        cases.append(("dir with six records, three extra", "--dir", too_many, 1))
+        three = root / "three"
+        three.mkdir()
+        for index in range(3):
+            write_record(three / f"{index:02d}-good.json", good_record())
+        cases.append(("dir with three records", "--dir", three, 0))
+
+        four = root / "four"
+        four.mkdir()
+        for index in range(4):
+            write_record(four / f"{index:02d}-good.json", good_record())
+        cases.append(("dir with four records", "--dir", four, 1))
 
         failed = 0
         for name, mode, path, expected in cases:
@@ -120,10 +162,12 @@ def main():
                 continue
             failed += 1
             print(f"FAIL {name}: expected exit {expected}, got {result.returncode}")
+            if result.stdout.strip():
+                print(f"  stdout: {result.stdout.strip()}")
             if result.stderr.strip():
                 print(f"  stderr: {result.stderr.strip()}")
 
-        print(f"selftest: {len(cases)} cases, {failed} failed")
+        print(f"phase2 gate selftest: {len(cases)} cases, {failed} failed")
         return 1 if failed else 0
 
 

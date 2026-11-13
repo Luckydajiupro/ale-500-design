@@ -332,6 +332,47 @@ def check_e6(inventory):
     return compare("E6", [CHARTER, PLAN, STAGE0], pattern, actual, where)
 
 
+
+def check_f():
+    """Keep the 2026-11-13 revision anchors from drifting out of the docs."""
+    anchors = {
+        "docs/02-plan.md": [
+            "M1a-Core", "M1a-R", "M2-C", "G3-M1a", "G2-A", "12-22 到 12-23",
+            "1,892", "916", "48.4%", "01-31", "受控启动",
+        ],
+        "docs/07-expert-supply.md": [
+            "477.5", "616", "1,892", "916", "48.4%", "235", "1,117", "01-31",
+            "12-22 到 12-23",
+        ],
+        "docs/08-pilot-design.md": [
+            "47/47", "12-22 到 12-23", "M1a-Core", "M1a-R", "M2-C",
+            "受控启动", "platform_db_export", "agent_auto_adopted",
+        ],
+        "docs/06-decisions-and-blockers.md": ["01-31", "12-22 到 12-23"],
+    }
+    missing = []
+    for name, needles in anchors.items():
+        body = text(ROOT / name)
+        for needle in needles:
+            if needle not in body:
+                missing.append(f"{name}: {needle}")
+    if missing:
+        return "F", "fail", "missing revision anchors: " + "; ".join(missing)
+    stale = {
+        "docs/02-plan.md": ["887", "M1a+"],
+        "docs/07-expert-supply.md": ["1,073", "46.3%", "880 h", "101%", "6.5 周 = 130", "887"],
+        "docs/08-pilot-design.md": ["36/36", "41/41"],
+    }
+    left = []
+    for name, needles in stale.items():
+        body = text(ROOT / name)
+        for needle in needles:
+            if needle in body:
+                left.append(f"{name}: {needle}")
+    if left:
+        return "F", "fail", "stale revision numbers: " + "; ".join(left)
+    return "F", "pass", "revision anchors present in the design docs"
+
 def evaluate():
     results = [check_a(), check_b()]
     results.extend(check_c())
@@ -371,6 +412,7 @@ def evaluate():
     )
     results.append(check_e5(inventory))
     results.append(check_e6(inventory))
+    results.append(check_f())
     return results
 
 
