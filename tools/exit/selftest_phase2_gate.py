@@ -44,7 +44,23 @@ def no_adapter_but_run_passes():
 
 def convert_fails():
     record = good_record()
-    record["stages"]["convert"]["status"] = "FAIL"
+    record["stages"]["convert"] = {"status": "FAIL", "blocking": True}
+    return record
+
+
+def convert_fails_nonblocking():
+    record = good_record()
+    record["stages"]["convert"] = {
+        "status": "FAIL",
+        "blocking": False,
+        "reason": "optional adapter missing",
+    }
+    return record
+
+
+def convert_fails_nonblocking_no_reason():
+    record = good_record()
+    record["stages"]["convert"] = {"status": "FAIL", "blocking": False}
     return record
 
 
@@ -85,7 +101,23 @@ def main():
             ("adapter none but run passes", "--record", write_record(root / "none-run.json", no_adapter_but_run_passes()), 1)
         )
         cases.append(
-            ("convert fails", "--record", write_record(root / "convert-fail.json", convert_fails()), 1)
+            ("convert blocking fail", "--record", write_record(root / "convert-fail.json", convert_fails()), 1)
+        )
+        cases.append(
+            (
+                "convert nonblocking fail",
+                "--record",
+                write_record(root / "convert-fail-ok.json", convert_fails_nonblocking()),
+                0,
+            )
+        )
+        cases.append(
+            (
+                "convert nonblocking fail no reason",
+                "--record",
+                write_record(root / "convert-fail-no-reason.json", convert_fails_nonblocking_no_reason()),
+                1,
+            )
         )
 
         empty_task = good_record()

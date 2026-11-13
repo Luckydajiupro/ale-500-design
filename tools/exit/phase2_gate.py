@@ -8,9 +8,10 @@ be mapped, and a small number of formats can be converted.
 
 A smoke record is a JSON object with a task id, an ALE-data version, an adapter
 name, and up to five stages. package and validate are required and must PASS
-with evidence. convert, run and score are optional: they may PASS, SKIP or FAIL,
-but SKIP needs a reason, and FAIL fails the record. When the adapter is none,
-run and score must be SKIP.
+with evidence. convert, run and score are optional: they may PASS, SKIP or FAIL.
+FAIL needs a blocking flag; only blocking=true fails the record, and both SKIP
+and non-blocking FAIL need a reason. When the adapter is none, run and score
+must be SKIP.
 """
 
 import json
@@ -83,7 +84,17 @@ def check_stages(record, adapter):
             continue
         status = stage.get("status")
         if status == "FAIL":
-            problems.append((f"stages.{name}.status", "status is FAIL"))
+            blocking = stage.get("blocking")
+            if not isinstance(blocking, bool):
+                problems.append((f"stages.{name}.blocking", "FAIL needs blocking true or false"))
+            elif blocking:
+                problems.append((f"stages.{name}.status", "blocking FAIL"))
+            else:
+                reason = stage.get("reason")
+                if not isinstance(reason, str) or not reason.strip():
+                    problems.append((f"stages.{name}.reason", "non-blocking FAIL needs a reason"))
+            if adapter == "none" and name in ("run", "score"):
+                problems.append((f"stages.{name}.status", "adapter is none, need SKIP"))
         elif status == "SKIP":
             reason = stage.get("reason")
             if not isinstance(reason, str) or not reason.strip():
