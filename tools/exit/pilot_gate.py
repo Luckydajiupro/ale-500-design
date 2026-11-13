@@ -141,7 +141,9 @@ def package_digest(package_dir):
 def verify_package(record, package_dir):
     problems = []
     package = record.get("package", {})
-    base = package_base(package_dir)
+    if not (package_dir / "base").is_dir():
+        return [("package.path", "need a version directory containing base/")]
+    base = package_dir / "base"
     manifest_path = base / "PACKAGE.json"
     if package_dir.is_symlink():
         return [("package.path", "package directory is a symlink")]

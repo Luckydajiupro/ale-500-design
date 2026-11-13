@@ -345,7 +345,7 @@ def check_f():
             "12-22 到 12-23",
         ],
         "docs/08-pilot-design.md": [
-            "40/40", "12-22 到 12-23", "M1a-Core", "M2-C",
+            "41/41", "12-22 到 12-23", "M1a-Core", "M2-C",
         ],
         "docs/06-decisions-and-blockers.md": ["01-31", "12-22 到 12-23"],
     }

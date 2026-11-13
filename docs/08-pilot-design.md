@@ -125,7 +125,7 @@ T1 和 T2 用同一题族的不同实例，中间至少隔 3 个工作日。专�
 
 单条记录对应一条试点线，`manual_baseline.task_id` 是 T1 实例，`platform_assisted.task_id` 是 T2 实例，两者必须不同，且 T2 等于记录顶层 `task_id`。`manual_baseline` 的 `hours` 大于 0，`artifacts` 非空；`platform_assisted` 的 `agent_suggestions` 大于 0，`agent_accepted` 必须为 0，`expert_confirmed` 为 true；`review.reviewers` 不含专家本人，`blockers` 等于 `resolved`；`package.package_hash` 是 64 位小写十六进制，检查器会按包内文件重算，`rebuilt_hash` 与重算值相等；`package.file_count` 指 `package_hash` 覆盖的文件数，即 `base/` 全部文件（含 `PACKAGE.json`）加 `package_manifest.json`、`materials.json`、`provenance.json`、`handoff.json` 四个版本级边车；`files[]` 只列 `base/` 内容文件（不含 `PACKAGE.json`），每项要带四位八进制 `mode` 和非空 `role`。`validation` 的每条检查 `status` 必须是 PASS，`passed` 等于 `checks`，`blockers` 为 0；`ingest.package_hash` 等于包哈希，`ingested_at` 不早于 `review.approved_at`。
 
-检查器自检 40/40 通过，覆盖四十组人造记录，包括缺段、未确认、包哈希错、校验阻断、入库错配、重复方向、T1 与 T2 同实例、T2 标识错、分工矩阵缺步或缺工时、Agent 报告缺项、冒烟 FAIL 或 SKIP 无理由、坏 JSON，以及空包、假哈希、空校验报告、校验项全 FAIL、冒烟文件与索引相反、标注版本不一致、缺版本级边车、包内多文件、改过包内文件、Agent 自动采纳、索引任务集与记录不一致。自检本身不通过，检查器的通过不算证据。检查器校验包、校验报告和回执文件，不连接平台数据库；入库是否真的发生，以平台审计日志和 `ingest_records` 为准，回执只是被核对的一项证据。
+检查器自检 41/41 通过，覆盖四十一组人造记录，包括缺段、未确认、包哈希错、校验阻断、入库错配、重复方向、T1 与 T2 同实例、T2 标识错、分工矩阵缺步或缺工时、Agent 报告缺项、冒烟 FAIL 或 SKIP 无理由、坏 JSON，以及空包、假哈希、空校验报告、校验项全 FAIL、冒烟文件与索引相反、标注版本不一致、缺版本级边车、包路径指到 base、包内多文件、改过包内文件、Agent 自动采纳、索引任务集与记录不一致。自检本身不通过，检查器的通过不算证据。检查器校验包、校验报告和回执文件，不连接平台数据库；入库是否真的发生，以平台审计日志和 `ingest_records` 为准，回执只是被核对的一项证据。
 
 ## 十二项证据
 

@@ -302,6 +302,17 @@ def smoke_file_fails(root):
     write(root, "smoke.json", {"status": "FAIL"})
 
 
+def base_path(root):
+    record = read(root, "record-business.json")
+    base = Path(root) / "packages/business/accounting_reconcile_01/v1/base"
+    digest, entries = pilot_gate.package_digest(base)
+    record["package"]["path"] = "packages/business/accounting_reconcile_01/v1/base"
+    record["package"]["package_hash"] = digest
+    record["package"]["rebuilt_hash"] = digest
+    record["package"]["file_count"] = len(entries)
+    write(root, "record-business.json", record)
+
+
 def missing_sidecar(root):
     (Path(root) / "packages/business/accounting_reconcile_01/v1/handoff.json").unlink()
 
@@ -369,6 +380,7 @@ def main():
     case("smoke file contradicts index", 1, lambda root: smoke_file_fails(root))
     case("annotation version mismatch", 1, lambda root: annotation_version_mismatch(root))
     case("missing version sidecar", 1, lambda root: missing_sidecar(root))
+    case("package path points base", 1, lambda root: base_path(root))
     case("agent auto accepted", 1, lambda root: set_nested(root, "record-business.json", "platform_assisted", "agent_accepted", 1))
     case("unlisted file", 1, lambda root: unlisted_file(root))
     case("tampered package file", 1, lambda root: tamper_package(root))
