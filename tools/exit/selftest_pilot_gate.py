@@ -31,19 +31,20 @@ def write_json(path, value):
 
 
 def build_package(root, direction, task_id):
-    package = root / "packages" / direction / task_id.split("/")[-1]
-    (package / "input").mkdir(parents=True)
-    (package / "reference").mkdir(parents=True)
+    version = root / "packages" / direction / task_id.split("/")[-1] / "v1"
+    base = version / "base"
+    (base / "input").mkdir(parents=True)
+    (base / "reference").mkdir(parents=True)
     files = {
         "input/task_brief.md": f"# {task_id}\n\nDo the task.\n",
         "input/output_contract.json": json.dumps({"root": "output", "required": ["answer.md"]}),
         "reference/answer_key.json": json.dumps({"answer": 42}),
     }
     for relative, content in files.items():
-        (package / relative).write_text(content, encoding="utf-8")
+        (base / relative).write_text(content, encoding="utf-8")
     declared = []
     for relative in sorted(files):
-        target = package / relative
+        target = base / relative
         declared.append({
             "path": relative,
             "sha256": pilot_gate.sha256_file(target),
@@ -51,14 +52,18 @@ def build_package(root, direction, task_id):
             "mode": "0644",
             "role": "reference" if relative.startswith("reference/") else "input",
         })
-    write_json(package / "PACKAGE.json", {
+    write_json(base / "PACKAGE.json", {
         "schema_version": "ale-pkg-1.2",
         "ale_data_version": "task-data-v1.1",
         "task_id": task_id,
         "task_version": "v1",
         "files": declared,
     })
-    digest, entries = pilot_gate.package_digest(package)
+    write_json(version / "package_manifest.json", {"package_version": "ale-pkg-1.2"})
+    write_json(version / "materials.json", {"materials": []})
+    write_json(version / "provenance.json", {"source": "test"})
+    write_json(version / "handoff.json", {"status": "ready"})
+    digest, entries = pilot_gate.package_digest(version)
     return digest, len(entries)
 
 
@@ -100,7 +105,7 @@ def record(direction, task_id, letter, package_hash, file_count):
             "approved_at": "2026-12-18T00:00:00Z",
         },
         "package": {
-            "path": f"packages/{direction}/{task_id.split('/')[-1]}",
+            "path": f"packages/{direction}/{task_id.split('/')[-1]}/v1",
             "package_hash": package_hash,
             "file_count": file_count,
             "ale_data_version": "task-data-v1.1",
@@ -280,7 +285,7 @@ def fake_package(root):
 
 
 def empty_package(root):
-    (Path(root) / "packages/business/accounting_reconcile_01/PACKAGE.json").write_text("{}", encoding="utf-8")
+    (Path(root) / "packages/business/accounting_reconcile_01/v1/base/PACKAGE.json").write_text("{}", encoding="utf-8")
 
 
 def empty_validation(root):
@@ -297,6 +302,10 @@ def smoke_file_fails(root):
     write(root, "smoke.json", {"status": "FAIL"})
 
 
+def missing_sidecar(root):
+    (Path(root) / "packages/business/accounting_reconcile_01/v1/handoff.json").unlink()
+
+
 def annotation_version_mismatch(root):
     data = read(root, "annotation-spec.json")
     data["version"] = "9.9"
@@ -304,12 +313,12 @@ def annotation_version_mismatch(root):
 
 
 def tamper_package(root):
-    path = Path(root) / "packages/business/accounting_reconcile_01/input/task_brief.md"
+    path = Path(root) / "packages/business/accounting_reconcile_01/v1/base/input/task_brief.md"
     path.write_text(path.read_text(encoding="utf-8") + "\nlate change\n", encoding="utf-8")
 
 
 def unlisted_file(root):
-    path = Path(root) / "packages/business/accounting_reconcile_01/input/extra.txt"
+    path = Path(root) / "packages/business/accounting_reconcile_01/v1/base/input/extra.txt"
     path.write_text("extra", encoding="utf-8")
 
 
@@ -359,6 +368,7 @@ def main():
     case("validation checks all failed", 1, lambda root: failed_validation(root))
     case("smoke file contradicts index", 1, lambda root: smoke_file_fails(root))
     case("annotation version mismatch", 1, lambda root: annotation_version_mismatch(root))
+    case("missing version sidecar", 1, lambda root: missing_sidecar(root))
     case("agent auto accepted", 1, lambda root: set_nested(root, "record-business.json", "platform_assisted", "agent_accepted", 1))
     case("unlisted file", 1, lambda root: unlisted_file(root))
     case("tampered package file", 1, lambda root: tamper_package(root))

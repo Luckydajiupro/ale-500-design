@@ -20,6 +20,7 @@ TASK_SCHEMA = "pilot-task-1.0"
 PACKAGE_SCHEMA = "ale-pkg-1.2"
 HASH64 = re.compile(r"^[0-9a-f]{64}$")
 MODE64 = re.compile(r"^0[0-7]{3}$")
+PACKAGE_SIDECARS = ("package_manifest.json", "materials.json", "provenance.json", "handoff.json")
 DIRECTIONS = ("business", "neuro", "engineering")
 STEPS = 7
 AGENT_CAPABILITIES = 5
@@ -110,17 +111,23 @@ def sha256_file(path):
     return digest.hexdigest()
 
 
-def package_digest(package_dir):
-    """Hash every file in the package, including PACKAGE.json.
+def package_base(package_dir):
+    base = package_dir / "base"
+    return base if base.is_dir() else package_dir
 
-    The digest is SHA256 over sorted "relative-path\\0sha256\\n" lines. The
-    platform contract uses the same shape; validation_report.json is not part
-    of the package directory and therefore cannot change this hash.
-    """
-    files = sorted(path for path in package_dir.rglob("*") if path.is_file() and not path.is_symlink())
+
+def package_digest(package_dir):
+    """Hash the base tree plus the version-level sidecars."""
+    base = package_base(package_dir)
+    files = [path for path in base.rglob("*") if path.is_file() and not path.is_symlink()]
+    if base != package_dir:
+        for name in PACKAGE_SIDECARS:
+            sidecar = package_dir / name
+            if sidecar.is_file():
+                files.append(sidecar)
     lines = bytearray()
     entries = []
-    for path in files:
+    for path in sorted(files):
         relative = path.relative_to(package_dir).as_posix()
         digest = sha256_file(path)
         entries.append((relative, digest, path.stat().st_size))
@@ -134,12 +141,17 @@ def package_digest(package_dir):
 def verify_package(record, package_dir):
     problems = []
     package = record.get("package", {})
-    manifest_path = package_dir / "PACKAGE.json"
+    base = package_base(package_dir)
+    manifest_path = base / "PACKAGE.json"
     if package_dir.is_symlink():
         return [("package.path", "package directory is a symlink")]
     for path in package_dir.rglob("*"):
         if path.is_symlink():
             return [("package.path", f"symlink inside package: {path.relative_to(package_dir).as_posix()}")]
+    if base != package_dir:
+        for name in PACKAGE_SIDECARS:
+            if not (package_dir / name).is_file():
+                problems.append((f"package.{name}", "missing version-level sidecar"))
     if not manifest_path.exists():
         return [("package.PACKAGE.json", "missing")]
     try:
@@ -174,7 +186,7 @@ def verify_package(record, package_dir):
         if path in listed:
             problems.append((where + ".path", "duplicate"))
             continue
-        target = package_dir / path
+        target = base / path
         if not target.is_file():
             problems.append((where + ".path", f"missing file: {path}"))
             continue
@@ -193,7 +205,12 @@ def verify_package(record, package_dir):
         listed[path] = actual_digest
 
     digest, entries = package_digest(package_dir)
-    actual = {path: file_digest for path, file_digest, _ in entries if path != "PACKAGE.json"}
+    actual = {}
+    for path in base.rglob("*"):
+        if path.is_file() and not path.is_symlink():
+            relative = path.relative_to(base).as_posix()
+            if relative != "PACKAGE.json":
+                actual[relative] = sha256_file(path)
     unlisted = sorted(set(actual) - set(listed))
     if unlisted:
         problems.append(("package.PACKAGE.json.files", f"unlisted files: {unlisted}"))
