@@ -123,9 +123,9 @@ T1 和 T2 用同一题族的不同实例，中间至少隔 3 个工作日。专�
 - `artifacts.smoke`：`path`、`version`、`status` 取 `PASS`、`SKIP`、`FAIL`；`FAIL` 直接不通过，`SKIP` 必须有 `reason`。
 - `artifacts.issue_log`：`path`、`version`、`open_blockers` 固定 0、`fallbacks` 是人工兜底 ID 列表。
 
-单条记录对应一条试点线，`manual_baseline.task_id` 是 T1 实例，`platform_assisted.task_id` 是 T2 实例，两者必须不同，且 T2 等于记录顶层 `task_id`。`manual_baseline` 的 `hours` 大于 0，`artifacts` 非空；`platform_assisted` 的 `agent_suggestions` 大于 0，`agent_accepted` 必须为 0，`expert_confirmed` 为 true；`review.reviewers` 不含专家本人，`blockers` 等于 `resolved`；`package.package_hash` 是 64 位小写十六进制，检查器会按包内文件重算，`rebuilt_hash` 与重算值相等；`validation.passed` 等于 `checks`，`blockers` 为 0；`ingest.package_hash` 等于包哈希，`ingested_at` 不早于 `review.approved_at`。
+单条记录对应一条试点线，`manual_baseline.task_id` 是 T1 实例，`platform_assisted.task_id` 是 T2 实例，两者必须不同，且 T2 等于记录顶层 `task_id`。`manual_baseline` 的 `hours` 大于 0，`artifacts` 非空；`platform_assisted` 的 `agent_suggestions` 大于 0，`agent_accepted` 必须为 0，`expert_confirmed` 为 true；`review.reviewers` 不含专家本人，`blockers` 等于 `resolved`；`package.package_hash` 是 64 位小写十六进制，检查器会按包内文件重算，`rebuilt_hash` 与重算值相等；`package.file_count` 指 base 目录下全部文件数，含 `PACKAGE.json`；`files[]` 只列除 `PACKAGE.json` 外的内容文件，每项要带四位八进制 `mode` 和非空 `role`。`validation` 的每条检查 `status` 必须是 PASS，`passed` 等于 `checks`，`blockers` 为 0；`ingest.package_hash` 等于包哈希，`ingested_at` 不早于 `review.approved_at`。
 
-检查器自检 36/36 通过，覆盖三十六组人造记录，包括缺段、未确认、包哈希错、校验阻断、入库错配、重复方向、T1 与 T2 同实例、T2 标识错、分工矩阵缺步或缺工时、Agent 报告缺项、冒烟 FAIL 或 SKIP 无理由、坏 JSON，以及空包、假哈希、空校验报告、包内多文件、改过包内文件、Agent 自动采纳、索引任务集与记录不一致。自检本身不通过，检查器的通过不算证据。检查器校验包、校验报告和回执文件，不连接平台数据库；入库是否真的发生，以平台审计日志和 `ingest_records` 为准，回执只是被核对的一项证据。
+检查器自检 39/39 通过，覆盖三十九组人造记录，包括缺段、未确认、包哈希错、校验阻断、入库错配、重复方向、T1 与 T2 同实例、T2 标识错、分工矩阵缺步或缺工时、Agent 报告缺项、冒烟 FAIL 或 SKIP 无理由、坏 JSON，以及空包、假哈希、空校验报告、校验项全 FAIL、冒烟文件与索引相反、标注版本不一致、包内多文件、改过包内文件、Agent 自动采纳、索引任务集与记录不一致。自检本身不通过，检查器的通过不算证据。检查器校验包、校验报告和回执文件，不连接平台数据库；入库是否真的发生，以平台审计日志和 `ingest_records` 为准，回执只是被核对的一项证据。
 
 ## 十二项证据
 
@@ -177,9 +177,9 @@ T1 和 T2 用同一题族的不同实例，中间至少隔 3 个工作日。专�
 
 ## 和首批 30 条的关系
 
-试点不是首批 30 条的硬前置。首批 30 条在 M1a 通过后于 12-01 开工，用平台 S0/S1 做任务源、审核和冻结；组包和入库等 M1b 在 12-22 通过后做。试点每周的结论进 30 条的周会，不改 30 条的开工日。
+试点不是首批 30 条的硬前置。首批 30 条在 M1a-Core 通过后于 12-01 开工，用平台 S0/S1 做任务源、审核和冻结；组包和入库等 M1b 在 12-22 通过后做。试点每周的结论进 30 条的周会，不改 30 条的开工日。
 
-首批 30 条的法律 8 条不经过试点。法律走供应方 ALE-data 导入，12-08 到包，12-12 前导入校验，12-22 到 12-23 入库（M1b 验收后）；不通过则 30 条变 22 条，报实际数，不用别的任务顶替。
+首批 30 条的法律 8 条不经过试点。法律走供应方 ALE-data 导入，12-08 到包，12-12 前完成布局、契约、哈希三项预检，12-15 后用 S3 校验器复跑 L1 到 L3，12-22 后 L4 到 L5 并入 M1b 正式校验，12-22 到 12-23 入库；不通过则 30 条变 22 条，报实际数，不用别的任务顶替。
 
 试点不产生可对外的专家人数。3 名试点专家是否进 W1，由专家运营负责人在 12-15 前按产能和意愿决定；进 W1 要重新签批次合同，不能沿用试点合同。
 

@@ -345,7 +345,7 @@ def check_f():
             "12-22 到 12-23",
         ],
         "docs/08-pilot-design.md": [
-            "36/36", "12-22 到 12-23", "M1a-Core", "M2-C",
+            "39/39", "12-22 到 12-23", "M1a-Core", "M2-C",
         ],
         "docs/06-decisions-and-blockers.md": ["01-31", "12-22 到 12-23"],
     }
@@ -357,6 +357,18 @@ def check_f():
                 missing.append(f"{name}: {needle}")
     if missing:
         return "F", "fail", "missing revision anchors: " + "; ".join(missing)
+    stale = {
+        "docs/07-expert-supply.md": ["1,073", "46.3%", "880 h", "101%", "6.5 周 = 130"],
+        "docs/08-pilot-design.md": ["36/36"],
+    }
+    left = []
+    for name, needles in stale.items():
+        body = text(ROOT / name)
+        for needle in needles:
+            if needle in body:
+                left.append(f"{name}: {needle}")
+    if left:
+        return "F", "fail", "stale revision numbers: " + "; ".join(left)
     return "F", "pass", "revision anchors present in the design docs"
 
 def evaluate():

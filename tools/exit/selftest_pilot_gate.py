@@ -175,9 +175,9 @@ def build(root):
                 "version": "1.0",
                 "steps": 7,
                 "assisted": 1,
-                "manual": 1,
-                "manual_hours": 30.0,
-                "platform_hours": 12.0,
+                "manual": 3,
+                "manual_hours": 9.0,
+                "platform_hours": 3.5,
             },
             "annotation_spec": {"path": "annotation-spec.json", "version": "1.0"},
             "agent_report": {
@@ -255,6 +255,9 @@ def declare_fallback(root):
     index = read(root, "index.json")
     index["artifacts"]["issue_log"]["fallbacks"] = ["F1"]
     write(root, "index.json", index)
+    issues = read(root, "issues.json")
+    issues["fallbacks"] = ["F1"]
+    write(root, "issues.json", issues)
 
 
 def fallback_without_reason(root):
@@ -266,6 +269,9 @@ def fallback_without_reason(root):
     index = read(root, "index.json")
     index["artifacts"]["issue_log"]["fallbacks"] = ["F1"]
     write(root, "index.json", index)
+    issues = read(root, "issues.json")
+    issues["fallbacks"] = ["F1"]
+    write(root, "issues.json", issues)
 
 
 def fake_package(root):
@@ -279,6 +285,22 @@ def empty_package(root):
 
 def empty_validation(root):
     (Path(root) / "validation-business.json").write_text("{}", encoding="utf-8")
+
+
+def failed_validation(root):
+    data = read(root, "validation-business.json")
+    data["checks"] = [{"code": f"L1-{i}", "status": "FAIL"} for i in range(6)]
+    write(root, "validation-business.json", data)
+
+
+def smoke_file_fails(root):
+    write(root, "smoke.json", {"status": "FAIL"})
+
+
+def annotation_version_mismatch(root):
+    data = read(root, "annotation-spec.json")
+    data["version"] = "9.9"
+    write(root, "annotation-spec.json", data)
 
 
 def tamper_package(root):
@@ -334,6 +356,9 @@ def main():
     case("fake package hash", 1, lambda root: fake_package(root))
     case("empty package manifest", 1, lambda root: empty_package(root))
     case("empty validation report", 1, lambda root: empty_validation(root))
+    case("validation checks all failed", 1, lambda root: failed_validation(root))
+    case("smoke file contradicts index", 1, lambda root: smoke_file_fails(root))
+    case("annotation version mismatch", 1, lambda root: annotation_version_mismatch(root))
     case("agent auto accepted", 1, lambda root: set_nested(root, "record-business.json", "platform_assisted", "agent_accepted", 1))
     case("unlisted file", 1, lambda root: unlisted_file(root))
     case("tampered package file", 1, lambda root: tamper_package(root))

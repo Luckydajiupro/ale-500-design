@@ -19,6 +19,7 @@ INDEX_SCHEMA = "pilot-index-1.0"
 TASK_SCHEMA = "pilot-task-1.0"
 PACKAGE_SCHEMA = "ale-pkg-1.2"
 HASH64 = re.compile(r"^[0-9a-f]{64}$")
+MODE64 = re.compile(r"^0[0-7]{3}$")
 DIRECTIONS = ("business", "neuro", "engineering")
 STEPS = 7
 AGENT_CAPABILITIES = 5
@@ -177,6 +178,11 @@ def verify_package(record, package_dir):
         if not target.is_file():
             problems.append((where + ".path", f"missing file: {path}"))
             continue
+        mode = item.get("mode")
+        if not isinstance(mode, str) or not MODE64.match(mode):
+            problems.append((where + ".mode", "need a four-digit octal mode"))
+        if not nonempty_str(item.get("role")):
+            problems.append((where + ".role", "missing or empty"))
         digest = item.get("sha256")
         size = item.get("bytes")
         actual_digest = sha256_file(target)
@@ -215,6 +221,15 @@ def verify_validation(record, report_path):
     checks = report.get("checks")
     if not isinstance(checks, list) or len(checks) != validation.get("checks"):
         problems.append(("validation.report.checks", "does not match record.checks"))
+    elif checks:
+        for position, check in enumerate(checks):
+            if not isinstance(check, dict):
+                problems.append((f"validation.report.checks[{position}]", "not an object"))
+                continue
+            if not nonempty_str(check.get("code")):
+                problems.append((f"validation.report.checks[{position}].code", "missing or empty"))
+            if check.get("status") != "PASS":
+                problems.append((f"validation.report.checks[{position}].status", "need PASS"))
     blockers = report.get("blockers")
     if not isinstance(blockers, list) or blockers:
         problems.append(("validation.report.blockers", "need an empty list"))
@@ -272,28 +287,58 @@ def check_artifact_file(name, value, root):
         if not isinstance(steps, list) or len(steps) != STEPS:
             problems.append((f"index.artifacts.{name}.steps", f"file needs {STEPS} steps"))
         else:
+            manual = assisted = 0
+            manual_hours = platform_hours = 0.0
             for position, step in enumerate(steps):
                 if not isinstance(step, dict):
                     problems.append((f"index.artifacts.{name}.steps[{position}]", "not an object"))
                     continue
                 mode = step.get("mode")
+                hours = step.get("hours")
                 if mode not in ("auto", "assisted", "manual"):
                     problems.append((f"index.artifacts.{name}.steps[{position}].mode", "need auto, assisted or manual"))
-                if not nonneg_num(step.get("hours")):
+                if not nonneg_num(hours):
                     problems.append((f"index.artifacts.{name}.steps[{position}].hours", "need a non-negative number"))
+                    continue
+                if mode == "manual":
+                    manual += 1
+                    manual_hours += hours
+                elif mode == "assisted":
+                    assisted += 1
+                    platform_hours += hours
+                elif mode == "auto":
+                    platform_hours += hours
+            if value.get("manual") != manual:
+                problems.append((f"index.artifacts.{name}.manual", f"file has {manual}"))
+            if value.get("assisted") != assisted:
+                problems.append((f"index.artifacts.{name}.assisted", f"file has {assisted}"))
+            if not nonneg_num(value.get("manual_hours")) or abs(value["manual_hours"] - manual_hours) > 0.01:
+                problems.append((f"index.artifacts.{name}.manual_hours", f"file has {manual_hours}"))
+            if not nonneg_num(value.get("platform_hours")) or abs(value["platform_hours"] - platform_hours) > 0.01:
+                problems.append((f"index.artifacts.{name}.platform_hours", f"file has {platform_hours}"))
     elif name == "agent_report":
         check_agent_details(data.get("details"), f"index.artifacts.{name}.details", problems)
+        if data.get("details") != value.get("details"):
+            problems.append((f"index.artifacts.{name}.details", "does not match index"))
     elif name == "annotation_spec":
         if not isinstance(data.get("fields"), list) or not data.get("fields"):
             problems.append((f"index.artifacts.{name}.fields", "need a non-empty list"))
+        if data.get("version") != value.get("version"):
+            problems.append((f"index.artifacts.{name}.version", "does not match index"))
     elif name == "issue_log":
         if data.get("open_blockers") != 0:
             problems.append((f"index.artifacts.{name}.open_blockers", "file needs 0"))
         if not isinstance(data.get("fallbacks"), list):
             problems.append((f"index.artifacts.{name}.fallbacks", "file needs a list"))
+        if data.get("open_blockers") != value.get("open_blockers"):
+            problems.append((f"index.artifacts.{name}.open_blockers", "does not match index"))
+        if data.get("fallbacks") != value.get("fallbacks"):
+            problems.append((f"index.artifacts.{name}.fallbacks", "does not match index"))
     elif name == "smoke":
         if data.get("status") not in ("PASS", "SKIP", "FAIL"):
             problems.append((f"index.artifacts.{name}.status", "file needs PASS, SKIP or FAIL"))
+        if data.get("status") != value.get("status"):
+            problems.append((f"index.artifacts.{name}.status", "does not match index"))
     return problems
 
 
