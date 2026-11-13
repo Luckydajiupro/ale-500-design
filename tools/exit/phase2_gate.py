@@ -1,17 +1,16 @@
 #!/usr/bin/env python3
-"""Check the phase 2 exit condition: records from snapshot to score.
+"""Check the phase 2 engineering smoke record.
 
-Phase 2 is technical feasibility, and its exit is a run record proving that one
-task went snapshot to convert to run to score. A record is a JSON object with a
-task id, the frozen ALE and Harbor commits, and the four stages, each carrying a
-status and evidence. The gate passes only when every stage says PASS with
-evidence and both commits are full lowercase hex hashes.
+This is not a stage exit. Phase 2 exits on three pilot records that go from
+manual annotation to an ingested ALE-data package; those are checked by
+pilot_gate.py. This gate only proves the package can be parsed, the fields can
+be mapped, and a small number of formats can be converted.
 
-Phase 2 replaces the earlier five-task pilot with three: one neuroscience task,
-one building task, one business task. The record directory therefore holds
-exactly three records, one per task. A missing record means one task family was
-never proven, and an extra record means the directory has picked up work outside
-the pilot.
+A smoke record is a JSON object with a task id, an ALE-data version, an adapter
+name, and up to five stages. package and validate are required and must PASS
+with evidence. convert, run and score are optional: they may PASS, SKIP or FAIL,
+but SKIP needs a reason, and FAIL fails the record. When the adapter is none,
+run and score must be SKIP.
 """
 
 import json
@@ -19,9 +18,11 @@ import re
 import sys
 from pathlib import Path
 
-STAGES = ("snapshot", "convert", "run", "score")
+REQUIRED = ("package", "validate")
+OPTIONAL = ("convert", "run", "score")
+ADAPTERS = ("harbor", "old", "none")
 COMMIT = re.compile(r"^[0-9a-f]{40}$")
-RECORDS = 3
+MAX_RECORDS = 3
 USAGE = "usage: phase2_gate.py --record PATH | --dir PATH"
 
 
@@ -53,38 +54,70 @@ def load(path):
     return record
 
 
-def check_stages(record):
+def check_stages(record, adapter):
     problems = []
     stages = record.get("stages")
     if not isinstance(stages, dict):
         return [("stages", "missing or not an object")]
 
-    for name in STAGES:
+    for name in REQUIRED:
         stage = stages.get(name)
         if not isinstance(stage, dict):
             problems.append((f"stages.{name}", "missing"))
             continue
-        status = stage.get("status")
-        if status != "PASS":
-            actual = "missing" if status is None else str(status)
-            problems.append((f"stages.{name}.status", f"status is {actual}"))
+        if stage.get("status") != "PASS":
+            actual = stage.get("status", "missing")
+            problems.append((f"stages.{name}.status", f"status is {actual}, need PASS"))
         evidence = stage.get("evidence")
         if not isinstance(evidence, str) or not evidence.strip():
             problems.append((f"stages.{name}.evidence", "evidence is missing or empty"))
+
+    for name in OPTIONAL:
+        stage = stages.get(name)
+        if stage is None:
+            if adapter == "none" and name in ("run", "score"):
+                problems.append((f"stages.{name}", "adapter is none, need SKIP with reason"))
+            continue
+        if not isinstance(stage, dict):
+            problems.append((f"stages.{name}", "not an object"))
+            continue
+        status = stage.get("status")
+        if status == "FAIL":
+            problems.append((f"stages.{name}.status", "status is FAIL"))
+        elif status == "SKIP":
+            reason = stage.get("reason")
+            if not isinstance(reason, str) or not reason.strip():
+                problems.append((f"stages.{name}.reason", "SKIP needs a non-empty reason"))
+            if adapter == "none" and name in ("run", "score"):
+                continue
+        elif status == "PASS":
+            evidence = stage.get("evidence")
+            if not isinstance(evidence, str) or not evidence.strip():
+                problems.append((f"stages.{name}.evidence", "evidence is missing or empty"))
+            if adapter == "none" and name in ("run", "score"):
+                problems.append((f"stages.{name}.status", "adapter is none, need SKIP"))
+        else:
+            actual = "missing" if status is None else str(status)
+            problems.append((f"stages.{name}.status", f"status is {actual}"))
     return problems
 
 
 def check_target(record):
     problems = []
-    target = record.get("target_version")
-    if not isinstance(target, dict):
-        return [("target_version", "missing or not an object")]
+    version = record.get("ale_data_version")
+    if version != "task-data-v1.1":
+        problems.append(("ale_data_version", f"is {version!r}, need 'task-data-v1.1'"))
 
-    for key in ("ale_commit", "harbor_commit"):
-        value = target.get(key)
+    adapter = record.get("adapter")
+    if adapter not in ADAPTERS:
+        problems.append(("adapter", f"is {adapter!r}, need one of {ADAPTERS}"))
+        return problems
+
+    if adapter != "none":
+        value = record.get("adapter_commit")
         if not isinstance(value, str) or not COMMIT.match(value):
             actual = "missing" if value is None else repr(value)
-            problems.append((f"target_version.{key}", f"not 40 lowercase hex characters: {actual}"))
+            problems.append(("adapter_commit", f"not 40 lowercase hex characters: {actual}"))
     return problems
 
 
@@ -97,14 +130,27 @@ def check_task_id(record):
 
 def check_record(record):
     problems = []
-    problems.extend(check_stages(record))
-    problems.extend(check_target(record))
     problems.extend(check_task_id(record))
+    problems.extend(check_target(record))
+    adapter = record.get("adapter")
+    problems.extend(check_stages(record, adapter))
     return problems
 
 
+def stage_counts(record):
+    stages = record.get("stages") if isinstance(record.get("stages"), dict) else {}
+    passed = sum(1 for name in REQUIRED if stages.get(name, {}).get("status") == "PASS")
+    skipped = sum(
+        1
+        for name in OPTIONAL
+        if stages.get(name, {}).get("status") == "SKIP"
+    )
+    return passed, skipped
+
+
 def pass_line(record):
-    return f"{record['task_id'].strip()} {len(STAGES)}/{len(STAGES)} stages PASS"
+    passed, skipped = stage_counts(record)
+    return f"{record['task_id'].strip()} {passed}/{len(REQUIRED)} required PASS, {skipped} SKIP"
 
 
 def check_one(path):
@@ -120,7 +166,7 @@ def check_one(path):
             print(f"FAIL {path.name} {where}: {reason}")
         return 1
 
-    print(f"phase 2 gate: {pass_line(record)}")
+    print(f"phase 2 smoke: {pass_line(record)}")
     return 0
 
 
@@ -139,8 +185,8 @@ def check_dir(path):
     if not files:
         print("FAIL dir: no record files")
         return 1
-    if len(files) != RECORDS:
-        print(f"FAIL dir: {len(files)} record files, need exactly {RECORDS}")
+    if len(files) > MAX_RECORDS:
+        print(f"FAIL dir: {len(files)} record files, need 1 to {MAX_RECORDS}")
         return 1
 
     passed = 0
@@ -158,9 +204,9 @@ def check_dir(path):
             continue
 
         passed += 1
-        print(f"{file.name} phase 2 gate: {pass_line(record)}")
+        print(f"{file.name} phase 2 smoke: {pass_line(record)}")
 
-    print(f"phase 2 gate: {passed}/{len(files)} records passed")
+    print(f"phase 2 smoke: {passed}/{len(files)} records passed")
     return 0 if passed == len(files) else 1
 
 
