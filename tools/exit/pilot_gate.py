@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """Check the phase 2 pilot exit and the phase 3 platform acceptance.
 
-A pilot record follows one task through seven segments: manual baseline,
-platform-assisted annotation, expert confirmation, independent review,
-ALE-data packaging, package validation, and ingest. Three records must cover
-business, neuro and engineering. The engineering smoke record is checked by
-phase2_gate.py and is not a substitute for this gate.
+The gate verifies artifacts, not a live platform database. It recomputes the
+package hash from package files, reads the validation report, and reads the
+division matrix, annotation spec, Agent report, issue log and smoke record.
+A machine-readable ingest receipt is still a claim; the platform audit log is
+the source of truth for the ingest itself.
 """
 
+import hashlib
 import json
 import re
 import sys
@@ -16,15 +17,13 @@ from pathlib import Path
 
 INDEX_SCHEMA = "pilot-index-1.0"
 TASK_SCHEMA = "pilot-task-1.0"
+PACKAGE_SCHEMA = "ale-pkg-1.2"
 HASH64 = re.compile(r"^[0-9a-f]{64}$")
 DIRECTIONS = ("business", "neuro", "engineering")
 STEPS = 7
 AGENT_CAPABILITIES = 5
 AGENT_CAPABILITY_NAMES = ("interview", "follow_up", "structuring", "precheck", "review_assist")
-USAGE = (
-    "usage: pilot_gate.py --dir PATH "
-    "[--require-platform-built] [--require-acceptance]"
-)
+USAGE = "usage: pilot_gate.py --dir PATH [--require-acceptance]"
 
 
 class InputError(Exception):
@@ -33,7 +32,6 @@ class InputError(Exception):
 
 def parse_args(argv):
     path = None
-    require_platform = False
     require_acceptance = False
     index = 0
     while index < len(argv):
@@ -41,17 +39,14 @@ def parse_args(argv):
         if item == "--dir" and index + 1 < len(argv):
             path = Path(argv[index + 1])
             index += 2
-        elif item == "--require-platform-built":
-            require_platform = True
-            index += 1
         elif item == "--require-acceptance":
             require_acceptance = True
             index += 1
         else:
-            return None, False, False
+            return None, False
     if path is None:
-        return None, False, False
-    return path, require_platform, require_acceptance
+        return None, False
+    return path, require_acceptance
 
 
 def load_json(path):
@@ -97,6 +92,211 @@ def is_true(value):
     return value is True
 
 
+def safe_rel(value):
+    if not nonempty_str(value):
+        return False
+    candidate = Path(value)
+    if candidate.is_absolute():
+        return False
+    return all(part not in ("", "..") for part in candidate.parts)
+
+
+def sha256_file(path):
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def package_digest(package_dir):
+    """Hash every file in the package, including PACKAGE.json.
+
+    The digest is SHA256 over sorted "relative-path\\0sha256\\n" lines. The
+    platform contract uses the same shape; validation_report.json is not part
+    of the package directory and therefore cannot change this hash.
+    """
+    files = sorted(path for path in package_dir.rglob("*") if path.is_file() and not path.is_symlink())
+    lines = bytearray()
+    entries = []
+    for path in files:
+        relative = path.relative_to(package_dir).as_posix()
+        digest = sha256_file(path)
+        entries.append((relative, digest, path.stat().st_size))
+        lines.extend(relative.encode("utf-8"))
+        lines.extend(b"\0")
+        lines.extend(digest.encode("ascii"))
+        lines.extend(b"\n")
+    return hashlib.sha256(bytes(lines)).hexdigest(), entries
+
+
+def verify_package(record, package_dir):
+    problems = []
+    package = record.get("package", {})
+    manifest_path = package_dir / "PACKAGE.json"
+    if package_dir.is_symlink():
+        return [("package.path", "package directory is a symlink")]
+    for path in package_dir.rglob("*"):
+        if path.is_symlink():
+            return [("package.path", f"symlink inside package: {path.relative_to(package_dir).as_posix()}")]
+    if not manifest_path.exists():
+        return [("package.PACKAGE.json", "missing")]
+    try:
+        manifest = load_json(manifest_path)
+    except InputError as exc:
+        return [("package.PACKAGE.json", str(exc))]
+
+    if manifest.get("schema_version") != PACKAGE_SCHEMA:
+        problems.append(("package.PACKAGE.json.schema_version", f"need {PACKAGE_SCHEMA}"))
+    if manifest.get("ale_data_version") != "task-data-v1.1":
+        problems.append(("package.PACKAGE.json.ale_data_version", "need task-data-v1.1"))
+    if manifest.get("task_id") != record.get("task_id"):
+        problems.append(("package.PACKAGE.json.task_id", "does not equal record.task_id"))
+
+    declared = manifest.get("files")
+    if not isinstance(declared, list) or not declared:
+        return problems + [("package.PACKAGE.json.files", "need a non-empty list")]
+
+    listed = {}
+    for position, item in enumerate(declared):
+        where = f"package.PACKAGE.json.files[{position}]"
+        if not isinstance(item, dict):
+            problems.append((where, "not an object"))
+            continue
+        path = item.get("path")
+        if not nonempty_str(path):
+            problems.append((where + ".path", "missing or empty"))
+            continue
+        if not safe_rel(path):
+            problems.append((where + ".path", "must be a relative path inside the package"))
+            continue
+        if path in listed:
+            problems.append((where + ".path", "duplicate"))
+            continue
+        target = package_dir / path
+        if not target.is_file():
+            problems.append((where + ".path", f"missing file: {path}"))
+            continue
+        digest = item.get("sha256")
+        size = item.get("bytes")
+        actual_digest = sha256_file(target)
+        if digest != actual_digest:
+            problems.append((where + ".sha256", "does not match file"))
+        if not nonneg_int(size) or size != target.stat().st_size:
+            problems.append((where + ".bytes", "does not match file size"))
+        listed[path] = actual_digest
+
+    digest, entries = package_digest(package_dir)
+    actual = {path: file_digest for path, file_digest, _ in entries if path != "PACKAGE.json"}
+    unlisted = sorted(set(actual) - set(listed))
+    if unlisted:
+        problems.append(("package.PACKAGE.json.files", f"unlisted files: {unlisted}"))
+
+    if package.get("package_hash") != digest:
+        problems.append(("package.package_hash", "does not match recomputed package hash"))
+    if package.get("rebuilt_hash") != digest:
+        problems.append(("package.rebuilt_hash", "does not match recomputed package hash"))
+    if package.get("file_count") != len(entries):
+        problems.append(("package.file_count", f"need {len(entries)} from the package directory"))
+    return problems
+
+
+def verify_validation(record, report_path):
+    problems = []
+    validation = record.get("validation", {})
+    try:
+        report = load_json(report_path)
+    except InputError as exc:
+        return [("validation.report", str(exc))]
+    if report.get("validator") != validation.get("validator"):
+        problems.append(("validation.report.validator", "does not match record"))
+    if report.get("validator_version") != validation.get("validator_version"):
+        problems.append(("validation.report.validator_version", "does not match record"))
+    checks = report.get("checks")
+    if not isinstance(checks, list) or len(checks) != validation.get("checks"):
+        problems.append(("validation.report.checks", "does not match record.checks"))
+    blockers = report.get("blockers")
+    if not isinstance(blockers, list) or blockers:
+        problems.append(("validation.report.blockers", "need an empty list"))
+    warnings = report.get("warnings")
+    if isinstance(warnings, list):
+        warning_count = len(warnings)
+    elif nonneg_int(warnings):
+        warning_count = warnings
+    else:
+        problems.append(("validation.report.warnings", "need a list or an integer"))
+        warning_count = None
+    if warning_count is not None and warning_count != validation.get("warnings"):
+        problems.append(("validation.report.warnings", "does not match record.warnings"))
+    return problems
+
+
+def check_agent_details(details, where, problems):
+    if not isinstance(details, list) or len(details) != AGENT_CAPABILITIES:
+        problems.append((where, f"need {AGENT_CAPABILITIES} entries"))
+        return
+    seen = set()
+    for position, item in enumerate(details):
+        label = f"{where}[{position}]"
+        if not isinstance(item, dict):
+            problems.append((label, "need an object"))
+            continue
+        name = item.get("capability")
+        if name not in AGENT_CAPABILITY_NAMES:
+            problems.append((label + ".capability", f"need one of {AGENT_CAPABILITY_NAMES}"))
+        elif name in seen:
+            problems.append((label + ".capability", "duplicate"))
+        seen.add(name)
+        if not nonneg_int(item.get("sample_size")) or item.get("sample_size") <= 0:
+            problems.append((label + ".sample_size", "need a positive integer"))
+        rate = item.get("success_rate")
+        if not nonneg_num(rate) or rate > 1:
+            problems.append((label + ".success_rate", "need 0..1"))
+        if not nonneg_num(item.get("cost_per_task")):
+            problems.append((label + ".cost_per_task", "need a non-negative number"))
+        modes = item.get("failure_modes")
+        if not isinstance(modes, list) or not modes:
+            problems.append((label + ".failure_modes", "need a non-empty list"))
+
+
+def check_artifact_file(name, value, root):
+    problems = []
+    path = root / value["path"]
+    try:
+        data = load_json(path)
+    except InputError as exc:
+        return [(f"index.artifacts.{name}.path", str(exc))]
+
+    if name == "division_matrix":
+        steps = data.get("steps")
+        if not isinstance(steps, list) or len(steps) != STEPS:
+            problems.append((f"index.artifacts.{name}.steps", f"file needs {STEPS} steps"))
+        else:
+            for position, step in enumerate(steps):
+                if not isinstance(step, dict):
+                    problems.append((f"index.artifacts.{name}.steps[{position}]", "not an object"))
+                    continue
+                mode = step.get("mode")
+                if mode not in ("auto", "assisted", "manual"):
+                    problems.append((f"index.artifacts.{name}.steps[{position}].mode", "need auto, assisted or manual"))
+                if not nonneg_num(step.get("hours")):
+                    problems.append((f"index.artifacts.{name}.steps[{position}].hours", "need a non-negative number"))
+    elif name == "agent_report":
+        check_agent_details(data.get("details"), f"index.artifacts.{name}.details", problems)
+    elif name == "annotation_spec":
+        if not isinstance(data.get("fields"), list) or not data.get("fields"):
+            problems.append((f"index.artifacts.{name}.fields", "need a non-empty list"))
+    elif name == "issue_log":
+        if data.get("open_blockers") != 0:
+            problems.append((f"index.artifacts.{name}.open_blockers", "file needs 0"))
+        if not isinstance(data.get("fallbacks"), list):
+            problems.append((f"index.artifacts.{name}.fallbacks", "file needs a list"))
+    elif name == "smoke":
+        if data.get("status") not in ("PASS", "SKIP", "FAIL"):
+            problems.append((f"index.artifacts.{name}.status", "file needs PASS, SKIP or FAIL"))
+    return problems
+
+
 def check_index(index, root):
     problems = []
     if index.get("schema_version") != INDEX_SCHEMA:
@@ -128,10 +328,14 @@ def check_index(index, root):
         path = value.get("path")
         if not nonempty_str(path):
             problems.append((f"index.artifacts.{name}.path", "missing or empty"))
+        elif not safe_rel(path):
+            problems.append((f"index.artifacts.{name}.path", "must be a relative path inside the worktree"))
         elif not (root / path).exists():
             problems.append((f"index.artifacts.{name}.path", f"does not exist: {path}"))
         if not nonempty_str(value.get("version")):
             problems.append((f"index.artifacts.{name}.version", "missing or empty"))
+        if nonempty_str(path) and (root / path).is_file():
+            problems.extend(check_artifact_file(name, value, root))
         return value
 
     matrix = artifact("division_matrix")
@@ -155,33 +359,7 @@ def check_index(index, root):
             problems.append(
                 ("index.artifacts.agent_report.capabilities", f"need {AGENT_CAPABILITIES}")
             )
-        details = report.get("details")
-        if not isinstance(details, list) or len(details) != AGENT_CAPABILITIES:
-            problems.append(
-                ("index.artifacts.agent_report.details", f"need {AGENT_CAPABILITIES} entries")
-            )
-        else:
-            seen = set()
-            for i, item in enumerate(details):
-                if not isinstance(item, dict):
-                    problems.append((f"index.artifacts.agent_report.details[{i}]", "need an object"))
-                    continue
-                name = item.get("capability")
-                if name not in AGENT_CAPABILITY_NAMES:
-                    problems.append((f"index.artifacts.agent_report.details[{i}].capability", f"need one of {AGENT_CAPABILITY_NAMES}"))
-                elif name in seen:
-                    problems.append((f"index.artifacts.agent_report.details[{i}].capability", "duplicate"))
-                seen.add(name)
-                if not nonneg_int(item.get("sample_size")) or item.get("sample_size") <= 0:
-                    problems.append((f"index.artifacts.agent_report.details[{i}].sample_size", "need a positive integer"))
-                rate = item.get("success_rate")
-                if not nonneg_num(rate) or rate > 1:
-                    problems.append((f"index.artifacts.agent_report.details[{i}].success_rate", "need 0..1"))
-                if not nonneg_num(item.get("cost_per_task")):
-                    problems.append((f"index.artifacts.agent_report.details[{i}].cost_per_task", "need a non-negative number"))
-                modes = item.get("failure_modes")
-                if not isinstance(modes, list) or not modes:
-                    problems.append((f"index.artifacts.agent_report.details[{i}].failure_modes", "need a non-empty list"))
+        check_agent_details(report.get("details"), "index.artifacts.agent_report.details", problems)
 
     smoke = artifact("smoke")
     if smoke is not None:
@@ -290,8 +468,8 @@ def check_record(record, task_ids):
             problems.append(("platform_assisted.agent_suggestions", "need a positive integer"))
         if not nonneg_int(accepted):
             problems.append(("platform_assisted.agent_accepted", "need a non-negative integer"))
-        elif nonneg_int(suggestions) and accepted > suggestions:
-            problems.append(("platform_assisted.agent_accepted", "greater than suggestions"))
+        elif accepted != 0:
+            problems.append(("platform_assisted.agent_accepted", "must be 0: experts confirm every field"))
         if not is_true(assisted.get("expert_confirmed")):
             problems.append(("platform_assisted.expert_confirmed", "need true"))
         if confirmed_at is None:
@@ -362,14 +540,19 @@ def check_record(record, task_ids):
 
     package = record.get("package")
     package_hash = None
+    package_dir = None
     if not isinstance(package, dict):
         problems.append(("package", "missing or not an object"))
     else:
         path = package.get("path")
         if not nonempty_str(path):
             problems.append(("package.path", "missing or empty"))
+        elif not safe_rel(path):
+            problems.append(("package.path", "must be a relative path inside the worktree"))
         elif not (record["_root"] / path).exists():
             problems.append(("package.path", f"does not exist: {path}"))
+        else:
+            package_dir = record["_root"] / path
         package_hash = package.get("package_hash")
         if not isinstance(package_hash, str) or not HASH64.match(package_hash):
             problems.append(("package.package_hash", "need 64 lowercase hex characters"))
@@ -388,6 +571,8 @@ def check_record(record, task_ids):
             problems.append(("package.ale_data_version", "need task-data-v1.1"))
         if package.get("built_by") != "platform":
             problems.append(("package.built_by", "need platform"))
+        if package_dir is not None:
+            problems.extend(verify_package(record, package_dir))
 
     validation = record.get("validation")
     if not isinstance(validation, dict):
@@ -412,8 +597,12 @@ def check_record(record, task_ids):
         report = validation.get("report")
         if not nonempty_str(report):
             problems.append(("validation.report", "missing or empty"))
+        elif not safe_rel(report):
+            problems.append(("validation.report", "must be a relative path inside the worktree"))
         elif not (record["_dir"] / report).exists():
             problems.append(("validation.report", f"does not exist: {report}"))
+        else:
+            problems.extend(verify_validation(record, record["_dir"] / report))
 
     ingest = record.get("ingest")
     if not isinstance(ingest, dict):
@@ -440,6 +629,9 @@ def check_cross(records, index, require_acceptance):
     by_direction = {record.get("direction") for record in records}
     if len(set(by_direction)) != 3 or set(by_direction) != set(DIRECTIONS):
         problems.append(("records", "need exactly business, neuro and engineering"))
+
+    if set(record.get("task_id") for record in records) != set(index.get("task_ids", [])):
+        problems.append(("records", "record task ids do not equal index.task_ids"))
 
     validators = {
         (record.get("validation", {}).get("validator"),
@@ -510,7 +702,7 @@ def check_cross(records, index, require_acceptance):
     return problems
 
 
-def check_dir(path, require_platform, require_acceptance):
+def check_dir(path, require_acceptance):
     if not path.exists():
         print(f"pilot_gate: {path}: no such directory", file=sys.stderr)
         return 2
@@ -558,16 +750,16 @@ def check_dir(path, require_platform, require_acceptance):
 
     for record in records:
         print(f"{record['task_id']} pilot record: 7/7 segments, package ingested")
-    print(f"pilot gate: 3/3 records passed")
+    print("pilot gate: 3/3 records passed")
     return 0
 
 
 def main():
-    path, require_platform, require_acceptance = parse_args(sys.argv[1:])
+    path, require_acceptance = parse_args(sys.argv[1:])
     if path is None:
         print(USAGE, file=sys.stderr)
         return 2
-    return check_dir(path, require_platform, require_acceptance)
+    return check_dir(path, require_acceptance)
 
 
 if __name__ == "__main__":

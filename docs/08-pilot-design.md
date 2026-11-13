@@ -2,6 +2,8 @@
 
 这份文件回答三条试点怎么从专家人工标注迁到平台辅助标注、平台和 Agent 怎么同步调试、试点怎么判定通过。它把 `docs/02-plan.md` 阶段 2 的出口展开成可执行的周计划、记录格式和验收判据。
 
+本文件是 2026-11-13 审查稿，判据和排期待项目负责人批准；批准前 `pilot_gate.py` 只作预检，不对外称正式验收。
+
 试点不计入 500。试点是能力探索，不是缩小的批量生产；首批 30 条才是正式生产第一梯队。
 
 ## 试点要回答的三个问题
@@ -48,7 +50,7 @@
 | 12-15 | S3 | 组包器 beta、包校验 L1 到 L3、失败隔离 | 用冻结快照生成一个包，看缺件和哈希 |
 | 12-22 | S4 | 包校验 L4 到 L5、幂等入库、入库回执 | 完成组包、校验、入库全链 |
 
-平台版本用功能开关控制，试点专家只看到已验收的开关。S3 和 S4 的包格式按 `docs/08-pilot-design.md` 附的 ALE-data 契约草案执行；契约变化要同时改组包器、校验器和试点记录，不能只改一边。
+平台版本用功能开关控制，试点专家只看到已验收的开关。S3 和 S4 的包格式按 `plan/platform-p1` 分支 `work/platform-p1/06-p1-revision-2026-11-13.md` 第 6 节的 ALE-data 契约执行；契约变化要同时改组包器、校验器和试点记录，不能只改一边。
 
 平台侧要埋点，不靠事后访谈回忆。每个字段的填写耗时、Agent 建议的展示与采纳、退回原因、组包失败码、入库耗时，都要有记录。埋点字段在 11-21 前定版，之后只增不改。
 
@@ -121,9 +123,9 @@ T1 和 T2 用同一题族的不同实例，中间至少隔 3 个工作日。专�
 - `artifacts.smoke`：`path`、`version`、`status` 取 `PASS`、`SKIP`、`FAIL`；`FAIL` 直接不通过，`SKIP` 必须有 `reason`。
 - `artifacts.issue_log`：`path`、`version`、`open_blockers` 固定 0、`fallbacks` 是人工兜底 ID 列表。
 
-单条记录对应一条试点线，`manual_baseline.task_id` 是 T1 实例，`platform_assisted.task_id` 是 T2 实例，两者必须不同，且 T2 等于记录顶层 `task_id`。`manual_baseline` 的 `hours` 大于 0，`artifacts` 非空；`platform_assisted` 的 `agent_suggestions` 大于 0，`agent_accepted` 不超过建议数，`expert_confirmed` 为 true；`review.reviewers` 不含专家本人，`blockers` 等于 `resolved`；`package.package_hash` 是 64 位小写十六进制，`rebuilt_hash` 与它相等；`validation.passed` 等于 `checks`，`blockers` 为 0；`ingest.package_hash` 等于包哈希，`ingested_at` 不早于 `review.approved_at`。
+单条记录对应一条试点线，`manual_baseline.task_id` 是 T1 实例，`platform_assisted.task_id` 是 T2 实例，两者必须不同，且 T2 等于记录顶层 `task_id`。`manual_baseline` 的 `hours` 大于 0，`artifacts` 非空；`platform_assisted` 的 `agent_suggestions` 大于 0，`agent_accepted` 必须为 0，`expert_confirmed` 为 true；`review.reviewers` 不含专家本人，`blockers` 等于 `resolved`；`package.package_hash` 是 64 位小写十六进制，检查器会按包内文件重算，`rebuilt_hash` 与重算值相等；`validation.passed` 等于 `checks`，`blockers` 为 0；`ingest.package_hash` 等于包哈希，`ingested_at` 不早于 `review.approved_at`。
 
-检查器自检覆盖二十六组人造记录，包括缺段、未确认、包哈希错、校验阻断、入库错配、重复方向、T1 与 T2 同实例、T2 标识错、分工矩阵缺步或缺工时、Agent 报告缺项、冒烟 FAIL 或 SKIP 无理由、坏 JSON。自检本身不通过，检查器的通过不算证据。
+检查器自检 36/36 通过，覆盖三十六组人造记录，包括缺段、未确认、包哈希错、校验阻断、入库错配、重复方向、T1 与 T2 同实例、T2 标识错、分工矩阵缺步或缺工时、Agent 报告缺项、冒烟 FAIL 或 SKIP 无理由、坏 JSON，以及空包、假哈希、空校验报告、包内多文件、改过包内文件、Agent 自动采纳、索引任务集与记录不一致。自检本身不通过，检查器的通过不算证据。检查器校验包、校验报告和回执文件，不连接平台数据库；入库是否真的发生，以平台审计日志和 `ingest_records` 为准，回执只是被核对的一项证据。
 
 ## 十二项证据
 
@@ -177,7 +179,7 @@ T1 和 T2 用同一题族的不同实例，中间至少隔 3 个工作日。专�
 
 试点不是首批 30 条的硬前置。首批 30 条在 M1a 通过后于 12-01 开工，用平台 S0/S1 做任务源、审核和冻结；组包和入库等 M1b 在 12-22 通过后做。试点每周的结论进 30 条的周会，不改 30 条的开工日。
 
-首批 30 条的法律 8 条不经过试点。法律走供应方 ALE-data 导入，12-08 到包，12-12 前导入校验，12-15 前入库；不通过则 30 条变 22 条，报实际数，不用别的任务顶替。
+首批 30 条的法律 8 条不经过试点。法律走供应方 ALE-data 导入，12-08 到包，12-12 前导入校验，12-22 到 12-23 入库（M1b 验收后）；不通过则 30 条变 22 条，报实际数，不用别的任务顶替。
 
 试点不产生可对外的专家人数。3 名试点专家是否进 W1，由专家运营负责人在 12-15 前按产能和意愿决定；进 W1 要重新签批次合同，不能沿用试点合同。
 
@@ -215,4 +217,4 @@ Agent 单条成本上限。建议试点 60 元、正式 120 元；超过上限�
 
 交给阶段 3 和阶段 4 的是六样东西：三条试点记录、十二项证据、标注规范 v1、Agent 能力报告、问题清单、阶段 2 验收结论。平台组包器、校验器、入库接口的代码和测试留在平台分支，阶段 3 继续用。
 
-阶段 2 收口不等于平台 M1 完成。M1a 在 11-30 验收，M1b 在 12-22 验收，M2 在 2027-01-31 前验收；阶段 2 只用 M1a 和 M1b 的试点段，不替阶段 3 验收全部能力。
+阶段 2 收口不等于平台 M1 完成。M1a-Core 在 11-30 验收，M1a+ 在 12-15 前，M1b 在 12-22 验收，M2-C 在 12-31 前，M2-Full 在 2027-01-31 前；阶段 2 只用 M1a 和 M1b 的试点段，不替阶段 3 验收全部能力。

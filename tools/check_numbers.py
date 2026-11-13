@@ -332,6 +332,33 @@ def check_e6(inventory):
     return compare("E6", [CHARTER, PLAN, STAGE0], pattern, actual, where)
 
 
+
+def check_f():
+    """Keep the 2026-11-13 revision anchors from drifting out of the docs."""
+    anchors = {
+        "docs/02-plan.md": [
+            "M1a-Core", "M2-C", "G3-M1a", "G2-A", "12-22 到 12-23",
+            "1,892", "887", "47%", "01-31",
+        ],
+        "docs/07-expert-supply.md": [
+            "477.5", "616", "1,892", "887", "235", "1,117", "01-31",
+            "12-22 到 12-23",
+        ],
+        "docs/08-pilot-design.md": [
+            "36/36", "12-22 到 12-23", "M1a-Core", "M2-C",
+        ],
+        "docs/06-decisions-and-blockers.md": ["01-31", "12-22 到 12-23"],
+    }
+    missing = []
+    for name, needles in anchors.items():
+        body = text(ROOT / name)
+        for needle in needles:
+            if needle not in body:
+                missing.append(f"{name}: {needle}")
+    if missing:
+        return "F", "fail", "missing revision anchors: " + "; ".join(missing)
+    return "F", "pass", "revision anchors present in the design docs"
+
 def evaluate():
     results = [check_a(), check_b()]
     results.extend(check_c())
@@ -371,6 +398,7 @@ def evaluate():
     )
     results.append(check_e5(inventory))
     results.append(check_e6(inventory))
+    results.append(check_f())
     return results
 
 

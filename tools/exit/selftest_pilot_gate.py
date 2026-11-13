@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Prove pilot_gate.py rejects bad pilot records.
+"""Prove pilot_gate.py rejects bad pilot records and fake evidence.
 
-Every case builds a temporary directory, mutates one field, runs the gate, and
-asserts the exit code. The good case is also the positive control.
+Every case builds a temporary directory with real package files, mutates one
+thing, runs the gate, and asserts the exit code. The good case is the positive
+control; the fake-evidence cases prove the gate reads files, not just JSON
+claims.
 """
 
-import copy
 import io
 import json
 import shutil
@@ -25,8 +26,43 @@ TASKS = (
 )
 
 
-def record(direction, task_id, letter):
-    package_hash = letter * 64
+def write_json(path, value):
+    path.write_text(json.dumps(value, ensure_ascii=False), encoding="utf-8")
+
+
+def build_package(root, direction, task_id):
+    package = root / "packages" / direction / task_id.split("/")[-1]
+    (package / "input").mkdir(parents=True)
+    (package / "reference").mkdir(parents=True)
+    files = {
+        "input/task_brief.md": f"# {task_id}\n\nDo the task.\n",
+        "input/output_contract.json": json.dumps({"root": "output", "required": ["answer.md"]}),
+        "reference/answer_key.json": json.dumps({"answer": 42}),
+    }
+    for relative, content in files.items():
+        (package / relative).write_text(content, encoding="utf-8")
+    declared = []
+    for relative in sorted(files):
+        target = package / relative
+        declared.append({
+            "path": relative,
+            "sha256": pilot_gate.sha256_file(target),
+            "bytes": target.stat().st_size,
+            "mode": "0644",
+            "role": "reference" if relative.startswith("reference/") else "input",
+        })
+    write_json(package / "PACKAGE.json", {
+        "schema_version": "ale-pkg-1.2",
+        "ale_data_version": "task-data-v1.1",
+        "task_id": task_id,
+        "task_version": "v1",
+        "files": declared,
+    })
+    digest, entries = pilot_gate.package_digest(package)
+    return digest, len(entries)
+
+
+def record(direction, task_id, letter, package_hash, file_count):
     return {
         "schema_version": "pilot-task-1.0",
         "task_id": task_id,
@@ -49,7 +85,7 @@ def record(direction, task_id, letter):
             "form_version": "form-0.3",
             "agent_runs": 14,
             "agent_suggestions": 52,
-            "agent_accepted": 31,
+            "agent_accepted": 0,
             "expert_confirmed": True,
             "confirmed_at": "2026-12-12T01:00:00Z",
             "manual_fallbacks": [],
@@ -66,7 +102,7 @@ def record(direction, task_id, letter):
         "package": {
             "path": f"packages/{direction}/{task_id.split('/')[-1]}",
             "package_hash": package_hash,
-            "file_count": 42,
+            "file_count": file_count,
             "ale_data_version": "task-data-v1.1",
             "built_by": "platform",
             "rebuilt_hash": package_hash,
@@ -78,8 +114,8 @@ def record(direction, task_id, letter):
             "checks": 6,
             "passed": 6,
             "blockers": 0,
-            "warnings": 1,
-            "report": "validation.json",
+            "warnings": 0,
+            "report": f"validation-{direction}.json",
         },
         "ingest": {
             "record_id": f"T-20261222-{direction}",
@@ -93,12 +129,41 @@ def record(direction, task_id, letter):
 def build(root):
     root = Path(root)
     for direction, task_id, letter in TASKS:
-        package = root / "packages" / direction / task_id.split("/")[-1]
-        package.mkdir(parents=True)
-        (package / "PACKAGE.json").write_text("{}", encoding="utf-8")
-        (root / "validation.json").write_text("{}", encoding="utf-8")
-        path = root / f"record-{direction}.json"
-        path.write_text(json.dumps(record(direction, task_id, letter)), encoding="utf-8")
+        package_hash, file_count = build_package(root, direction, task_id)
+        write_json(root / f"record-{direction}.json", record(direction, task_id, letter, package_hash, file_count))
+        write_json(root / f"validation-{direction}.json", {
+            "validator": "ale-data-validate",
+            "validator_version": "1.0.0",
+            "checks": [{"code": f"L1-{i}", "status": "PASS"} for i in range(6)],
+            "blockers": [],
+            "warnings": [],
+        })
+
+    steps = [
+        {"step": "manual_baseline", "mode": "manual", "hours": 6.5},
+        {"step": "platform_assisted", "mode": "assisted", "hours": 3.1},
+        {"step": "expert_confirmation", "mode": "manual", "hours": 0.5},
+        {"step": "independent_review", "mode": "manual", "hours": 2.0},
+        {"step": "package", "mode": "auto", "hours": 0.2},
+        {"step": "validate", "mode": "auto", "hours": 0.1},
+        {"step": "ingest", "mode": "auto", "hours": 0.1},
+    ]
+    write_json(root / "division-matrix.json", {"steps": steps})
+    write_json(root / "annotation-spec.json", {"version": "1.0", "fields": ["identity", "scenario"]})
+    write_json(root / "agent-report.json", {
+        "details": [
+            {
+                "capability": capability,
+                "sample_size": 3,
+                "success_rate": 0.5,
+                "cost_per_task": 10.0,
+                "failure_modes": ["none observed"],
+            }
+            for capability in pilot_gate.AGENT_CAPABILITY_NAMES
+        ]
+    })
+    write_json(root / "issues.json", {"open_blockers": 0, "fallbacks": []})
+    write_json(root / "smoke.json", {"status": "PASS"})
 
     index = {
         "schema_version": "pilot-index-1.0",
@@ -130,11 +195,7 @@ def build(root):
                     for capability in pilot_gate.AGENT_CAPABILITY_NAMES
                 ],
             },
-            "smoke": {
-                "path": "smoke.json",
-                "version": "1.0",
-                "status": "PASS",
-            },
+            "smoke": {"path": "smoke.json", "version": "1.0", "status": "PASS"},
             "issue_log": {
                 "path": "issues.json",
                 "version": "1.0",
@@ -143,12 +204,7 @@ def build(root):
             },
         },
     }
-    (root / "index.json").write_text(json.dumps(index), encoding="utf-8")
-    (root / "division-matrix.json").write_text("{}", encoding="utf-8")
-    (root / "annotation-spec.json").write_text("{}", encoding="utf-8")
-    (root / "agent-report.json").write_text("{}", encoding="utf-8")
-    (root / "issues.json").write_text("{}", encoding="utf-8")
-    (root / "smoke.json").write_text("{}", encoding="utf-8")
+    write_json(root / "index.json", index)
 
 
 def read(root, name):
@@ -156,14 +212,93 @@ def read(root, name):
 
 
 def write(root, name, value):
-    (Path(root) / name).write_text(json.dumps(value), encoding="utf-8")
+    write_json(Path(root) / name, value)
 
 
 def run(root, acceptance=False):
     out = io.StringIO()
     with redirect_stdout(out), redirect_stderr(out):
-        code = pilot_gate.check_dir(Path(root), False, acceptance)
+        code = pilot_gate.check_dir(Path(root), acceptance)
     return code, out.getvalue()
+
+
+def set_field(root, name, field, value):
+    data = read(root, name)
+    data[field] = value
+    write(root, name, data)
+
+
+def drop_field(root, name, field):
+    data = read(root, name)
+    data.pop(field, None)
+    write(root, name, data)
+
+
+def set_nested(root, name, parent, field, value):
+    data = read(root, name)
+    data[parent][field] = value
+    write(root, name, data)
+
+
+def set_artifact(root, name, value):
+    data = read(root, "index.json")
+    data["artifacts"][name] = value
+    write(root, "index.json", data)
+
+
+def declare_fallback(root):
+    data = read(root, "record-business.json")
+    data["platform_assisted"]["manual_fallbacks"] = [
+        {"id": "F1", "step": "materials.license", "reason": "not in form yet"}
+    ]
+    write(root, "record-business.json", data)
+    index = read(root, "index.json")
+    index["artifacts"]["issue_log"]["fallbacks"] = ["F1"]
+    write(root, "index.json", index)
+
+
+def fallback_without_reason(root):
+    data = read(root, "record-business.json")
+    data["platform_assisted"]["manual_fallbacks"] = [
+        {"id": "F1", "step": "materials.license"}
+    ]
+    write(root, "record-business.json", data)
+    index = read(root, "index.json")
+    index["artifacts"]["issue_log"]["fallbacks"] = ["F1"]
+    write(root, "index.json", index)
+
+
+def fake_package(root):
+    set_nested(root, "record-business.json", "package", "package_hash", "f" * 64)
+    set_nested(root, "record-business.json", "package", "rebuilt_hash", "f" * 64)
+
+
+def empty_package(root):
+    (Path(root) / "packages/business/accounting_reconcile_01/PACKAGE.json").write_text("{}", encoding="utf-8")
+
+
+def empty_validation(root):
+    (Path(root) / "validation-business.json").write_text("{}", encoding="utf-8")
+
+
+def tamper_package(root):
+    path = Path(root) / "packages/business/accounting_reconcile_01/input/task_brief.md"
+    path.write_text(path.read_text(encoding="utf-8") + "\nlate change\n", encoding="utf-8")
+
+
+def unlisted_file(root):
+    path = Path(root) / "packages/business/accounting_reconcile_01/input/extra.txt"
+    path.write_text("extra", encoding="utf-8")
+
+
+def empty_matrix(root):
+    (Path(root) / "division-matrix.json").write_text("{}", encoding="utf-8")
+
+
+def agent_report_four(root):
+    data = read(root, "agent-report.json")
+    data["details"] = data["details"][:4]
+    write(root, "agent-report.json", data)
 
 
 def main():
@@ -196,6 +331,16 @@ def main():
     case("smoke skipped without reason", 1, lambda root: set_artifact(root, "smoke", {"path": "smoke.json", "version": "1.0", "status": "SKIP"}))
     case("T1 and T2 same instance", 1, lambda root: set_nested(root, "record-business.json", "manual_baseline", "task_id", "business_finance/accounting_reconcile_01"))
     case("T2 task id mismatch", 1, lambda root: set_nested(root, "record-business.json", "platform_assisted", "task_id", "business_finance/other_01"))
+    case("fake package hash", 1, lambda root: fake_package(root))
+    case("empty package manifest", 1, lambda root: empty_package(root))
+    case("empty validation report", 1, lambda root: empty_validation(root))
+    case("agent auto accepted", 1, lambda root: set_nested(root, "record-business.json", "platform_assisted", "agent_accepted", 1))
+    case("unlisted file", 1, lambda root: unlisted_file(root))
+    case("tampered package file", 1, lambda root: tamper_package(root))
+    case("index task ids mismatch", 1, lambda root: set_field(root, "index.json", "task_ids", ["business_finance/other_01", "psychology_neuro/dicom_to_bids_01", "engineering/building_energy_baseline_01"]))
+    case("duplicate record task id", 1, lambda root: set_field(root, "record-neuro.json", "task_id", "business_finance/accounting_reconcile_01"))
+    case("empty matrix file", 1, lambda root: empty_matrix(root))
+    case("agent report file has four", 1, lambda root: agent_report_four(root))
     case("stage three mode needs acceptance", 1, lambda root: None, acceptance=True)
     case("bad json", 2, lambda root: (Path(root) / "record-business.json").write_text("{", encoding="utf-8"))
 
@@ -213,59 +358,6 @@ def main():
 
     print(f"pilot gate selftest: {len(cases) - failures}/{len(cases)} passed")
     return 0 if failures == 0 else 1
-
-
-def set_field(root, name, field, value):
-    data = read(root, name)
-    data[field] = value
-    write(root, name, data)
-
-
-def drop_field(root, name, field):
-    data = read(root, name)
-    data.pop(field, None)
-    write(root, name, data)
-
-
-def set_nested(root, name, parent, field, value):
-    data = read(root, name)
-    if name == "index.json" and parent == "artifacts":
-        key = field
-        if isinstance(value, dict):
-            data["artifacts"][key] = value
-        else:
-            data["artifacts"][key][field] = value
-    else:
-        data[parent][field] = value
-    write(root, name, data)
-
-
-def set_artifact(root, name, value):
-    data = read(root, "index.json")
-    data["artifacts"][name] = value
-    write(root, "index.json", data)
-
-
-def declare_fallback(root):
-    data = read(root, "record-business.json")
-    data["platform_assisted"]["manual_fallbacks"] = [
-        {"id": "F1", "step": "materials.license", "reason": "not in form yet"}
-    ]
-    write(root, "record-business.json", data)
-    index = read(root, "index.json")
-    index["artifacts"]["issue_log"]["fallbacks"] = ["F1"]
-    write(root, "index.json", index)
-
-
-def fallback_without_reason(root):
-    data = read(root, "record-business.json")
-    data["platform_assisted"]["manual_fallbacks"] = [
-        {"id": "F1", "step": "materials.license"}
-    ]
-    write(root, "record-business.json", data)
-    index = read(root, "index.json")
-    index["artifacts"]["issue_log"]["fallbacks"] = ["F1"]
-    write(root, "index.json", index)
 
 
 if __name__ == "__main__":
