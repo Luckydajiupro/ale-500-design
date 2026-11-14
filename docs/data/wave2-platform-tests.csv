@@ -1,0 +1,15 @@
+test,result,evidence
+schema-core-tables,PASS,"tasks, task_versions, materials and packages exist"
+schema-bad-state,PASS,CHECK rejects an unknown task state
+state-main-path,PASS,draft to ingested through nine events
+state-return-resubmit,PASS,returned can submit again
+state-skip-step,PASS,freeze from draft is rejected
+canonical-empty,PASS,empty payload is a blocker
+canonical-identity,PASS,identity fields are required
+canonical-materials-license,PASS,material licence is required
+native-hash-order,PASS,file order does not change the digest
+native-hash-mode,PASS,mode changes the digest
+package-hash-self,PASS,package_hash ignores its own field
+package-hash-stable-field,PASS,a stable field changes the digest
+object-store-converge,PASS,same bytes map to one key
+object-store-traversal,PASS,path traversal is rejected
