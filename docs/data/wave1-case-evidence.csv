@@ -1,0 +1,43 @@
+case_id,claim,source_path,line_or_locator,evidence_type,design_implication
+C1,参考工作簿与提交者原件字节相同（MD5 8864a767192d27d1d8e98c75a90eff2c）,inputs/frozen/03_ale-data/task-data-v1.1/business_finance/equity_research_summary/tsla_fy2023/reference/reference_workbook.xlsx,与 raw_submission/TSLA_Financial_Summary_Feb2026 - Yushan Li.xlsx 同 MD5,file fact,oracle 不能直接复用提交件，500 条要独立复算或双人复核
+C1,公式单元格必须在扰动输入下重算并保持规则一致,inputs/frozen/01_agents-last-exam/tasks/business_finance/equity_research_summary/scripts/score_workbook.py,372-481,code fact,表格类验证要能识别硬编码数字
+C1,实时字段只校验“是数值”，不校验数值本身,inputs/frozen/01_agents-last-exam/tasks/business_finance/equity_research_summary/scripts/score_workbook.py,483-494,code fact,联网取数不可复现，500 条应改为给定时点快照
+C1,43 项检查必须全对，score>=1.0 才记 1.0,inputs/frozen/01_agents-last-exam/tasks/business_finance/equity_research_summary/scripts/score_workbook.py,496-497,code fact,表格任务分数是二值的，没有部分分
+C1,LibreOffice 找不到时用 winget 现场安装,inputs/frozen/03_ale-data/task-data-v1.1/business_finance/equity_research_summary/tsla_fy2023/software/bootstrap_libreoffice.ps1,19,file fact,软件必须预装进镜像，不能依赖运行期联网
+C1,标签定位靠“非公式文本→同行右邻格”，不依赖坐标,inputs/frozen/01_agents-last-exam/tasks/business_finance/equity_research_summary/scripts/score_workbook.py,216-248,code fact,表格契约应声明标签文本与相邻列规则
+C1,六个节标题要求加粗且有非白填充,inputs/frozen/03_ale-data/task-data-v1.1/business_finance/equity_research_summary/tsla_fy2023/reference/reference_manifest.json,7-14,file fact,样式要求要机器可读，不能只写在 instruction 里
+C2,表单是纯前端 HTML/JS，无后端,inputs/frozen/03_ale-data/task-data-v1.1/business_finance/taxform_4_1/variant_1/input/forms/form1040.html,整个文件；配套 form-handler.js,file fact,任务可离线自包含，不依赖外部服务
+C2,"页面印 15,750 标准扣除，主 GT 用 15,000，alt GT 用 15,750",inputs/frozen/03_ale-data/task-data-v1.1/business_finance/taxform_4_1/variant_1/input/forms/form1040.html,html:208 与 reference/form1040_gt.json 的 line_12e,file fact,题面与 oracle 冲突时必须提供 alt 答案通道
+C2,缺文件/缺字段/额外字段/类型不符/顶层键意外均直接 0 分,inputs/frozen/01_agents-last-exam/tasks/business_finance/taxform_4_1/scripts/score_taxform_outputs.py,56-143,code fact,表单类 schema 校验必须前置且失败即 0
+C2,line_ 前缀字段去逗号后按 0.01 容差比较,inputs/frozen/01_agents-last-exam/tasks/business_finance/taxform_4_1/scripts/score_taxform_outputs.py,32-42,code fact,金额类答案要统一舍入与容差口径
+C2,191 个字段中按 _is_informative 口径约 39 个计分,inputs/frozen/03_ale-data/task-data-v1.1/business_finance/taxform_4_1/variant_1/reference/form1040_gt.json,逐字段统计,inference,专家要显式标出哪些字段计分
+C2,alt reference 提供第二条合法答案通道,inputs/frozen/01_agents-last-exam/tasks/business_finance/taxform_4_1/scripts/score_taxform_outputs.py,"71,116-120",code fact,等价答案必须显式建模，否则正确解被判错
+C3,截图只做 Image.open().verify()，不比较像素,inputs/frozen/01_agents-last-exam/tasks/psychology_neuro/scene2_resample/scripts/verify_outputs.py,132-137,code fact,过程证据若要真实内容，必须另设像素或人工审核
+C3,mask 验收靠 shape/affine/体素阈值与派生统计,inputs/frozen/01_agents-last-exam/tasks/psychology_neuro/scene2_resample/scripts/verify_outputs.py,146-164,code fact,二进制产物可用几何与数值指纹验收
+C3,参考目录只有一个 65 B 的统计 CSV,inputs/frozen/03_ale-data/task-data-v1.1/psychology_neuro/scene2_resample/base/reference/scene2_stats.csv,整个文件,file fact,oracle 允许一族解，只要统计量一致
+C3,8.66 GB Slicer 容器镜像随包分发,inputs/frozen/03_ale-data/task-data-v1.1/psychology_neuro/scene2_resample/base/software/computer_use_benchmark_bundle/containers/slicer_5.0.3_20221025.simg,"8,658,481,183 B",file fact,软件资产需独立分层、哈希与镜像清单
+C3,数据包内没有任何验证器文件,inputs/frozen/03_ale-data/task-data-v1.1/psychology_neuro/scene2_resample/base,目录清单,file fact,数据合同必须单独携带验证器或验证器引用
+C3,0.7 给派生统计全对，0.3 给 agent CSV 全对，容差 1e-6,inputs/frozen/01_agents-last-exam/tasks/psychology_neuro/scene2_resample/scripts/verify_outputs.py,"12-13,32-48",code fact,部分分要按可解释的分量切分
+C4,OBJ 与 BLEND 的最大顶点距离必须 <=1.0 mm,inputs/frozen/01_agents-last-exam/tasks/engineering/2d_drawings_to_3d_building_model/scripts/validate_native.py,"41-106,135",code fact,多产物任务要检查“同一性”，不能只查存在
+C4,视觉判定是 8 条二元 YES/NO 问题，score=yes/8,inputs/frozen/01_agents-last-exam/tasks/engineering/2d_drawings_to_3d_building_model/scripts/score_outputs.py,"53-91,283-284",code fact,感知类验收要拆成可复核子问题并保存原始回答
+C4,数据包内没有参考 OBJ，只有 eval_config 与 14 张参考渲染,inputs/frozen/03_ale-data/task-data-v1.1/engineering/2d_drawings_to_3d_building_model/base/reference,目录清单,file fact,参考渲染不可重建，复评依赖原始仓库
+C4,判定器遇到非 YES/NO 或 finish_reason!=stop 直接抛错,inputs/frozen/01_agents-last-exam/tasks/engineering/2d_drawings_to_3d_building_model/scripts/score_outputs.py,269-273,code fact,基础设施故障不能算作 agent 失败
+C4,reward 取 8 问比例本身，pass_threshold 只是报告字段,inputs/frozen/01_agents-last-exam/tasks/engineering/2d_drawings_to_3d_building_model/main.py,461,code fact,图像判定分数是 0/8–8/8 的离散值
+C4,14 个固定渲染视角含平面、立面、剖面与轴测,inputs/frozen/01_agents-last-exam/tasks/engineering/2d_drawings_to_3d_building_model/scripts/score_outputs.py,35-50,code fact,判定视角要在契约里固定，避免视角挑选
+C5,真值集合 4 个位置，源码注释 6 个且只有 3 个重合,inputs/frozen/03_ale-data/task-data-v1.1/engineering/chisel_verilog_alignment_seq_1/base/input/workdir/generated/optimized.sv,第 21 行注释；reference/answer.json,file fact,代码理解类 oracle 必须人工复核，不能由工具注释生成
+C5,target_location_in_optimized_sv 只查键存在，值不被读取,inputs/frozen/01_agents-last-exam/tasks/engineering/chisel_verilog_alignment_seq_1/main.py,171-185,code fact,答案 schema 的每个字段要么校验要么删掉
+C5,task_card 声称的“源文件被修改则 0 分”硬门未实现,inputs/frozen/01_agents-last-exam/tasks/engineering/chisel_verilog_alignment_seq_1/main.py,129-185,code fact,反作弊门必须有代码实现与测试
+C5,chisel_sources 集合相等才加 0.80，少一个即失去该分量,inputs/frozen/01_agents-last-exam/tasks/engineering/chisel_verilog_alignment_seq_1/main.py,180-183,code fact,精确集合类答案没有部分分，难度集中在完整性
+C5,工具链全部是 /opt 薄壳，版本写进 README,inputs/frozen/03_ale-data/task-data-v1.1/engineering/chisel_verilog_alignment_seq_1/base/software/README.txt,整个文件；yosys/firtool/sbt 包装器,file fact,离线软件要固定版本并写进镜像清单
+C6,15 个数值、容差 0.01、权重 7/7/6、分母 100,inputs/frozen/01_agents-last-exam/tasks/legal/legal_dr_fees_01/scripts/score_outputs.py,"8-14,142,152-167",code fact,数值类任务要给逐字段权重与统一舍入口径
+C6,评分不读 reference/answer_key.json，用代码内硬编码 ANSWER_KEY,inputs/frozen/01_agents-last-exam/tasks/legal/legal_dr_fees_01/main.py,177-179,code fact,参考数据只能有一份权威副本，避免双写漂移
+C6,案件 id 与顶层结构接受多种等价写法,inputs/frozen/01_agents-last-exam/tasks/legal/legal_dr_fees_01/scripts/score_outputs.py,49-129,code fact,输出契约要声明接受哪些等价形状，否则是隐藏要求
+C6,Case 4 的和解条件只写在题面与 cases.json,inputs/frozen/03_ale-data/task-data-v1.1/legal/legal_dr_fees_01/base/input/task_brief.md,25-27,file fact,特殊规则必须可判定，否则变成猜出题人意图
+C6,七份 PDF 带 document_id/filename/sha256 清单,inputs/frozen/03_ale-data/task-data-v1.1/legal/legal_dr_fees_01/base/input/document_manifest.json,整个文件,file fact,资料引用要可校验，防止 PDF 被替换
+X1,官方数据包中不存在 PACKAGE.json,inputs/frozen/03_ale-data/task-data-v1.1,find -name 'PACKAGE*.json' 计数 0,file fact,平台边车必须标为新增，不能写成官方事实
+X2,122 个包与发布清单逐名比对，3 个任务的变体名不符,inputs/frozen/01_agents-last-exam/tasks/published_tasks.json,与 task-data-v1.1 目录名比对,file fact,发布清单不是变体粒度的可靠连接键
+X3,包内指令文件名有 instruction.md/instruction.txt/TASK.md/README.md/task_brief.md 多种,inputs/frozen/03_ale-data/task-data-v1.1,各变体 input/ 目录,file fact,数据合同必须显式声明指令入口路径
+X4,104 包有 input+reference+software，16 包缺 software，2 包缺 reference,inputs/frozen/03_ale-data/task-data-v1.1,三件套目录统计,file fact,组包器要允许可选目录但强制 reference
+X5,release-v1.1.json 只给版本、revision、任务数、成员数、归档哈希,inputs/frozen/03_ale-data/archive/release-v1.1.json,整个文件,file fact,官方元数据不含 taxonomy、指令入口、容差
+X6,selected-members.jsonl 每行 path/bytes/mode/sha256/type,inputs/frozen/03_ale-data/archive/selected-members.jsonl,样例首行,file fact,逐文件哈希可用于包校验，但不能替代语义元数据
+X7,五种 contract kind 不是 ALE 官方术语,inputs/frozen/02_ale/docs/specs,全文检索 contract.kind/numeric_cases/artifact_diff 无命中,code fact,kind 只能作为平台分类假设使用
