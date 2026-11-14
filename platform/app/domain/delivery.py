@@ -136,6 +136,7 @@ def freeze_task(conn: sqlite3.Connection, principal: Principal, task_id: str) ->
         raise conflict("TASK_NOT_APPROVED", "只有 approved 任务可以冻结")
     version_no = int(task["current_version_no"])
     payload = _task_payload(conn, task_id, version_no)
+    _package_metadata(conn, payload)
     files = _material_files(conn, payload)
     manifest = {
         "task_id": task_id,
@@ -190,6 +191,77 @@ def _write_json(path: Path, value: Any) -> bytes:
     return data
 
 
+
+_PII_ORDER = {"none": 0, "low": 1, "medium": 2, "high": 3}
+
+
+def _package_metadata(conn: sqlite3.Connection, payload: Dict[str, Any]) -> Dict[str, Any]:
+    """Derive package metadata from the reviewed task source.
+
+    Nothing here is a demo default. Missing or inconsistent material metadata
+    stops the build before a package directory is written.
+    """
+    canonical_materials = list(canonical_schema.iter_materials(payload))
+    if not canonical_materials:
+        raise invalid("PKG_LICENSE_MISSING", "任务源没有资料，无法确定许可")
+    license_types = []
+    redistribution = True
+    highest_pii = "none"
+    material_ids = []
+    for item in canonical_materials:
+        material_id = str(item.get("material_id") or "")
+        row = material_repo.get_material(conn, material_id)
+        if row is None:
+            raise invalid("PKG_MATERIAL_MISSING", "任务源引用的资料不存在: %s" % material_id)
+        declared = item.get("license") or {}
+        declared_type = str(declared.get("type") or "")
+        if not declared_type or declared_type != row["license_type"]:
+            raise invalid("PKG_MATERIAL_MISMATCH", "资料 %s 的许可与登记记录不一致" % material_id)
+        declared_pii = str(item.get("pii_level") or "none")
+        if declared_pii != row["pii_level"]:
+            raise invalid("PKG_MATERIAL_MISMATCH", "资料 %s 的 PII 等级与登记记录不一致" % material_id)
+        license_types.append(declared_type)
+        redistribution = redistribution and bool(row["license_redistribution"])
+        if _PII_ORDER[declared_pii] > _PII_ORDER[highest_pii]:
+            highest_pii = declared_pii
+        material_ids.append(material_id)
+    if highest_pii == "high":
+        raise invalid("PKG_PII_HIGH", "高危 PII 未脱敏，不能组包")
+
+    criteria = payload.get("success_criteria") or []
+    if not criteria:
+        raise invalid("PKG_CRITERIA_MISSING", "任务源没有成功标准，无法确定验证模式")
+    methods = {str(item.get("check_method") or "") for item in criteria}
+    if methods <= {"auto_script"}:
+        mode, oracle = "deterministic", {"required": True, "kind": "recomputed_oracle", "rationale": "确定性检查可由脚本重算"}
+    elif "llm_judge" in methods:
+        mode, oracle = "judge", {"required": False, "kind": "visual_reference_family", "rationale": "专业判断由校准 Judge 评分"}
+    elif "human_rubric" in methods:
+        mode, oracle = "human_rubric", {"required": False, "kind": "rubric_only", "rationale": "无唯一参考解，按 rubric 人工评分"}
+    elif "artifact_diff" in methods:
+        mode, oracle = "hybrid", {"required": True, "kind": "independent_oracle", "rationale": "产物与参考几何/渲染比对"}
+    else:
+        mode, oracle = "hybrid", {"required": False, "kind": "rubric_only", "rationale": "混合检查无独立 oracle"}
+
+    provenance = payload.get("provenance") or {}
+    if not provenance.get("sources"):
+        raise invalid("PKG_PROVENANCE_MISSING", "任务源没有来源记录")
+    handoff = payload.get("handoff") or {}
+    if not handoff.get("target_format"):
+        raise invalid("PKG_HANDOFF_MISSING", "任务源没有交接目标格式")
+    environment = payload.get("environment") or {}
+    license_type = license_types[0] if len(set(license_types)) == 1 else "mixed"
+    return {
+        "license": {"type": license_type, "redistribution": redistribution, "sources": sorted(set(material_ids))},
+        "pii": {"level": highest_pii},
+        "oracle": oracle,
+        "verification": {"mode": mode, "artifacts": []},
+        "provenance": provenance,
+        "handoff": handoff,
+        "environment_intent": environment,
+        "sandbox": {"input_root": "input", "output_root": "output"},
+    }
+
 def build_package(
     conn: sqlite3.Connection,
     principal: Principal,
@@ -201,21 +273,24 @@ def build_package(
     task = task_repo.get_task(conn, task_id)
     if task is None:
         raise not_found("任务")
+    existing = delivery_repo.get_package_for_task(conn, task_id, int(task["current_version_no"]))
+    if existing and existing["state"] in ("built", "validated", "ingested"):
+        return existing
     if task["state"] != sm.FROZEN:
         raise conflict("TASK_NOT_FROZEN", "只有 frozen 任务可以组包")
     snapshot = delivery_repo.get_snapshot_for_task(conn, task_id, int(task["current_version_no"]))
     if snapshot is None:
         raise not_found("冻结快照")
-    existing = delivery_repo.get_package_for_task(conn, task_id, int(task["current_version_no"]))
-    if existing and existing["state"] in ("built", "validated"):
-        return existing
 
     payload = json.loads(snapshot["payload_json"])
     identity = payload.get("identity") or {}
     domain = str(identity.get("domain_code") or task["domain_code"])
     slug = str(identity.get("task_id") or task_id).split("/")[-1]
     version = int(task["current_version_no"])
-    target = package_root / domain / slug / str(version)
+    target = package_root / task_id / str(version)
+    if target.exists():
+        raise conflict("PKG_TARGET_EXISTS", "目标包目录已存在，拒绝覆盖: %s" % target)
+    metadata = _package_metadata(conn, payload)
     package_root.mkdir(parents=True, exist_ok=True)
     tmp = Path(tempfile.mkdtemp(prefix=".build-", dir=str(package_root)))
     try:
@@ -235,11 +310,14 @@ def build_package(
             "language": str(identity.get("language") or "en"),
             "entrypoints": {"brief": "input/task_brief.md", "contract": "input/output_contract.json"},
             "deliverables": deliverables,
-            "oracle": {"required": False, "kind": "rubric_only", "rationale": "No independent oracle in this demo task"},
-            "verification": {"mode": "human_rubric", "artifacts": []},
-            "license": {"type": "synthetic", "redistribution": True},
-            "pii": {"level": "none"},
-            "provenance": {"author_type": "human", "sources": [{"source_id": "demo", "url_or_path": "platform://demo"}]},
+            "oracle": metadata["oracle"],
+            "verification": metadata["verification"],
+            "license": metadata["license"],
+            "pii": metadata["pii"],
+            "provenance": metadata["provenance"],
+            "environment_intent": metadata["environment_intent"],
+            "sandbox": metadata["sandbox"],
+            "handoff": metadata["handoff"],
             "files": [entry.as_dict() for entry in entries],
             "hashes": {"native_hash": native, "hash_status": "candidate"},
             "built_by": "platform",
@@ -255,17 +333,20 @@ def build_package(
             },
             "materials.json": {
                 "materials": [
-                    {"material_id": item["material_id"], "path": item["path"], "role": item["role"], "sha256": item["sha256"]}
+                    {
+                        "material_id": item["material_id"],
+                        "path": item["path"],
+                        "role": item["role"],
+                        "sha256": item["sha256"],
+                        "bytes": item["bytes"],
+                        "license": next((m.get("license") for m in payload.get("materials", []) if m.get("material_id") == item["material_id"]), None),
+                        "pii_level": next((m.get("pii_level") for m in payload.get("materials", []) if m.get("material_id") == item["material_id"]), None),
+                    }
                     for item in _material_files(conn, payload)
                 ]
             },
-            "provenance.json": package_json["provenance"],
-            "handoff.json": {
-                "target_format": "ale_task_toml",
-                "files_expected": [item.get("path") for item in deliverables],
-                "known_gaps": "demo package generated by the platform packager",
-                "frozen_snapshot_id": snapshot["snapshot_id"],
-            },
+            "provenance.json": metadata["provenance"],
+            "handoff.json": dict(metadata["handoff"], frozen_snapshot_id=snapshot["snapshot_id"]),
         }
         sidecar_hashes: Dict[str, str] = {}
         for name, value in sidecar_values.items():
@@ -279,7 +360,7 @@ def build_package(
         )
         target.parent.mkdir(parents=True, exist_ok=True)
         if target.exists():
-            shutil.rmtree(target)
+            raise conflict("PKG_TARGET_EXISTS", "目标包目录在构建期间出现，拒绝覆盖")
         os.replace(tmp, target)
     except Exception:
         shutil.rmtree(tmp, ignore_errors=True)
@@ -312,13 +393,14 @@ def build_package(
 
 
 def _read_package(package_root: Path, package: Dict[str, Any], task: Dict[str, Any]) -> Tuple[Path, Dict[str, Any], List[package_contract.FileEntry]]:
-    versions = package_root / task["domain_code"] / task["task_id"].split("/")[-1] / str(package["version_no"])
+    versions = package_root / package["task_id"] / str(package["version_no"])
     package_json_path = versions / "PACKAGE.json"
     if not package_json_path.exists():
         raise invalid("PKG_LAYOUT", "PACKAGE.json 不在版本层")
     package_json = json.loads(package_json_path.read_text(encoding="utf-8"))
     base = versions / "base"
     entries: List[package_contract.FileEntry] = []
+    declared_roles = {item.get("path"): item.get("role") for item in package_json.get("files") or []}
     if base.exists():
         for path in sorted(base.rglob("*")):
             if path.is_file():
@@ -328,7 +410,7 @@ def _read_package(package_root: Path, package: Dict[str, Any], task: Dict[str, A
                         path=rel,
                         bytes=path.stat().st_size,
                         mode="0%03o" % (path.stat().st_mode & 0o777),
-                        role=str(package_json.get("_roles", {}).get(rel) or ("reference" if rel.startswith("reference/") else "software" if rel.startswith("software/") else "input")),
+                        role=str(declared_roles.get(rel) or ("reference" if rel.startswith("reference/") else "software" if rel.startswith("software/") else "input")),
                         sha256=_sha256_file(path),
                     )
                 )

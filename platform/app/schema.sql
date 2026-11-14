@@ -256,7 +256,13 @@ CREATE TABLE IF NOT EXISTS agent_runs (
     status        TEXT NOT NULL,
     latency_ms    INTEGER,
     cost_cents    INTEGER NOT NULL DEFAULT 0,
-    created_at    TEXT NOT NULL
+    created_at    TEXT NOT NULL,
+    prompt_version TEXT NOT NULL DEFAULT '',
+    tokens_in     INTEGER NOT NULL DEFAULT 0,
+    tokens_out    INTEGER NOT NULL DEFAULT 0,
+    degraded      INTEGER NOT NULL DEFAULT 0,
+    mock_only     INTEGER NOT NULL DEFAULT 0,
+    error_code    TEXT
 );
 
 CREATE TABLE IF NOT EXISTS agent_suggestions (
@@ -357,6 +363,30 @@ BEFORE DELETE ON audit_events
 BEGIN
     SELECT RAISE(ABORT, 'audit_events is append-only');
 END;
+
+
+
+-- Background jobs. The worker claims rows with a conditional UPDATE; SQLite
+-- serialises writers, PostgreSQL uses FOR UPDATE SKIP LOCKED in the claim.
+CREATE TABLE IF NOT EXISTS jobs (
+    job_id        TEXT PRIMARY KEY,
+    kind          TEXT NOT NULL,
+    task_id       TEXT REFERENCES tasks(task_id),
+    payload_json  TEXT NOT NULL DEFAULT '{}',
+    state         TEXT NOT NULL DEFAULT 'queued',
+    attempts      INTEGER NOT NULL DEFAULT 0,
+    max_attempts  INTEGER NOT NULL DEFAULT 3,
+    available_at  TEXT NOT NULL,
+    locked_by     TEXT,
+    locked_at     TEXT,
+    last_error    TEXT,
+    result_json   TEXT,
+    created_at    TEXT NOT NULL,
+    updated_at    TEXT NOT NULL,
+    CHECK (state IN ('queued', 'running', 'succeeded', 'failed', 'cancelled'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_jobs_claim ON jobs(state, available_at);
 
 -- Web credential store. The skeleton authenticated with an X-Actor-Id header;
 -- the real workbench stores a PBKDF2 digest instead and never keeps plaintext.

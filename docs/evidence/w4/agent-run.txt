@@ -1,0 +1,13 @@
+run_id=run_617eb3676c3043589cb9b3135acb436a
+capability=structuring
+model=mock:mock-deterministic
+status=success
+mock_only=1
+degraded=0
+prompt_version=agent-v1
+tokens_in=969
+tokens_out=40
+field_path=deliverables[0].format
+suggested_value="xlsx"
+state=accepted
+confirmed_by=u_expert

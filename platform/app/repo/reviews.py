@@ -80,9 +80,15 @@ def assign(
     due_at: Optional[str],
 ) -> None:
     conn.execute(
-        """INSERT OR REPLACE INTO assignments
+        """INSERT INTO assignments
            (assignment_id, review_id, task_id, reviewer_id, strategy, state, assigned_at, due_at)
-           VALUES (?, ?, ?, ?, ?, 'assigned', ?, ?)""",
+           VALUES (?, ?, ?, ?, ?, 'assigned', ?, ?)
+           ON CONFLICT(review_id, reviewer_id) DO UPDATE SET
+             assignment_id = excluded.assignment_id,
+             strategy = excluded.strategy,
+             state = 'assigned',
+             assigned_at = excluded.assigned_at,
+             due_at = excluded.due_at""",
         (assignment_id, review_id, task_id, reviewer_id, strategy, assigned_at, due_at),
     )
 

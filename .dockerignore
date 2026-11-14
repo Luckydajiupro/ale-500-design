@@ -1,0 +1,13 @@
+.git
+.worktrees
+.venv
+**/__pycache__
+**/*.pyc
+platform/var
+platform/evidence
+docs/evidence
+/tmp
+inputs
+docs
+work
+.github

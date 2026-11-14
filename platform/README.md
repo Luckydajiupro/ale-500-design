@@ -1,17 +1,28 @@
 # ALE 专家工作台
 
-这份文件说明 `platform/` 下的本地专家工作台。它是第三波的运行骨架，不是最终生产部署。
+这份文件说明 `platform/` 下的专家工作台。它可以在 SQLite 开发模式运行，也可以在 Mac Docker Desktop 的 Compose 集成环境运行。它不是公网生产部署。
 
 ## 启动
 
+开发模式使用 SQLite：
+
 ```bash
-cd platform
-python3 -m venv ../.venv
-../.venv/bin/pip install -r requirements.txt
-ALE_DB_PATH=$PWD/var/platform.db ../.venv/bin/python run.py
+python3 -m venv .venv
+.venv/bin/pip install -r platform/requirements.txt
+ALE_DB_PATH=$PWD/platform/var/platform.db PYTHONPATH=platform .venv/bin/python platform/run.py
 ```
 
 打开 `http://127.0.0.1:8000`。首次启动会建库并写入演示账号。
+
+本地集成模式使用 Docker Compose：
+
+```bash
+docker compose -p ale500 up -d db
+docker compose -p ale500 run --rm migrate
+docker compose -p ale500 up -d web worker
+```
+
+打开 `http://127.0.0.1:8088`，健康检查为 `/healthz`。Web 只绑定本机回环地址，PostgreSQL 不发布宿主机端口。
 
 演示账号的密码统一为 `AleDemo123!`：
 
@@ -30,11 +41,11 @@ ALE_DB_PATH=$PWD/var/platform.db ../.venv/bin/python run.py
 
 任务源是 Canonical v1 JSON，但专家只看到表单和摘要，不直接改 JSON。Agent 建议写入 `agent_suggestions`，只有专家确认后才写回 `tasks.draft_payload`。
 
-## 存储
+## 存储与数据库
 
-本地用 SQLite，路径由 `ALE_DB_PATH` 控制，默认 `platform/var/platform.db`。文件内容寻址存储在 `ALE_STORAGE_ROOT`，默认 `platform/var/objects`。包输出在 `ALE_PACKAGE_ROOT`，默认 `platform/var/packages`。
+SQLite 开发模式由 `ALE_DB_PATH` 控制，默认 `platform/var/platform.db`。Compose 模式由 `ALE_DB_URL` 指向 PostgreSQL，迁移在 `platform/pg/migrations/`。两种后端共用 domain 与 repo，JSONB 和 SQLite 文本 JSON 由连接层规范化。
 
-PostgreSQL、对象存储和后台队列是目标生产 profile，当前没有实现。HTTP 层与领域服务分离，后续替换适配器即可。
+文件内容寻址存储在 `ALE_STORAGE_ROOT`，默认 `platform/var/objects`。包输出在 `ALE_PACKAGE_ROOT`，默认 `platform/var/packages`。后台任务写入 PostgreSQL `jobs` 表，由 `platform/worker.py` 消费。
 
 ## 安全边界
 
@@ -44,9 +55,15 @@ PostgreSQL、对象存储和后台队列是目标生产 profile，当前没有�
 - `PACKAGE.json` 在版本层，不在 `base/`，被评 Agent 不可见。
 - 这是本地演示配置，cookie 未设 `Secure`。正式外部访问必须启用 HTTPS、`Secure` cookie、生产密钥管理和 PostgreSQL。
 
+## Agent Gateway
+
+Agent 默认使用 `mock` provider，不能计为真实模型质量。真实配置放在 `platform/agent/config.local.toml`，密钥通过 `ALE_MODEL_API_KEY` 或 0600 secret 文件提供，不进入仓库。示例配置在 `platform/agent/config.example.toml`。
+
+五项能力入口在任务详情页。建议先写入 `agent_suggestions`，专家确认后才写回草稿。`review_assist` 只允许分配给该任务的评审使用。
+
 ## 测试
 
 ```bash
-PYTHONPATH=platform ../.venv/bin/python -m unittest discover -s platform/tests -v
-../.venv/bin/python -m pytest platform/tests -q
+PYTHONPATH=platform .venv/bin/python -m pytest platform/tests platform/agent/tests -q
+PYTHONPATH=platform .venv/bin/python -m unittest discover -s platform/tests -v
 ```

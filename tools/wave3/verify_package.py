@@ -32,7 +32,21 @@ def role_for(path: str, declared: Dict[str, str]) -> str:
     return declared.get(path, "document")
 
 
-def verify(package_dir: Path, expected_package_hash: str, expected_native_hash: str) -> Dict[str, Any]:
+def verify_agent_view(view_dir: Path) -> Dict[str, bool]:
+    files = [p.relative_to(view_dir).as_posix() for p in view_dir.rglob("*") if p.is_file()]
+    return {
+        "agent_view_no_reference": not any(
+            name.startswith("reference/") or "/reference/" in name for name in files
+        ),
+        "agent_view_no_package_json": "PACKAGE.json" not in files,
+        "agent_view_no_metadata_sidecar": not any(
+            name in ("package_manifest.json", "materials.json", "provenance.json", "handoff.json")
+            for name in files
+        ),
+    }
+
+
+def verify(package_dir: Path, expected_package_hash: str, expected_native_hash: str, agent_view: Path | None = None) -> Dict[str, Any]:
     manifest = json.loads((package_dir / "PACKAGE.json").read_text(encoding="utf-8"))
     base = package_dir / "base"
     declared = {str(item["path"]): str(item.get("role") or "document") for item in manifest.get("files", [])}
@@ -67,7 +81,10 @@ def verify(package_dir: Path, expected_package_hash: str, expected_native_hash: 
         "package_hash_matches_receipt": actual_package == expected_package_hash,
         "files_list_matches_base": set(declared) == {entry.path for entry in actual},
         "no_absolute_paths": all(not entry.path.startswith("/") for entry in actual),
+        "no_declared_path_traversal": all(".." not in Path(path).parts for path in declared),
     }
+    if agent_view is not None:
+        checks.update(verify_agent_view(agent_view))
     return {
         "package_dir": str(package_dir),
         "file_count": len(actual),
@@ -85,9 +102,15 @@ def main() -> int:
     parser.add_argument("--package", required=True)
     parser.add_argument("--expected-package-hash", required=True)
     parser.add_argument("--expected-native-hash", required=True)
+    parser.add_argument("--agent-view")
     parser.add_argument("--out")
     args = parser.parse_args()
-    result = verify(Path(args.package), args.expected_package_hash, args.expected_native_hash)
+    result = verify(
+        Path(args.package),
+        args.expected_package_hash,
+        args.expected_native_hash,
+        Path(args.agent_view) if args.agent_view else None,
+    )
     text = json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True)
     if args.out:
         Path(args.out).write_text(text + "\n", encoding="utf-8")

@@ -51,7 +51,7 @@ class DeliveryFlowTests(unittest.TestCase):
         self.db.close()
         self.tmp.cleanup()
 
-    def _create(self, with_reference: bool = False) -> dict:
+    def _create(self, with_reference: bool = False, filename: str = "ledger.csv") -> dict:
         payload = empty_payload(self.task_id, "business_finance", "accounting", "u_expert")
         payload["identity"]["title_zh"] = "交付链验收任务"
         payload["identity"]["title_en"] = "Delivery fixture"
@@ -106,14 +106,14 @@ class DeliveryFlowTests(unittest.TestCase):
                 "pii_level": "none",
             },
         )
-        stored = materials.upload(self.db, self.expert, self.store, "M-001", "ledger.csv", b"account,amount\ncash,10\n")
+        stored = materials.upload(self.db, self.expert, self.store, "M-001", filename, b"account,amount\ncash,10\n")
         version = stored["versions"][-1]
         payload["materials"] = [
             {
                 "material_id": "M-001",
                 "kind": "dataset",
                 "role": "input",
-                "path": "input/ledger.csv",
+                "path": "input/" + filename,
                 "sha256": version["sha256"],
                 "bytes": version["bytes"],
                 "license": {"type": "synthetic", "redistribution": True},
@@ -173,12 +173,29 @@ class DeliveryFlowTests(unittest.TestCase):
         reviews.claim(self.db, self.quality, quality_review[0]["review_id"])
         reviews.decide(self.db, self.quality, quality_review[0]["review_id"], "pass", "", [])
 
-    def _package(self) -> dict:
-        self._create()
+    def _package(self, with_reference: bool = False, filename: str = "ledger.csv") -> dict:
+        self._create(with_reference=with_reference, filename=filename)
         self._approve()
         delivery.freeze_task(self.db, self.admin, self.task_id)
         package = delivery.build_package(self.db, self.admin, self.task_id, self.packages, self.store)
         return package
+
+    def test_license_is_derived_from_material_records(self) -> None:
+        package = self._package(with_reference=True)
+        data = json.loads((self.packages / self.task_id / str(package["version_no"]) / "PACKAGE.json").read_text())
+        self.assertEqual(data["license"]["sources"], ["M-001", "M-002"])
+        self.assertFalse(data["license"]["redistribution"])
+        self.assertEqual(data["pii"]["level"], "none")
+
+    def test_build_refuses_target_directory_without_package_row(self) -> None:
+        self._create()
+        self._approve()
+        delivery.freeze_task(self.db, self.admin, self.task_id)
+        target = self.packages / self.task_id / "1"
+        target.mkdir(parents=True)
+        with self.assertRaises(Exception) as ctx:
+            delivery.build_package(self.db, self.admin, self.task_id, self.packages, self.store)
+        self.assertIn("拒绝覆盖", str(ctx.exception))
 
     def test_package_validate_and_idempotent_ingest(self) -> None:
         package = self._package()
@@ -214,6 +231,36 @@ class DeliveryFlowTests(unittest.TestCase):
         self.assertFalse((version_dir / "base" / "PACKAGE.json").exists())
         stored = self.db.execute("SELECT package_hash FROM packages WHERE package_id = ?", (package["package_id"],)).fetchone()
         self.assertEqual(stored["package_hash"], package["package_hash"])
+
+    def test_unicode_material_path_survives_build_and_validation(self) -> None:
+        package = self._package(filename="中文 流水.csv")
+        version_dir = self.packages / self.task_id / str(package["version_no"])
+        self.assertTrue((version_dir / "base" / "input" / "中文 流水.csv").is_file())
+        result = delivery.validate_package(self.db, self.admin, package["package_id"], self.packages)
+        self.assertTrue(result["ok"], result)
+
+    def test_package_metadata_rejects_license_and_pii_mismatch(self) -> None:
+        self._create()
+        task = tasks.get_task(self.db, self.expert, self.task_id)
+        payload = task["draft_payload"]
+        payload["materials"][0]["license"]["type"] = "cc_by"
+        with self.assertRaises(Exception) as ctx:
+            delivery._package_metadata(self.db, payload)
+        self.assertIn("许可与登记记录不一致", str(ctx.exception))
+        payload = task["draft_payload"]
+        payload["materials"][0]["license"]["type"] = "synthetic"
+        payload["materials"][0]["pii_level"] = "high"
+        with self.assertRaises(Exception) as ctx:
+            delivery._package_metadata(self.db, payload)
+        self.assertIn("PII", str(ctx.exception))
+
+    def test_submitted_version_is_append_only(self) -> None:
+        package = self._package()
+        with self.assertRaises(Exception):
+            self.db.execute(
+                "UPDATE task_versions SET payload_json = '{}' WHERE task_id = ? AND version_no = ?",
+                (self.task_id, package["version_no"]),
+            )
 
     def test_tamper_and_path_traversal_are_rejected(self) -> None:
         package = self._package()

@@ -1,0 +1,90 @@
+name: ale500
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-ale500}
+      POSTGRES_USER: ${POSTGRES_USER:-ale}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ale_local_dev}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-ale} -d ${POSTGRES_DB:-ale500}"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+    networks:
+      - ale500
+
+  migrate:
+    build: .
+    command: ["python", "platform/manage.py", "migrate"]
+    environment:
+      ALE_DB_URL: postgresql://${POSTGRES_USER:-ale}:${POSTGRES_PASSWORD:-ale_local_dev}@db:5432/${POSTGRES_DB:-ale500}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - ale500
+
+  web:
+    build: .
+    command: ["python", "platform/run.py"]
+    environment:
+      ALE_DB_URL: postgresql://${POSTGRES_USER:-ale}:${POSTGRES_PASSWORD:-ale_local_dev}@db:5432/${POSTGRES_DB:-ale500}
+      ALE_STORAGE_ROOT: /data/objects
+      ALE_PACKAGE_ROOT: /data/packages
+      ALE_SECRET_PATH: /data/session.key
+      ALE_HOST: 0.0.0.0
+      ALE_PORT: 8080
+      ALE_SEED_PASSWORD: ${ALE_SEED_PASSWORD:-AleDemo123!}
+    ports:
+      - "127.0.0.1:8088:8080"
+    volumes:
+      - objects:/data/objects
+      - packages:/data/packages
+      - runtime:/data/run
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/healthz', timeout=3)\""]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    networks:
+      - ale500
+
+  worker:
+    build: .
+    command: ["python", "platform/worker.py", "--loop"]
+    environment:
+      ALE_DB_URL: postgresql://${POSTGRES_USER:-ale}:${POSTGRES_PASSWORD:-ale_local_dev}@db:5432/${POSTGRES_DB:-ale500}
+      ALE_STORAGE_ROOT: /data/objects
+      ALE_PACKAGE_ROOT: /data/packages
+      ALE_SECRET_PATH: /data/session.key
+      ALE_WORKER_ID: compose-worker
+    volumes:
+      - objects:/data/objects
+      - packages:/data/packages
+      - runtime:/data/run
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    networks:
+      - ale500
+
+networks:
+  ale500:
+    name: ale500_net
+
+volumes:
+  pgdata:
+    name: ale500_pgdata
+  objects:
+    name: ale500_objects
+  packages:
+    name: ale500_packages
+  runtime:
+    name: ale500_runtime

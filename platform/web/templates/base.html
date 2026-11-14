@@ -31,7 +31,7 @@
   {% if error %}<div class="flash bad">{{ error }}</div>{% endif %}
   {% block content %}{% endblock %}
 </main>
-<footer class="foot">本地演示环境。所有操作写入真实 SQLite 数据库与审计日志。</footer>
+<footer class="foot">本地集成环境。所有操作写入真实 {{ backend }} 数据库与审计日志。</footer>
 <script src="{{ url_for('static', path='workbench.js') }}"></script>
 </body>
 </html>

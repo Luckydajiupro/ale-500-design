@@ -1,0 +1,10 @@
+task_id=business_finance/pg_e2e_04
+snapshot_id=snap_6c3aa22c4641458294ba
+package_id=pkg_de57d995499f446cb551
+receipt_id=ing_779136cf78c0416a973e
+native_hash=1e7cb980c4d65770718da46ce8df6f1c9a8c6bf7493fc0ffb33d20c07f125c0a
+package_hash=790705df2942ea00bdeea5a0546a8d63251c99760570c53a009bb34c97e59932
+reference_in_package=reference/answer.csv
+reference_in_agent_view=false
+package_json_in_agent_view=false
+independent_checks=10/10
