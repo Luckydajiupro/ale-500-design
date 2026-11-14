@@ -10,8 +10,8 @@
 
 - 平台服务七类人，但每天真正在平台上工作的是三类：专家、领域评审、质量审核。其余四类按批次、按例外、按验收进场（推断，依据 `docs/04-roles-and-decisions.md` 的七个执行角色与七个管理职责）。
 - 主链有 9 个主状态、2 个任务旁路、4 类入库侧状态。生产完成（`ingested`）与合作方计数（`counted_in_500`）是两件事，平台不能自行把后者置真（设计稿陈述，`06-p1-revision-2026-11-13.md` 第 3 节与第 7.3 节）。
-- 完整功能地图有 11 个模块、91 项功能，其中 64 项是 P1 核心、15 项是 P1 加固、12 项是完整产品（数字由 `docs/data/wave1-functional-map.csv` 逐行统计）。
-- 页面 24 个，中心是专家标注工作台。专家不接触 Docker、验证器、任务目录，也不应该接触包的内部结构（约束来自 `docs/01-charter.md` 的关键约束）。
+- 完整功能地图有 11 个模块、91 项功能，其中 66 项是 P1 核心、15 项是 P1 加固、10 项是完整产品（数字由 `docs/data/wave1-functional-map.csv` 逐行统计）。
+- 页面 25 个，中心是专家标注工作台。专家不接触 Docker、验证器、任务目录，也不应该接触包的内部结构（约束来自 `docs/01-charter.md` 的关键约束）。
 - Agent 有五个能力、十个介入位置，全部只写建议、逐字段人工确认。未经确认的自动采纳按失败处理（设计稿陈述，`docs/08-pilot-design.md` 的 Agent 指标门槛）。
 - 官方 `task-data-v1.1` 的 122 个任务目录里，100 个有 `base/`、22 个没有；没有任何一个任务根或 `base/` 里有 ALE 包描述文件 `PACKAGE.json`（全树同名的 2 个文件都是任务内容：`computing_math/k8s_migration_1/base/input/app/frontend/PACKAGE.json` 是前端应用清单，`visual_media/skeletal_animation_reproduction/skeletal_animation_reproduction_singing_anime_character/reference/PACKAGE.json` 是参考产物）；固定三件套（`task_brief.md`、`output_contract.json`、`answer_key.json`）只有 2 个包同时满足（文件事实，2026-11-14 实测）。所以 `PACKAGE.json` 是平台新增的边车，不是官方字段；"与官方布局一致"只能理解为与多数包的 `base/` 子结构一致，不能理解为官方有统一包契约。
 - P1 分四段交付：11-30 的 M1a-Core 六项、12-15 的 M1a-R 三项、12-22 的 M1b 四项、12-31 的 M2-C 三项；完整产品能力排到 2027-01-31 的 M2-Full 之后（设计稿陈述，`06` 第 8 节）。
@@ -410,7 +410,7 @@ PII 扫描是阻断项：命中未确认不能提交。扫描结果留痕，人�
 
 ### 10.1 批次与配额
 
-四批合计 500：W1 120（商业 50、法律 42、社会 28）、W2 128、W3 126、W4 126；每批 22 名核心加 4 名后备，四批 104 份合同，峰值 44 人在岗（`docs/07-expert-supply.md`）。14 个 domain_code 的配额以 `docs/04-roles-and-decisions.md` 决策 10 为准，合计 500；`computing_math` 配额 0，官方 18 条只作参考。
+四批合计 500：W1 120（商业 50、法律 42、社会 28）、W2 128、W3 126、W4 126；每批 22 名核心加 4 名后备，四批 104 份合同，峰值 44 人在岗（`docs/07-expert-supply.md`）。14 个 domain_code 的配额以 `docs/04-roles-and-decisions.md` 决策 10 为准，合计 500；`computing_math` 配额 0，官方 19 条只作参考。
 
 批次是平台的第一等对象：配额、窗口、放行、复盘都挂在批次上。批次之间不并行超过 2 个，否则评审池会被抽干（`05-pilot-and-rollout.md` 第 8 节）。
 
