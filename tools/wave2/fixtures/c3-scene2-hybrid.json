@@ -1,0 +1,94 @@
+{
+  "schema_version": "verification-contract-1.0",
+  "contract_id": "VC-W2-003",
+  "task_id": "psychology_neuro/scene2_resample",
+  "contract_kind": "artifact_diff",
+  "mode": "hybrid",
+  "oracle": {
+    "required": true,
+    "kind": "recomputed_oracle",
+    "rationale": "statistics recomputed from source volumes"
+  },
+  "artifacts": [
+    {
+      "role": "oracle",
+      "path": "reference/scene2_stats.csv",
+      "visibility": "evaluator_only",
+      "in_package_hash": true,
+      "required": true,
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    {
+      "role": "reference_render",
+      "path": "reference/scene2.png",
+      "visibility": "evaluator_only",
+      "in_package_hash": true,
+      "required": true,
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  ],
+  "tolerance": {
+    "type": "geometric",
+    "value": 1.0,
+    "unit": "mm"
+  },
+  "scoring": {
+    "reward": "score",
+    "score_type": "ratio",
+    "score_range": [
+      0,
+      1
+    ],
+    "partial_credit": true,
+    "weights_total": 100,
+    "components": [
+      {
+        "criterion_id": "geometry",
+        "dimension": "correctness",
+        "check_method": "artifact_diff",
+        "channel": "geometry",
+        "weight": 70,
+        "critical": true
+      },
+      {
+        "criterion_id": "stats",
+        "dimension": "completeness",
+        "check_method": "auto_script",
+        "channel": "declared_output",
+        "weight": 30,
+        "critical": false
+      }
+    ],
+    "hard_gates": [
+      {
+        "gate_id": "G1",
+        "condition": "missing deliverable",
+        "enforced_by": "verifier",
+        "on_fail": "score_0",
+        "evidence": "stderr"
+      }
+    ],
+    "passed": {
+      "rule": "score == 1.0",
+      "is_reward": false
+    },
+    "composition": "gate_then_weighted"
+  },
+  "handoff": {
+    "handoff_id": "HO-W2-001",
+    "status": "draft",
+    "exported_at": null,
+    "exported_by": null,
+    "verifier": {
+      "verifier_id": null,
+      "version": null,
+      "sha256": null,
+      "runtime": null,
+      "entrypoint": null,
+      "known_limits": null,
+      "sample_results": []
+    },
+    "accepted_at": null,
+    "rejection_reason": null
+  }
+}

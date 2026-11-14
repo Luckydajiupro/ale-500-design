@@ -1,0 +1,92 @@
+{
+  "schema_version": "verification-contract-1.0",
+  "contract_id": "VC-W2-007",
+  "task_id": "social_sciences/atwood_2022_measles_vaccine_reproduction",
+  "contract_kind": "document_qa",
+  "mode": "human_review",
+  "oracle": {
+    "required": false,
+    "kind": "rubric_only",
+    "rationale": "multiple defensible reproductions",
+    "approved_without_reference": true,
+    "approval_ref": "D-APPROVAL-7"
+  },
+  "artifacts": [
+    {
+      "role": "rubric",
+      "path": "reference/rubric.md",
+      "visibility": "evaluator_only",
+      "in_package_hash": true,
+      "required": true,
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    {
+      "role": "sample_good",
+      "path": "reference/sample_good.json",
+      "visibility": "evaluator_only",
+      "in_package_hash": true,
+      "required": true,
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  ],
+  "tolerance": {
+    "type": "decimal",
+    "value": 1.0
+  },
+  "scoring": {
+    "reward": "score",
+    "score_type": "binary",
+    "score_range": [
+      0,
+      1
+    ],
+    "partial_credit": false,
+    "weights_total": 100,
+    "components": [
+      {
+        "criterion_id": "rubric",
+        "dimension": "professional_judgment",
+        "check_method": "human_rubric",
+        "channel": "human_rubric",
+        "weight": 100,
+        "critical": true
+      }
+    ],
+    "hard_gates": [
+      {
+        "gate_id": "G1",
+        "condition": "missing deliverable",
+        "enforced_by": "verifier",
+        "on_fail": "score_0",
+        "evidence": "stderr"
+      }
+    ],
+    "passed": {
+      "rule": "score == 1.0",
+      "is_reward": false
+    }
+  },
+  "handoff": {
+    "handoff_id": "HO-W2-001",
+    "status": "draft",
+    "exported_at": null,
+    "exported_by": null,
+    "verifier": {
+      "verifier_id": null,
+      "version": null,
+      "sha256": null,
+      "runtime": null,
+      "entrypoint": null,
+      "known_limits": null,
+      "sample_results": []
+    },
+    "accepted_at": null,
+    "rejection_reason": null
+  },
+  "human_review": {
+    "reviewers_min": 2,
+    "adjudication": "third reviewer",
+    "blind_review": true,
+    "approval_ref": "D-APPROVAL-7"
+  }
+}

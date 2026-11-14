@@ -1,0 +1,120 @@
+{
+  "schema_version": "verification-contract-1.0",
+  "contract_id": "VC-W2-004",
+  "task_id": "engineering/2d_drawings_to_3d_building_model",
+  "contract_kind": "artifact_diff",
+  "mode": "judge",
+  "oracle": {
+    "required": true,
+    "kind": "independent_oracle",
+    "rationale": "reference workbook exists"
+  },
+  "artifacts": [
+    {
+      "role": "oracle",
+      "path": "reference/eval_config.json",
+      "visibility": "evaluator_only",
+      "in_package_hash": true,
+      "required": true,
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    {
+      "role": "rubric",
+      "path": "reference/rubric.md",
+      "visibility": "evaluator_only",
+      "in_package_hash": true,
+      "required": true,
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    {
+      "role": "reference_render",
+      "path": "reference/render_01.png",
+      "visibility": "evaluator_only",
+      "in_package_hash": true,
+      "required": true,
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  ],
+  "tolerance": {
+    "type": "geometric",
+    "value": 1.0,
+    "unit": "mm"
+  },
+  "scoring": {
+    "reward": "score",
+    "score_type": "ratio",
+    "score_range": [
+      0,
+      1
+    ],
+    "partial_credit": true,
+    "weights_total": 100,
+    "components": [
+      {
+        "criterion_id": "judge_questions",
+        "dimension": "professional_judgment",
+        "check_method": "llm_judge",
+        "channel": "judge",
+        "weight": 80,
+        "critical": true
+      },
+      {
+        "criterion_id": "format",
+        "dimension": "format",
+        "check_method": "auto_script",
+        "channel": "format",
+        "weight": 20,
+        "critical": false
+      }
+    ],
+    "hard_gates": [
+      {
+        "gate_id": "G1",
+        "condition": "missing deliverable",
+        "enforced_by": "verifier",
+        "on_fail": "score_0",
+        "evidence": "stderr"
+      }
+    ],
+    "passed": {
+      "rule": "score == 1.0",
+      "is_reward": false
+    }
+  },
+  "handoff": {
+    "handoff_id": "HO-W2-001",
+    "status": "draft",
+    "exported_at": null,
+    "exported_by": null,
+    "verifier": {
+      "verifier_id": null,
+      "version": null,
+      "sha256": null,
+      "runtime": null,
+      "entrypoint": null,
+      "known_limits": null,
+      "sample_results": []
+    },
+    "accepted_at": null,
+    "rejection_reason": null
+  },
+  "judge": {
+    "model_family": "vision-language",
+    "model_version_policy": "pinned",
+    "answer_format": "YES_NO",
+    "questions": [
+      "Is the tower position correct?",
+      "Is the north wall solid?"
+    ],
+    "rubric_ref": "reference/rubric.md",
+    "pass_threshold": 0.5,
+    "calibration": {
+      "required": true,
+      "sample_set_ref": "calibration/c4-building",
+      "agreement_threshold": 0.8,
+      "human_review_rate": 0.1,
+      "repeat_runs": 2,
+      "record_raw_response": true
+    }
+  }
+}
