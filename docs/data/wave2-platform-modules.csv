@@ -1,0 +1,13 @@
+module,layer,p1_scope,functions,key_tables,api_prefix,status,notes
+auth,domain,P1 core,"sessions, principal, role scopes","users, roles, user_roles","/api/v1/sessions, /api/v1/me",skeleton,HTTP session adapter not bound
+tasks,domain,P1 core,"create draft, patch field, validate, submit, return","tasks, task_versions, checks",/api/v1/tasks,skeleton,submit writes an immutable version
+materials,domain,P1 core,"register, upload version, four-layer read rules","materials, material_versions",/api/v1/materials,skeleton,PII and licence checks in domain
+checks,domain,P1 core,"structural checks, layer/code/severity findings",checks,/api/v1/checks,design,runner contract still open
+reviews,domain,P1 core,"claim, decide, return, review items","reviews, assignments, review_items",/api/v1/reviews,skeleton,SLA and conflict routing in design
+snapshots,domain,P1 core,"freeze, immutable snapshot","snapshots, task_versions",/api/v1/tasks/{id}/freeze,design,snapshot payload in design
+packaging,domain,P1 core,"build from frozen snapshot, L1-L5, candidate hash","packages, package_validations",/api/v1/packages,skeleton,package contract is candidate
+ingest,domain,P1 core,"idempotent ingest, receipt",ingest_records,/api/v1/ingest,design,receipt hash in design
+agents,domain,P1 firm,"run, suggest, confirm, reject","agent_runs, agent_suggestions",/api/v1/agent-runs,design,agents may only write suggestions
+audit,domain,P1 core,"append events, query by actor/object",audit_events,/api/v1/admin/audit,skeleton,append-only trigger in schema
+admin,domain,P1 firm,"batch stats, quotas, production counters","batches, tasks, packages, ingest_records",/api/v1/admin/stats,design,"P1 firm, not P1 core"
+adapters,adapter,P1 core,"time, id, sha256, local object store",none,none,skeleton,S3 adapter deferred
