@@ -14,6 +14,9 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: 安装平台依赖
+        run: python3 -m pip install -r platform/requirements.txt
+
       - name: 文档写作规则
         run: python3 tools/check_docs.py
 
