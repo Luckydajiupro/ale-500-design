@@ -11,6 +11,7 @@ import argparse
 import os
 import sys
 from pathlib import Path
+from typing import Optional
 
 ROOT = Path(__file__).resolve().parent
 if str(ROOT) not in sys.path:
@@ -22,6 +23,16 @@ from app.repo import users as user_repo  # noqa: E402
 from web.security import hash_password  # noqa: E402
 
 DEFAULT_PASSWORD = os.environ.get("ALE_SEED_PASSWORD", "AleDemo123!")
+_TRUTHY = {"1", "true", "yes", "on"}
+
+
+def demo_seed_allowed(env=None) -> bool:
+    """Demo identities must be explicit outside a local environment."""
+
+    environment = os.environ if env is None else env
+    if str(environment.get("ALE_ALLOW_DEMO_SEED", "")).strip().lower() in _TRUTHY:
+        return True
+    return str(environment.get("ALE_ENV", "production")).strip().lower() == "local"
 USERS = (
     ("u_expert", "expert@ale.local", "王会计", "expert", "business_finance/accounting"),
     ("u_expert2", "expert2@ale.local", "周工程", "expert", "engineering/building"),
@@ -40,7 +51,13 @@ ROLE_NAMES = {
 }
 
 
-def seed(database, password: str) -> None:
+def seed(database, password: str, allow_demo: Optional[bool] = None) -> None:
+    if allow_demo is None:
+        allow_demo = demo_seed_allowed()
+    if not allow_demo:
+        raise RuntimeError(
+            "拒绝在非本地环境创建演示账号；如确需创建，设置 ALE_ALLOW_DEMO_SEED=1"
+        )
     conn = connect(database)
     if is_postgres(conn):
         run_migrations(conn, ROOT / "pg" / "migrations")
@@ -80,8 +97,9 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--db", default=os.environ.get("ALE_DB_URL") or os.environ.get("ALE_DB_PATH", str(ROOT / "var" / "platform.db")))
     parser.add_argument("--password", default=DEFAULT_PASSWORD)
+    parser.add_argument("--allow-demo", action="store_true", help="allow demo users outside local")
     args = parser.parse_args()
-    seed(args.db, args.password)
+    seed(args.db, args.password, allow_demo=True if args.allow_demo else None)
     print("seeded %s" % args.db)
     for user_id, email, display_name, role, scope in USERS:
         print("%s  %s  %s  %s  %s" % (user_id, email, display_name, role, scope))

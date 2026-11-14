@@ -3,7 +3,16 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
-SRC="${1:-$ROOT/docs/evidence/w4/backup}"
+BACKUP_ROOT="${ALE_BACKUP_ROOT:-$ROOT/work/backups}"
+if [ -n "${1:-}" ]; then
+  SRC="$1"
+else
+  SRC="$(ls -dt "$BACKUP_ROOT"/w4-* 2>/dev/null | head -1 || true)"
+fi
+[ -n "${SRC:-}" ] && [ -f "$SRC/db.dump" ] || {
+  echo "no backup with db.dump found; pass a backup directory or run tools/wave4/backup.sh" >&2
+  exit 2
+}
 RESTORE_DB=ale500_restore_db
 RESTORE_WEB=ale500_restore_web
 

@@ -1,0 +1,122 @@
+{
+  "identity": {
+    "task_id": "business_finance/calibration_reconcile",
+    "domain_code": "business_finance",
+    "subdomain_code": "accounting",
+    "title_zh": "银行流水与总账对账",
+    "language": "zh-CN",
+    "batch_id": "w5-calibration",
+    "owner_expert_id": "u_expert",
+    "difficulty_rationale": "需要跨表核对、差异归类和会计判断。"
+  },
+  "scenario": {
+    "role": "财务分析师",
+    "trigger": "月末结账",
+    "goal": "完成银行流水与总账的差异核对并给出调整建议。",
+    "constraints": ["只使用任务内资料"]
+  },
+  "materials": [
+    {
+      "material_id": "M-001",
+      "kind": "dataset",
+      "role": "input",
+      "path": "input/ledger.csv",
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "bytes": 30,
+      "license": {"type": "synthetic", "redistribution": false},
+      "pii_level": "none",
+      "used_by": "operations[0]"
+    },
+    {
+      "material_id": "M-002",
+      "kind": "dataset",
+      "role": "reference",
+      "path": "reference/answer.csv",
+      "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+      "bytes": 30,
+      "license": {"type": "synthetic", "redistribution": false},
+      "pii_level": "none",
+      "used_by": "success_criteria[0]"
+    }
+  ],
+  "operations": [
+    {
+      "step_no": 1,
+      "actor": "expert",
+      "action": "读取流水与总账",
+      "inputs": ["M-001"],
+      "expected_state": "两份数据已加载",
+      "checkpoint": "行数与期间一致",
+      "time_estimate_min": 10
+    },
+    {
+      "step_no": 2,
+      "actor": "expert",
+      "action": "按金额和日期匹配",
+      "inputs": ["M-001"],
+      "expected_state": "匹配与未匹配项已分类",
+      "checkpoint": "差异列表完整",
+      "time_estimate_min": 20
+    },
+    {
+      "step_no": 3,
+      "actor": "expert",
+      "action": "写出差异原因和调整建议",
+      "inputs": ["M-001"],
+      "expected_state": "差异原因可复核",
+      "checkpoint": "每条差异有原因和金额",
+      "time_estimate_min": 15
+    }
+  ],
+  "deliverables": [
+    {
+      "deliverable_id": "D-001",
+      "path": "output/reconciliation.xlsx",
+      "format": "xlsx",
+      "description": "差异明细与调整建议",
+      "produced_by_step": 3,
+      "mandatory": true,
+      "acceptance_ref": "C-001"
+    }
+  ],
+  "success_criteria": [
+    {
+      "criterion_id": "C-001",
+      "dimension": "correctness",
+      "check_method": "auto_script",
+      "weight": 100,
+      "threshold": "差异金额与参考答案一致，容差 0.01",
+      "evidence_required": "逐行差异与调整金额",
+      "critical": true,
+      "verifier_hint": "按行号和金额比对"
+    }
+  ],
+  "environment": {
+    "os": "linux",
+    "gui_required": false,
+    "gpu": {"required": false},
+    "software": [{"name": "python", "version": "3.11"}],
+    "network": {"mode": "offline"},
+    "resources": {"cpu": 2, "ram_gb": 4, "disk_gb": 10, "time_limit_min": 60},
+    "nested_virt": false
+  },
+  "review": {
+    "risk_tier": "medium",
+    "tier_rationale": "涉及会计判断但资料为合成数据。",
+    "required_reviewers": ["domain", "quality"],
+    "open_issues": ""
+  },
+  "provenance": {
+    "author_type": "expert",
+    "sources": [{"source_id": "S-001", "type": "synthetic", "description": "合成对账数据"}],
+    "originality": "原创合成任务",
+    "revision_history": "v1"
+  },
+  "handoff": {
+    "target_format": "ale-data-v1.1",
+    "target_schema_version": "1.0",
+    "files_expected": ["input/ledger.csv", "output/reconciliation.xlsx"],
+    "known_gaps": "尚未在真实会计系统验证",
+    "secrets_attestation": "不含密钥"
+  }
+}

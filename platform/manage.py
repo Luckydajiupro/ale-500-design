@@ -46,7 +46,11 @@ def migrate() -> int:
 def seed() -> int:
     from seed import seed as seed_data
 
-    seed_data(database(), os.environ.get("ALE_SEED_PASSWORD", "AleDemo123!"))
+    seed_data(
+        database(),
+        os.environ.get("ALE_SEED_PASSWORD", "AleDemo123!"),
+        allow_demo=None,
+    )
     print("seed complete")
     return 0
 

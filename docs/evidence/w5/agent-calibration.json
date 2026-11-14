@@ -1,0 +1,234 @@
+{
+  "capabilities": [
+    {
+      "capability": "interview",
+      "cost_status": "not_applicable",
+      "degraded": false,
+      "error_code": null,
+      "expected_path_hit": true,
+      "fallback_present": false,
+      "latency_ms": 0,
+      "mock_only": true,
+      "model": "mock-deterministic",
+      "model_version": "mock-deterministic-v1",
+      "path_contract_ok": true,
+      "prompt_version": "agent-v1",
+      "status": "success",
+      "suggestion_count": 1,
+      "suggestions": [
+        {
+          "confidence": 0.82,
+          "evidence": [
+            "demo:interview-1"
+          ],
+          "field_path": "identity",
+          "rationale": "身份信息缺少输入输出边界，访谈可先补齐。",
+          "value": {
+            "question": "目标用户完成该任务时，最关键的输入与输出分别是什么？",
+            "why": "identity 尚未说明可验证的输入输出边界。"
+          }
+        }
+      ],
+      "tokens_in": 939,
+      "tokens_out": 56,
+      "valid_suggestion_count": 1
+    },
+    {
+      "capability": "followup",
+      "cost_status": "not_applicable",
+      "degraded": false,
+      "error_code": null,
+      "expected_path_hit": true,
+      "fallback_present": false,
+      "latency_ms": 0,
+      "mock_only": true,
+      "model": "mock-deterministic",
+      "model_version": "mock-deterministic-v1",
+      "path_contract_ok": true,
+      "prompt_version": "agent-v1",
+      "status": "success",
+      "suggestion_count": 2,
+      "suggestions": [
+        {
+          "confidence": 0.66,
+          "evidence": [
+            "demo:followup-1"
+          ],
+          "field_path": "identity.batch_id",
+          "rationale": "沿用当前批次的编号规则。",
+          "value": "batch-demo-001"
+        },
+        {
+          "confidence": 0.7,
+          "evidence": [
+            "demo:followup-2"
+          ],
+          "field_path": "materials[0].role",
+          "rationale": "首条资料是任务输入。",
+          "value": "input"
+        }
+      ],
+      "tokens_in": 889,
+      "tokens_out": 74,
+      "valid_suggestion_count": 2
+    },
+    {
+      "capability": "structuring",
+      "cost_status": "not_applicable",
+      "degraded": false,
+      "error_code": null,
+      "expected_path_hit": true,
+      "fallback_present": false,
+      "latency_ms": 0,
+      "mock_only": true,
+      "model": "mock-deterministic",
+      "model_version": "mock-deterministic-v1",
+      "path_contract_ok": true,
+      "prompt_version": "agent-v1",
+      "status": "success",
+      "suggestion_count": 1,
+      "suggestions": [
+        {
+          "confidence": 0.74,
+          "evidence": [
+            "demo:structuring-1"
+          ],
+          "field_path": "deliverables[0].format",
+          "rationale": "交付物需要可计算的表格。",
+          "value": "xlsx"
+        }
+      ],
+      "tokens_in": 887,
+      "tokens_out": 40,
+      "valid_suggestion_count": 1
+    },
+    {
+      "capability": "precheck",
+      "cost_status": "not_applicable",
+      "degraded": false,
+      "error_code": null,
+      "expected_path_hit": true,
+      "fallback_present": false,
+      "latency_ms": 0,
+      "mock_only": true,
+      "model": "mock-deterministic",
+      "model_version": "mock-deterministic-v1",
+      "path_contract_ok": true,
+      "prompt_version": "agent-v1",
+      "status": "success",
+      "suggestion_count": 1,
+      "suggestions": [
+        {
+          "confidence": 0.61,
+          "evidence": [
+            "demo:precheck-1"
+          ],
+          "field_path": "success_criteria[0].threshold",
+          "rationale": "检查项未说明如何测量阈值。",
+          "value": {
+            "finding": "阈值缺少可复现的测量方法。",
+            "severity": "warning"
+          }
+        }
+      ],
+      "tokens_in": 948,
+      "tokens_out": 52,
+      "valid_suggestion_count": 1
+    },
+    {
+      "capability": "review_assist",
+      "cost_status": "not_applicable",
+      "degraded": false,
+      "error_code": null,
+      "expected_path_hit": true,
+      "fallback_present": false,
+      "latency_ms": 0,
+      "mock_only": true,
+      "model": "mock-deterministic",
+      "model_version": "mock-deterministic-v1",
+      "path_contract_ok": true,
+      "prompt_version": "agent-v1",
+      "status": "success",
+      "suggestion_count": 1,
+      "suggestions": [
+        {
+          "confidence": 0.55,
+          "evidence": [
+            "demo:review-1"
+          ],
+          "field_path": "review.open_issues",
+          "rationale": "路径一致性是评审的机械检查项。",
+          "value": {
+            "check": "核对交付物路径与材料引用是否一致。",
+            "evidence_location": "deliverables[0].path"
+          }
+        }
+      ],
+      "tokens_in": 943,
+      "tokens_out": 56,
+      "valid_suggestion_count": 1
+    }
+  ],
+  "flow_compatible": true,
+  "limitations": [
+    "confidence 是模型自报，不是质量结论",
+    "mock 输出不能当作真实模型效果",
+    "未测量专家修改率、专业事实错误、误报与漏报",
+    "成本未配置计价时 cost_status=unknown"
+  ],
+  "live_connectivity_pass": false,
+  "live_pass": false,
+  "live_pass_reason": "未配置真实 Provider，未调用真实模型",
+  "mock_flow_pass": true,
+  "mock_only": true,
+  "model_id": "mock-deterministic",
+  "prompt_version": "agent-v1",
+  "provider": "mock",
+  "reference_removed_before_prompt": true,
+  "resilience": [
+    {
+      "degraded": true,
+      "error_code": "PROVIDER_TIMEOUT",
+      "fallback": true,
+      "injected": "timeout",
+      "ok": true,
+      "suggestions": 0
+    },
+    {
+      "degraded": true,
+      "error_code": "PROVIDER_RATE_LIMITED",
+      "fallback": true,
+      "injected": "rate_limit",
+      "ok": true,
+      "suggestions": 0
+    },
+    {
+      "degraded": true,
+      "error_code": "PROVIDER_UNAVAILABLE",
+      "fallback": true,
+      "injected": "server",
+      "ok": true,
+      "suggestions": 0
+    },
+    {
+      "error_code": "OUTPUT_MARKDOWN_FENCE",
+      "injected": "malformed",
+      "ok": true,
+      "rejected": true
+    },
+    {
+      "error_code": "OUTPUT_UNKNOWN_FIELD",
+      "injected": "unknown_field",
+      "ok": true,
+      "rejected": true
+    },
+    {
+      "error_code": "OUTPUT_MISSING_FIELD",
+      "injected": "missing_field",
+      "ok": true,
+      "rejected": true
+    }
+  ],
+  "status": "MOCK_FLOW_ONLY",
+  "structured_output": "none"
+}

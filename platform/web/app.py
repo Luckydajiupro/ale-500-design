@@ -7,7 +7,6 @@ functions the tests and the API surface use.
 
 from __future__ import annotations
 
-import hashlib
 import json
 import os
 import re
@@ -55,6 +54,7 @@ class Settings:
         self.package_root = Path(os.environ.get("ALE_PACKAGE_ROOT", str(repo_root / "var" / "packages")))
         self.secret_path = Path(os.environ.get("ALE_SECRET_PATH", str(repo_root / "var" / "session.key")))
         self.is_postgres = bool(self.database_url)
+        self.environment = os.environ.get("ALE_ENV", "production")
 
     @property
     def bootstrap_schema(self) -> Path:
@@ -158,50 +158,6 @@ def _suggestions(conn: sqlite3.Connection, task_id: str) -> List[Dict[str, Any]]
     ]
 
 
-def _insert_suggestion_run(conn: sqlite3.Connection, task: Dict[str, Any], payload: Dict[str, Any]) -> int:
-    run_id = new_id("ar")
-    created = now()
-    input_hash = hashlib.sha256(json.dumps(payload, ensure_ascii=False, sort_keys=True).encode("utf-8")).hexdigest()
-    prompt_hash = hashlib.sha256(b"rule-based-structuring-v1").hexdigest()
-    suggestions: List[tuple] = []
-    scenario = payload.setdefault("scenario", {})
-    identity = payload.setdefault("identity", {})
-    environment = payload.setdefault("environment", {})
-    review = payload.setdefault("review", {})
-    handoff = payload.setdefault("handoff", {})
-    if not scenario.get("role"):
-        suggestions.append(("scenario.role", "财务分析师", 0.72))
-    if not scenario.get("trigger"):
-        suggestions.append(("scenario.trigger", "季度结账与报表复核", 0.68))
-    if not scenario.get("audience"):
-        suggestions.append(("scenario.audience", "财务负责人", 0.66))
-    if not identity.get("difficulty_rationale"):
-        suggestions.append(("identity.difficulty_rationale", "需要跨表核对、判断异常并解释差异，不能靠单步规则完成。", 0.74))
-    if (environment.get("network") or {}).get("mode") == "online-required" and not (environment.get("network") or {}).get("justification"):
-        suggestions.append(("environment.network.justification", "任务需要公开网页的实时数据；记录访问时间与来源，失败时允许使用给定快照。", 0.63))
-    if not review.get("tier_rationale"):
-        suggestions.append(("review.tier_rationale", "含真实专业判断与多步核对，按中风险评审。", 0.61))
-    if not handoff.get("known_gaps"):
-        suggestions.append(("handoff.known_gaps", "没有独立 reference，采用专业 rubric 与双人复核。", 0.58))
-    conn.execute(
-        "INSERT INTO agent_runs (run_id, task_id, capability, model, model_version, prompt_hash, input_hash, status, latency_ms, cost_cents, created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
-        (run_id, task["task_id"], "structuring", "rule-based-local", "1", prompt_hash, input_hash, "succeeded", 1, 0, created),
-    )
-    for field_path, value, confidence in suggestions:
-        conn.execute(
-            """INSERT INTO agent_suggestions
-               (suggestion_id, run_id, task_id, field_path, suggested_value, confidence, model, model_version,
-                prompt_hash, input_hash, state, created_at)
-               VALUES (?,?,?,?,?,?,?,?,?,?, 'proposed', ?)""",
-            (
-                new_id("sug"), run_id, task["task_id"], field_path,
-                json.dumps(value, ensure_ascii=False), confidence, "rule-based-local", "1",
-                prompt_hash, input_hash, created,
-            ),
-        )
-    return len(suggestions)
-
-
 def _path_tokens(path: str) -> List[Any]:
     tokens: List[Any] = []
     for match in re.finditer(r"([A-Za-z0-9_]+)|\[(\d+)\]", path):
@@ -273,8 +229,14 @@ def create_app() -> FastAPI:
             initialize(conn, ROOT / "app" / "schema.sql")
             run_migrations(conn, ROOT / "migrations")
         if conn.execute("SELECT COUNT(*) AS n FROM users").fetchone()["n"] == 0:
-            from seed import seed
-            seed(settings.database, os.environ.get("ALE_SEED_PASSWORD", "AleDemo123!"))
+            from seed import demo_seed_allowed, seed
+            if demo_seed_allowed():
+                seed(settings.database, os.environ.get("ALE_SEED_PASSWORD", "AleDemo123!"))
+            else:
+                import logging
+                logging.getLogger(__name__).warning(
+                    "no users and demo seeding is disabled; create users explicitly"
+                )
 
     bootstrap_conn = connect(settings.database)
     bootstrap(bootstrap_conn)
@@ -398,11 +360,16 @@ def create_app() -> FastAPI:
                 if isinstance(receipt, str):
                     receipt = json.loads(receipt)
                 package["native_hash"] = receipt.get("native_hash")
+        latest_run = conn.execute(
+            "SELECT cost_status FROM agent_runs WHERE task_id = ? ORDER BY created_at DESC LIMIT 1",
+            (task_id,),
+        ).fetchone()
         return _render(
             request,
             "task_detail.html",
             {
                 "task": task,
+                "agent_cost_status": str(latest_run["cost_status"]) if latest_run else "unknown",
                 "editable": editable,
                 "package": package,
                 "ingest": ingest,

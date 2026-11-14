@@ -89,6 +89,7 @@ def ensure_agent_run_columns(conn: Any) -> None:
         ("tokens_out", "INTEGER NOT NULL DEFAULT 0"),
         ("degraded", "INTEGER NOT NULL DEFAULT 0"),
         ("mock_only", "INTEGER NOT NULL DEFAULT 0"),
+        ("cost_status", "TEXT NOT NULL DEFAULT 'unknown'"),
         ("error_code", "TEXT"),
     )
     if is_postgres(conn):

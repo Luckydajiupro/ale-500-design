@@ -9,14 +9,17 @@
 ```bash
 python3 -m venv .venv
 .venv/bin/pip install -r platform/requirements.txt
-ALE_DB_PATH=$PWD/platform/var/platform.db PYTHONPATH=platform .venv/bin/python platform/run.py
+ALE_ENV=local ALE_DB_PATH=$PWD/platform/var/platform.db PYTHONPATH=platform .venv/bin/python platform/run.py
 ```
 
-打开 `http://127.0.0.1:8000`。首次启动会建库并写入演示账号。
+打开 `http://127.0.0.1:8000`。本地环境首次启动会建库并写入演示账号；`ALE_ENV` 不是 `local` 时必须显式设置 `ALE_ALLOW_DEMO_SEED=1`，否则不会创建演示账号。
 
-本地集成模式使用 Docker Compose：
+本地集成模式使用 Docker Compose。先准备一个 secret 文件，Mock 模式也需要占位文件才能挂载：
 
 ```bash
+mkdir -p .secrets
+printf '%s' 'mock-placeholder-key' > .secrets/model_api_key
+chmod 600 .secrets/model_api_key
 docker compose -p ale500 up -d db
 docker compose -p ale500 run --rm migrate
 docker compose -p ale500 up -d web worker
@@ -57,7 +60,7 @@ SQLite 开发模式由 `ALE_DB_PATH` 控制，默认 `platform/var/platform.db`�
 
 ## Agent Gateway
 
-Agent 默认使用 `mock` provider，不能计为真实模型质量。真实配置放在 `platform/agent/config.local.toml`，密钥通过 `ALE_MODEL_API_KEY` 或 0600 secret 文件提供，不进入仓库。示例配置在 `platform/agent/config.example.toml`。
+Agent 默认使用 `mock` provider，不能计为真实模型质量。Compose 通过 `ALE_MODEL_PROVIDER`、`ALE_MODEL_BASE_URL`、`ALE_MODEL_ID`、`ALE_MODEL_STRUCTURED_OUTPUT` 注入配置；密钥不进入 `.env`、Compose 文件、镜像、日志或数据库，而是由只读 secret 挂载到 `/run/secrets/model_api_key`，容器内非 root 进程 uid 10001 读取。真实密钥用 `tools/wave5/setup_model_secret.sh --from-file <受保护文件>` 安装；未配置真实密钥时保持 `mock`，不得标记 `LIVE_PASS`。成本未配置计价时记录 `cost_status=unknown`，不把零成本当成真实计量。示例配置在 `platform/agent/config.example.toml`。
 
 五项能力入口在任务详情页。建议先写入 `agent_suggestions`，专家确认后才写回草稿。`review_assist` 只允许分配给该任务的评审使用。
 

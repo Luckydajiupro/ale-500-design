@@ -209,6 +209,7 @@ class AgentRun:
     tokens_in: int
     tokens_out: int
     cost_cents: int
+    cost_status: str
     status: str
     error_code: Optional[str] = None
     attempts: int = 0
@@ -531,6 +532,18 @@ class AgentGateway:
         )
         return int(round(cents))
 
+    def _cost_status(self, response: Optional[ModelResponse]) -> str:
+        """Never present an unconfigured price as a real zero-cost call."""
+
+        if self._mock_only():
+            return "not_applicable"
+        if (
+            self.config.input_cents_per_1k <= 0
+            and self.config.output_cents_per_1k <= 0
+        ):
+            return "unknown"
+        return "estimated"
+
     def _run_record(
         self,
         *,
@@ -562,6 +575,7 @@ class AgentGateway:
             tokens_in=int(response.tokens_in) if response else 0,
             tokens_out=int(response.tokens_out) if response else 0,
             cost_cents=self._cost_cents(response),
+            cost_status=self._cost_status(response),
             status=status,
             error_code=error_code,
             attempts=attempts,

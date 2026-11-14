@@ -88,7 +88,7 @@ class ModelConfig:
     rate_limit_per_min: int = 60
     prompt_version: str = "agent-v1"
     # Pricing is configuration, not a claim about a live provider. Zero means
-    # "not configured"; the gateway then records cost_cents=0.
+    # "not configured"; the gateway records cost_status=unknown, not a real zero.
     input_cents_per_1k: float = 0.0
     output_cents_per_1k: float = 0.0
     max_input_chars: int = 20000
@@ -315,6 +315,18 @@ def load_config(
     return _from_mapping(resolved)
 
 
+CONTAINER_SECRET_ROOT = "/run/secrets"
+
+
+def _secret_permissions_ok(mode: int, path_text: str) -> bool:
+    """0600 on the host; Docker file secrets are root-owned 0444 by design."""
+
+    if not mode & 0o077:
+        return True
+    normalized = str(Path(path_text))
+    return normalized.startswith(CONTAINER_SECRET_ROOT + "/") and mode == 0o444
+
+
 def _read_secret_file(path_text: str) -> str:
     path = Path(path_text).expanduser()
     safe_path = redact_text(str(path))
@@ -327,7 +339,7 @@ def _read_secret_file(path_text: str) -> str:
         raise SecretError("secret_file 不能是符号链接: %s" % safe_path)
     if not stat.S_ISREG(link_stat.st_mode):
         raise SecretError("secret_file 必须是普通文件: %s" % safe_path)
-    if stat.S_IMODE(link_stat.st_mode) & 0o077:
+    if not _secret_permissions_ok(stat.S_IMODE(link_stat.st_mode), str(path)):
         raise SecretError(
             "secret_file 权限过宽，必须仅属主可读写（0600）: %s" % safe_path
         )
@@ -341,7 +353,7 @@ def _read_secret_file(path_text: str) -> str:
         raise SecretError("secret_file 无法打开: %s" % safe_path) from exc
     try:
         opened = os.fstat(fd)
-        if stat.S_IMODE(opened.st_mode) & 0o077:
+        if not _secret_permissions_ok(stat.S_IMODE(opened.st_mode), str(path)):
             raise SecretError(
                 "secret_file 权限过宽，必须仅属主可读写（0600）: %s" % safe_path
             )
