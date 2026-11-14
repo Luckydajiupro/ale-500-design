@@ -1,0 +1,8 @@
+test,check,expected,actual,pass,evidence
+native-stable,"same content, different build clock",5de21e30d0a5b9b87a862e947acde46a275ab7aff769ba98d24e7954182487f3,5de21e30d0a5b9b87a862e947acde46a275ab7aff769ba98d24e7954182487f3,yes,native_hash ignores PACKAGE.json and clocks
+package-stable,stable fields only,9a1bce51ad49b24b93aa672fb08594475eac6226cd02ed1057fa732896cd4e41,9a1bce51ad49b24b93aa672fb08594475eac6226cd02ed1057fa732896cd4e41,yes,built_at and built_by are outside package_hash payload
+mode-kept,software/run.sh mode,0755,0755,yes,manifest keeps executable bit
+self-reference,naive hash includes package_hash field,different digest on second pass,different,yes,the digest changes when written back into the hashed bytes
+content-sensitive,verification mode changes package_hash,different digest,different,yes,a semantic contract change moves the package hash
+content-sensitive-native,one byte changes native_hash,different digest,different,yes,"native_hash covers path, bytes, mode, role and sha256"
+sidecar-clock,build clock inside a sidecar,different digest,different,yes,clocks must stay out of sidecar bytes or be derived from the snapshot

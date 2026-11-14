@@ -1,0 +1,212 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ale.local/schemas/ale-package-1.2-draft.json",
+  "title": "ALE platform package overlay 1.2 draft",
+  "description": "Draft PACKAGE.json contract. It wraps an official task-data-v1.1 variant without changing its input, software or reference bytes. Hash rules are candidates until P12 passes.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "ale_data_version",
+    "task_id",
+    "task_version",
+    "domain_code",
+    "subdomain_code",
+    "entrypoints",
+    "deliverables",
+    "oracle",
+    "verification",
+    "environment_intent",
+    "sandbox",
+    "license",
+    "pii",
+    "provenance",
+    "files",
+    "hashes",
+    "built_by",
+    "built_at"
+  ],
+  "properties": {
+    "schema_version": {"const": "ale-pkg-1.2"},
+    "ale_data_version": {"const": "task-data-v1.1"},
+    "task_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*/[A-Za-z0-9][A-Za-z0-9._-]*$"},
+    "task_version": {"type": "integer", "minimum": 1},
+    "domain_code": {"type": "string", "minLength": 1},
+    "subdomain_code": {"type": "string", "minLength": 1},
+    "title": {"type": "string", "minLength": 1},
+    "summary": {"type": "string"},
+    "language": {"enum": ["en", "zh", "bilingual"]},
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {"enum": ["official_import", "new_task"]},
+        "source_task_id": {"type": "string"},
+        "source_variant": {"type": "string"},
+        "source_revision": {"type": "string"}
+      },
+      "required": ["kind"]
+    },
+    "entrypoints": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "brief": {"type": "string", "pattern": "^[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"},
+        "contract": {"type": "string", "pattern": "^[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"},
+        "answer_key": {"type": "string", "pattern": "^[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"},
+        "document_manifest": {"type": "string", "pattern": "^[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"}
+      },
+      "required": ["brief"]
+    },
+    "deliverables": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "format", "mandatory"],
+        "properties": {
+          "path": {"type": "string", "pattern": "^[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"},
+          "format": {"type": "string", "minLength": 1},
+          "mandatory": {"type": "boolean"},
+          "description": {"type": "string"}
+        }
+      }
+    },
+    "oracle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required", "kind"],
+      "properties": {
+        "required": {"type": "boolean"},
+        "kind": {"enum": ["independent_oracle", "recomputed_oracle", "equivalence_class", "rubric_only", "visual_reference_family", "none"]},
+        "paths": {"type": "array", "items": {"type": "string"}},
+        "tolerance": {"type": "object"},
+        "notes": {"type": "string"}
+      }
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contract_kind", "mode", "artifacts"],
+      "properties": {
+        "contract_kind": {"enum": ["numeric_cases", "tabular_columns", "document_qa", "artifact_diff", "code_artifact", "unknown"]},
+        "mode": {"enum": ["deterministic", "rubric", "judge", "hybrid", "human_review"]},
+        "artifacts": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["role", "path", "visibility"],
+            "properties": {
+              "role": {"type": "string", "minLength": 1},
+              "path": {"type": "string", "pattern": "^[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"},
+              "visibility": {"enum": ["agent_visible", "evaluator_only", "platform_only"]},
+              "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+              "description": {"type": "string"}
+            }
+          }
+        },
+        "judge": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "questions": {"type": "array", "items": {"type": "string"}},
+            "pass_threshold": {"type": "number", "minimum": 0, "maximum": 1},
+            "calibration_ref": {"type": "string"}
+          }
+        }
+      }
+    },
+    "environment_intent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["os", "gui_required", "gpu_required", "network_mode"],
+      "properties": {
+        "os": {"enum": ["linux", "windows", "macos", "any"]},
+        "os_version": {"type": "string"},
+        "gui_required": {"enum": ["yes", "no", "unknown"]},
+        "gpu_required": {"type": "boolean"},
+        "network_mode": {"enum": ["none", "staged_local", "online_required", "public_ref"]},
+        "external_services": {"type": "array", "items": {"type": "string"}},
+        "software": {"type": "array", "items": {"type": "object"}},
+        "resources": {"type": "object"},
+        "notes": {"type": "string"}
+      }
+    },
+    "sandbox": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["input_root", "output_root"],
+      "properties": {
+        "input_root": {"type": "string", "pattern": "^[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"},
+        "output_root": {"type": "string", "pattern": "^[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"},
+        "notes": {"type": "string"}
+      }
+    },
+    "license": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "redistribution"],
+      "properties": {
+        "type": {"enum": ["public_domain", "cc_by", "proprietary", "internal", "synthetic", "unknown"]},
+        "redistribution": {"type": "boolean"},
+        "url": {"type": "string"},
+        "notes": {"type": "string"}
+      }
+    },
+    "pii": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["level"],
+      "properties": {
+        "level": {"enum": ["none", "low", "medium", "high"]},
+        "deidentification": {"type": "string"},
+        "irb_protocol_id": {"type": "string"}
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["author_type", "sources"],
+      "properties": {
+        "author_type": {"enum": ["human", "agent_assisted"]},
+        "sources": {"type": "array", "items": {"type": "object"}},
+        "agent_runs": {"type": "array", "items": {"type": "object"}},
+        "synthetic_disclosure": {"type": "string"},
+        "revision_history": {"type": "array", "items": {"type": "object"}}
+      }
+    },
+    "files": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "sha256", "bytes", "mode", "role"],
+        "properties": {
+          "path": {"type": "string", "pattern": "^[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"},
+          "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+          "bytes": {"type": "integer", "minimum": 0},
+          "mode": {"type": "string", "pattern": "^0[0-7]{3}$"},
+          "role": {"enum": ["input", "software", "reference", "template", "document"]}
+        }
+      }
+    },
+    "hashes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["native_hash"],
+      "properties": {
+        "native_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "package_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$", "description": "Candidate only; store in DB or receipt, not in hashed bytes."}
+      }
+    },
+    "built_by": {"type": "string", "minLength": 1},
+    "built_at": {"type": "string", "format": "date-time"},
+    "counted_in_500": {"type": "boolean"},
+    "scope_exception": {"type": "string"},
+    "validation_report_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}
