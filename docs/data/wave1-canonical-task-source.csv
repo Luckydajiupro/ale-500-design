@@ -1,0 +1,113 @@
+block,canonical_field,type,required,source,visibility,b_field_id,platform_storage,ale_data_carrier,package_field,notes
+identity,identity.task_id,string,yes,expert,public,identity.task_id,tasks / task_versions,PACKAGE.json + 目录名,.task_id,canonical id，不用官方前缀
+identity,identity.version,integer,no,platform,platform,identity.version,tasks / task_versions,PACKAGE.json + 目录名,.task_version,平台生成；专家修改走新版本，不覆盖已提交版本。
+identity,identity.domain_code,enum,yes,expert,public,identity.domain_code,tasks / task_versions,PACKAGE.json + 目录名,,枚举与 500 条配额一致；computing_math 当前配额为 0。
+identity,identity.subdomain_code,enum,yes,expert,public,identity.subdomain_code,tasks / task_versions,PACKAGE.json + 目录名,,子域决定评审派单；错选会降低评审质量。
+identity,identity.title_zh,string,yes,expert,public,identity.title_zh,tasks / task_versions,PACKAGE.json + 目录名,,平台要求中文标题；英文交付另有 title_en。
+identity,identity.title_en,string,conditional,expert,public,identity.title_en,tasks / task_versions,PACKAGE.json + 目录名,,条件：language 含 en；项目默认英文交付。
+identity,identity.language,enum,yes,expert,public,identity.language,tasks / task_versions,PACKAGE.json + 目录名,,任务文本、交付物、评审记录最终用英文。
+identity,identity.batch_id,enum,yes,expert,public,identity.batch_id,tasks / task_versions,PACKAGE.json + 目录名,,批次决定配额、窗口和评审上限。
+identity,identity.owner_expert_id,string,yes,platform,platform,identity.owner_expert_id,tasks / task_versions,PACKAGE.json + 目录名,,作者与评审人分离；改派由平台更新，不进包。
+identity,identity.difficulty_rationale,text,yes,expert,reviewer,identity.difficulty_rationale,tasks / task_versions,PACKAGE.json + 目录名,,不进包
+scenario,scenario.role,string,yes,expert,agent,scenario.role,task_versions.scenario_json,task_brief.md / instruction.md,,岗位决定专业边界和判断标准。
+scenario,scenario.organization_context,text,yes,expert,agent,scenario.organization_context,task_versions.scenario_json,task_brief.md / instruction.md,,情境要能解释触发事件，不是公司简介。
+scenario,scenario.trigger,text,yes,expert,agent,scenario.trigger,task_versions.scenario_json,task_brief.md / instruction.md,,没有触发事件的任务容易变成练习。
+scenario,scenario.audience,string,yes,expert,agent,scenario.audience,task_versions.scenario_json,task_brief.md / instruction.md,,受众影响详略和专业语气。
+scenario,scenario.constraints,array<string>,yes,expert,agent,scenario.constraints,task_versions.scenario_json,task_brief.md / instruction.md,,约束要可检查，不写认真准确。
+scenario,scenario.out_of_scope,array<string>,yes,expert,agent,scenario.out_of_scope,task_versions.scenario_json,task_brief.md / instruction.md,,防止任务边界无限扩张。
+scenario,scenario.realism_evidence,text,yes,expert,reviewer,scenario.realism_evidence,task_versions.scenario_json,task_brief.md / instruction.md,,审核证据
+materials,materials.material_id,string,yes,expert,agent,materials.material_id,materials,input/ 字节 + PACKAGE.files[],,步骤和交付物用该 ID 引用。
+materials,materials.kind,enum,yes,expert,agent,materials.kind,materials,input/ 字节 + PACKAGE.files[],,url 只作来源，不作运行期输入。
+materials,materials.role,enum,yes,expert,agent,materials.role,materials,input/ 字节 + PACKAGE.files[],,reference 不得进智能体可见输入。
+materials,materials.path,path,yes,expert,agent,materials.path,materials,input/ 字节 + PACKAGE.files[],.files[].path,input/template 可见；reference 不可见
+materials,materials.sha256,sha256,yes,expert,platform,materials.sha256,materials,input/ 字节 + PACKAGE.files[],.files[].sha256,平台导入时复算；不一致即返修。
+materials,materials.bytes,integer,yes,expert,platform,materials.bytes,materials,input/ 字节 + PACKAGE.files[],.files[].bytes,与哈希一起构成完整性证据。
+materials,materials.license.type,enum,yes,expert,platform,materials.license.type,materials,input/ 字节 + PACKAGE.files[],.license.type,枚举与平台草案一致；许可不明按不可用。平台许可字段，官方包无独立位置，导出依赖边车。
+materials,materials.license.redistribution,boolean,yes,expert,platform,materials.license.redistribution,materials,input/ 字节 + PACKAGE.files[],.license.redistribution,false 时只能平台内部保存，导出前替换或移除。平台许可字段，官方包无独立位置，导出依赖边车。
+materials,materials.source_url,url,conditional,expert,platform,materials.source_url,materials,input/ 字节 + PACKAGE.files[],.provenance.sources[].url,条件：license.type 不是 synthetic 或 internal。
+materials,materials.pii_level,enum,yes,expert,platform,materials.pii_level,materials,input/ 字节 + PACKAGE.files[],.pii.level,high 未脱敏禁止提交；medium 需脱敏记录。平台许可字段，官方包无独立位置，导出依赖边车。
+materials,materials.deidentification,text,conditional,expert,platform,materials.deidentification,materials,input/ 字节 + PACKAGE.files[],.pii.deidentification,条件：pii_level 非 none。平台许可字段，官方包无独立位置，导出依赖边车。
+materials,materials.irb.protocol_id,string,conditional,expert,platform,materials.irb.protocol_id,materials,input/ 字节 + PACKAGE.files[],.pii.irb_protocol_id,条件：涉及人类受试数据；没有批件不提交。平台许可字段，官方包无独立位置，导出依赖边车。
+materials,materials.used_by,array<string>,yes,expert,reviewer,materials.used_by,materials,input/ 字节 + PACKAGE.files[],,孤儿资料要删除或说明用途。平台许可字段，官方包无独立位置，导出依赖边车。
+materials,materials.synthetic_disclosure,text,conditional,expert,reviewer,materials.synthetic_disclosure,materials,input/ 字节 + PACKAGE.files[],.provenance.synthetic_disclosure,条件：license.type=synthetic；平台 v0 无独立字段，暂写资料备注。
+operations,operations.step_no,integer,yes,expert,reviewer,operations.step_no,task_versions.operations_json,instruction.md / task_brief.md,,至少 3 步。
+operations,operations.actor,enum,yes,expert,reviewer,operations.actor,task_versions.operations_json,instruction.md / task_brief.md,,不要所有步骤都写 agent。
+operations,operations.action,string,yes,expert,reviewer,operations.action,task_versions.operations_json,instruction.md / task_brief.md,,不要写打开软件点下一步。
+operations,operations.tool,string,conditional,expert,reviewer,operations.tool,task_versions.operations_json,instruction.md / task_brief.md,,条件：该步使用软件；工具必须在 environment.software 中。
+operations,operations.inputs,array<string>,yes,expert,reviewer,operations.inputs,task_versions.operations_json,instruction.md / task_brief.md,,每步至少一个输入。
+operations,operations.expected_state,text,yes,expert,reviewer,operations.expected_state,task_versions.operations_json,instruction.md / task_brief.md,,检查点必须能被人或脚本核验。
+operations,operations.checkpoint,boolean,yes,expert,reviewer,operations.checkpoint,task_versions.operations_json,instruction.md / task_brief.md,,检查点用于发现错误，不是形式字段。
+operations,operations.time_estimate_min,integer,yes,expert,reviewer,operations.time_estimate_min,task_versions.operations_json,instruction.md / task_brief.md,,总工时与报价层级要匹配。
+deliverables,deliverables.deliverable_id,string,yes,expert,agent,deliverables.deliverable_id,deliverables,output_contract.json + PACKAGE.deliverables,,与成功标准引用一致。
+deliverables,deliverables.path,path,yes,expert,agent,deliverables.path,deliverables,output_contract.json + PACKAGE.deliverables,.deliverables[].path,必须与 instruction 一致
+deliverables,deliverables.format,enum,yes,expert,agent,deliverables.format,deliverables,output_contract.json + PACKAGE.deliverables,.deliverables[].format,扩展名要与 path 一致；领域原生格式用具体扩展名，不能一律写 other。
+deliverables,deliverables.description,text,yes,expert,agent,deliverables.description,deliverables,output_contract.json + PACKAGE.deliverables,,不要只写报告一份。
+deliverables,deliverables.produced_by_step,integer,yes,expert,agent,deliverables.produced_by_step,deliverables,output_contract.json + PACKAGE.deliverables,,每个交付物至少被一步产出。
+deliverables,deliverables.mandatory,boolean,yes,expert,agent,deliverables.mandatory,deliverables,output_contract.json + PACKAGE.deliverables,.deliverables[].mandatory,全部可选等于没有交付物。
+deliverables,deliverables.acceptance_ref,array<string>,yes,expert,reviewer,deliverables.acceptance_ref,deliverables,output_contract.json + PACKAGE.deliverables,,交付物与标准要互相覆盖。
+success_criteria,success_criteria.criterion_id,string,yes,expert,reviewer,success_criteria.criterion_id,success_criteria,reference/ + PACKAGE.verification,,与交付物引用一致。
+success_criteria,success_criteria.dimension,enum,yes,expert,reviewer,success_criteria.dimension,success_criteria,reference/ + PACKAGE.verification,,至少一条 professional_judgment。
+success_criteria,success_criteria.check_method,enum,yes,expert,reviewer,success_criteria.check_method,success_criteria,reference/ + PACKAGE.verification,.verification.mode,映射为 deterministic/rubric/judge/hybrid/human_review
+success_criteria,success_criteria.weight,integer,yes,expert,reviewer,success_criteria.weight,success_criteria,reference/ + PACKAGE.verification,.verification.criteria[].weight,不要平均分配；关键项权重大。
+success_criteria,success_criteria.threshold,text,yes,expert,reviewer,success_criteria.threshold,success_criteria,reference/ + PACKAGE.verification,.verification.criteria[].threshold,不接受合理、基本正确这类表述。
+success_criteria,success_criteria.evidence_required,text,yes,expert,reviewer,success_criteria.evidence_required,success_criteria,reference/ + PACKAGE.verification,,证据要能落到具体位置。
+success_criteria,success_criteria.verifier_hint,text,conditional,expert,reviewer,success_criteria.verifier_hint,success_criteria,reference/ + PACKAGE.verification,.verification.criteria[].verifier_hint,条件：check_method 非 human_rubric。
+success_criteria,success_criteria.critical,boolean,yes,expert,reviewer,success_criteria.critical,success_criteria,reference/ + PACKAGE.verification,.verification.criteria[].critical,关键项失败即任务失败。
+environment,environment.os,enum,yes,expert,platform,environment.os,task_versions.environment_json,software/ + PACKAGE.environment_intent（运行层另进 task.toml）,.environment_intent.os,首批 30 条不含 Windows；默认 Linux。
+environment,environment.os_version,string,conditional,expert,platform,environment.os_version,task_versions.environment_json,software/ + PACKAGE.environment_intent（运行层另进 task.toml）,.environment_intent.os_version,条件：os != any。
+environment,environment.gui_required,enum,yes,expert,platform,environment.gui_required,task_versions.environment_json,software/ + PACKAGE.environment_intent（运行层另进 task.toml）,.environment_intent.gui,unknown 不得定低风险。
+environment,environment.gpu.required,boolean,yes,expert,platform,environment.gpu.required,task_versions.environment_json,software/ + PACKAGE.environment_intent（运行层另进 task.toml）,.environment_intent.gpu.required,首批 30 条不含 GPU。
+environment,environment.gpu.vram_gb,integer,conditional,expert,agent,environment.gpu.vram_gb,task_versions.environment_json,software/ + PACKAGE.environment_intent（运行层另进 task.toml）,,条件：gpu.required=yes。
+environment,environment.gpu.cuda_version,string,conditional,expert,agent,environment.gpu.cuda_version,task_versions.environment_json,software/ + PACKAGE.environment_intent（运行层另进 task.toml）,,条件：gpu.required=yes。
+environment,environment.software,array<object>,conditional,expert,agent,environment.software,task_versions.environment_json,software/ + PACKAGE.environment_intent（运行层另进 task.toml）,.environment_intent.software[],条件：任务需要非基础软件；禁止 latest。
+environment,environment.network.mode,enum,yes,expert,agent,environment.network.mode,task_versions.environment_json,software/ + PACKAGE.environment_intent（运行层另进 task.toml）,.environment_intent.network.mode,默认 none；运行期下载不算可行路径。
+environment,environment.network.endpoints,array<string>,conditional,expert,platform,environment.network.endpoints,task_versions.environment_json,software/ + PACKAGE.environment_intent（运行层另进 task.toml）,.environment_intent.network.endpoints,条件：network.mode 非 none。
+environment,environment.network.justification,text,conditional,expert,reviewer,environment.network.justification,task_versions.environment_json,software/ + PACKAGE.environment_intent（运行层另进 task.toml）,.environment_intent.network.justification,条件：network.mode=online-required；同时自动高风险。
+environment,environment.resources.cpu,integer,yes,expert,platform,environment.resources.cpu,task_versions.environment_json,software/ + PACKAGE.environment_intent（运行层另进 task.toml）,.environment_intent.resources.cpu,资源不足会导致验证失败。
+environment,environment.resources.ram_gb,integer,yes,expert,platform,environment.resources.ram_gb,task_versions.environment_json,software/ + PACKAGE.environment_intent（运行层另进 task.toml）,.environment_intent.resources.ram_gb,与磁盘、超时一起评估。
+environment,environment.resources.disk_gb,integer,yes,expert,platform,environment.resources.disk_gb,task_versions.environment_json,software/ + PACKAGE.environment_intent（运行层另进 task.toml）,.environment_intent.resources.disk_gb,大镜像要单独说明。
+environment,environment.resources.time_limit_min,integer,yes,expert,platform,environment.resources.time_limit_min,task_versions.environment_json,software/ + PACKAGE.environment_intent（运行层另进 task.toml）,.environment_intent.resources.time_limit_min,不要照抄官方 7200。
+environment,environment.nested_virt,boolean,yes,expert,agent,environment.nested_virt,task_versions.environment_json,software/ + PACKAGE.environment_intent（运行层另进 task.toml）,,需要时升级工程复核。
+environment,environment.external_services,array<object>,no,expert,platform,environment.external_services,task_versions.environment_json,software/ + PACKAGE.environment_intent（运行层另进 task.toml）,.environment_intent.external_services,平台 v0 无独立表时存环境备注；有外部服务必须说明替选。
+review,review.risk_tier,enum,yes,reviewer,reviewer,review.risk_tier,reviews / review_items,不导出，平台留存,.governance.risk_tier,未知不得低风险。平台审核字段，不导出到 ALE-data 包。
+review,review.tier_rationale,text,yes,reviewer,reviewer,review.tier_rationale,reviews / review_items,不导出，平台留存,,不要只写专业性强。平台审核字段，不导出到 ALE-data 包。
+review,review.required_reviewers,array<object>,yes,reviewer,platform,review.required_reviewers,reviews / review_items,不导出，平台留存,,平台按风险与子域派单。平台审核字段，不导出到 ALE-data 包。
+review,review.reviews,array<object>,no,reviewer,reviewer,review.reviews,reviews / review_items,不导出，平台留存,,只读字段，专家不能改。平台审核字段，不导出到 ALE-data 包。
+review,review.sign_offs.content,boolean,no,reviewer,reviewer,review.sign_offs.content,reviews / review_items,不导出，平台留存,,缺内容签字不得冻结。平台审核字段，不导出到 ALE-data 包。
+review,review.sign_offs.domain,boolean,no,reviewer,reviewer,review.sign_offs.domain,reviews / review_items,不导出，平台留存,,高风险任务必须。平台审核字段，不导出到 ALE-data 包。
+review,review.sign_offs.engineering,boolean,no,reviewer,reviewer,review.sign_offs.engineering,reviews / review_items,不导出，平台留存,,环境或转换有风险时必须。平台审核字段，不导出到 ALE-data 包。
+review,review.sign_offs.license,boolean,no,reviewer,reviewer,review.sign_offs.license,reviews / review_items,不导出，平台留存,,缺许可签字禁止提交。平台审核字段，不导出到 ALE-data 包。
+review,review.open_issues,array<object>,yes,reviewer,reviewer,review.open_issues,reviews / review_items,不导出，平台留存,,有 blocking 不得冻结。平台审核字段，不导出到 ALE-data 包。
+provenance,provenance.author_type,enum,yes,expert,platform,provenance.author_type,task_versions.provenance_json / agent_runs,PACKAGE.json 摘要；明细不导出,.provenance.author_type,用了 AI 就不能填 human。平台来源字段，不导出；包级来源另写 PACKAGE.json。
+provenance,provenance.agent_runs,array<object>,conditional,expert,platform,provenance.agent_runs,task_versions.provenance_json / agent_runs,PACKAGE.json 摘要；明细不导出,.provenance.agent_runs[],只留摘要
+provenance,provenance.sources,array<object>,yes,expert,reviewer,provenance.sources,task_versions.provenance_json / agent_runs,PACKAGE.json 摘要；明细不导出,.provenance.sources[],与输入资料的许可是两回事。平台来源字段，不导出；包级来源另写 PACKAGE.json。
+provenance,provenance.originality.not_copied,boolean,yes,expert,platform,provenance.originality.not_copied,task_versions.provenance_json / agent_runs,PACKAGE.json 摘要；明细不导出,.provenance.originality.not_copied,声明不实按拒收处理。平台来源字段，不导出；包级来源另写 PACKAGE.json。
+provenance,provenance.originality.similar_check_ref,string,conditional,expert,platform,provenance.originality.similar_check_ref,task_versions.provenance_json / agent_runs,PACKAGE.json 摘要；明细不导出,,条件：提交前必须做；平台未上线时写人工检索记录。平台来源字段，不导出；包级来源另写 PACKAGE.json。
+provenance,provenance.revision_history,array<object>,yes,expert,platform,provenance.revision_history,task_versions.provenance_json / agent_runs,PACKAGE.json 摘要；明细不导出,,不要只写修改。平台来源字段，不导出；包级来源另写 PACKAGE.json。
+handoff,handoff.target_format,enum,yes,expert,platform,handoff.target_format,handoffs,不导出，handoff.json 边车,,默认 ale_task_toml；运行框架未定不阻塞任务源；P1 不做 Harbor 转换。平台交接字段，不导出；转换时由工程侧消费。
+handoff,handoff.target_schema_version,string,yes,expert,platform,handoff.target_schema_version,handoffs,不导出，handoff.json 边车,,与 task.toml schema 对齐。平台交接字段，不导出；转换时由工程侧消费。
+handoff,handoff.engine_commit,string,conditional,expert,platform,handoff.engine_commit,handoffs,不导出，handoff.json 边车,,条件：冻结快照生成时。平台交接字段，不导出；转换时由工程侧消费。
+handoff,handoff.files_expected,array<string>,yes,expert,platform,handoff.files_expected,handoffs,不导出，handoff.json 边车,,不一致会阻断转换。平台交接字段，不导出；转换时由工程侧消费。
+handoff,handoff.converter_version,string,conditional,expert,platform,handoff.converter_version,handoffs,不导出，handoff.json 边车,,条件：target_format 非 ale_task_toml。平台交接字段，不导出；转换时由工程侧消费。
+handoff,handoff.known_gaps,text,yes,expert,platform,handoff.known_gaps,handoffs,不导出，handoff.json 边车,,不允许留空；隐瞒缺口会导致运行失败。平台交接字段，不导出；转换时由工程侧消费。
+handoff,handoff.execution_notes,text,no,expert,platform,handoff.execution_notes,handoffs,不导出，handoff.json 边车,,平台导入后进入转换说明。平台交接字段，不导出；转换时由工程侧消费。
+handoff,handoff.secrets_attestation,boolean,yes,expert,platform,handoff.secrets_attestation,handoffs,不导出，handoff.json 边车,,含密钥或凭据不得提交。平台交接字段，不导出；转换时由工程侧消费。
+handoff,handoff.frozen_snapshot_id,string,no,expert,platform,handoff.frozen_snapshot_id,handoffs,不导出，handoff.json 边车,.source.snapshot_id,专家提交时不填。平台交接字段，不导出；转换时由工程侧消费。
+verification,verification.contract_kind,enum,yes,platform,reviewer,,packages / package_validations,PACKAGE.json,.verification.contract_kind,numeric_cases/tabular_columns/document_qa/artifact_diff/code_artifact
+verification,verification.mode,enum,yes,platform,reviewer,,packages / package_validations,PACKAGE.json,.verification.mode,deterministic/rubric/judge/hybrid/human_review
+verification,verification.artifacts,array<object>,yes,platform,reviewer,,packages / package_validations,PACKAGE.json + reference/,.verification.artifacts[],role=oracle/rubric/judge_config/fixture/render/verifier
+verification,verification.oracle_required,boolean,yes,platform,reviewer,,packages / package_validations,PACKAGE.json,.oracle.required,无唯一参考解可为 false
+verification,verification.tolerance,object,conditional,platform,reviewer,,packages / package_validations,PACKAGE.json,.verification.tolerance,数值/结构/几何容差
+verification,verification.judge_config,object,conditional,platform,reviewer,,packages / package_validations,PACKAGE.json + reference/,.verification.judge_config,judge 问题、阈值、视图
+verification,verification.verifier_entry,string,conditional,engineering,platform,,packages / package_validations,运行包 tests/,.verification.verifier.entry,平台包不内含验证器
+verification,verification.verifier_sha256,string,conditional,engineering,platform,,packages / package_validations,运行包 tests/,.verification.verifier.sha256,验证器哈希
+package,package.schema_version,string,yes,platform,platform,,packages / ingest_records,PACKAGE.json,.schema_version,ale-pkg-1.2
+package,package.ale_data_version,string,yes,platform,platform,,packages / ingest_records,PACKAGE.json,.ale_data_version,task-data-v1.1
+package,package.entrypoints,object,yes,platform,platform,,packages / ingest_records,PACKAGE.json,.entrypoints,brief/contract/answer_key 可条件必填
+package,package.files,array<object>,yes,platform,platform,,packages / ingest_records,PACKAGE.json,.files[],path/sha256/bytes/mode/role
+package,package.native_hash,string,yes,platform,platform,,packages / ingest_records,PACKAGE.json,.hashes.native_hash,排除 PACKAGE.json
+package,package.package_hash,string,yes,platform,platform,,packages / ingest_records,PACKAGE.json,.hashes.package_hash,含 PACKAGE.json 与四边车
+package,package.built_by,string,yes,platform,platform,,packages / ingest_records,PACKAGE.json,.built_by,platform/manual
+package,package.built_at,string,yes,platform,platform,,packages / ingest_records,PACKAGE.json,.built_at,ISO 时间
+package,package.counted_in_500,boolean,yes,platform,platform,,packages / ingest_records,ingest_records,,只由合作方验收回执改写
+package,package.scope_exception,string,conditional,platform,platform,,packages / ingest_records,PACKAGE.json,.governance.scope_exception,法律 42 条等

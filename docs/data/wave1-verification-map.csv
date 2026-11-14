@@ -1,0 +1,9 @@
+pattern_id,case_ids,contract_kind,verification_mode,oracle_required,artifacts,scoring,partial_credit,human_review,source_evidence,notes
+V1,C1,tabular_columns,deterministic,yes,reference_manifest.json;reference_workbook.xlsx,43 个检查项，score=passed/total，全对才 1.0,yes,no,A C1；score_workbook.py:496-497；main.py:210,passed 布尔只在 1.0 时为真，不是 reward；实时字段只校验数值，新任务应冻结快照
+V2,C2,numeric_cases,deterministic,yes,output_contract.json;form1040_gt.json;form1040_alt_gt.json,硬门（缺文件/字段/类型即 0）+ 约 39 个计分字段,yes,no,A C2,"页面标准扣除 15,750 与主 GT 15,000 冲突，必须保留 alt 通道"
+V3,C3,artifact_diff,hybrid,yes,scene2_stats.csv;scene2 运行统计,0.7 重算统计 + 0.3 agent CSV；PNG 只 verify,yes,optional,A C3,参考目录无参考 mask；截图不比较像素，视觉证据需另设判定
+V4,C4,artifact_diff,judge,no,eval_config.json;reference_renders_linux/;base_model.obj,几何硬门 + 8 条 YES/NO Judge，score=yes_count/8,yes,optional,A C4,无参考 OBJ；pass_threshold=0.5 只作报告，reward 是 score
+V5,C5,code_artifact,deterministic,yes,answer.json,schema 0.10 + target_signal 0.10 + 集合相等 0.80,yes,no,A C5,target_location 值不校验；task_card 声称的反篡改硬门无代码
+V6,C6,document_qa,deterministic,yes,answer_key.json;output_contract.json,5 案 × 3 金额，weights 7/7/6，Decimal 0.01,yes,no,A C6,评分器硬编码 ANSWER_KEY 并丢弃参考文件；Case 4 特殊条件未体现在答案键
+V7,new-human,artifact_diff,human_rubric,no,rubric.json;sample_good/;sample_bad/,人工六维 rubric，至少 1 条关键项,no,yes,B 第 2.1 节；C 审核台,仅限无唯一参考解且经批准的任务；必须有样例外与反例
+V8,new-alt,numeric_cases,deterministic,yes,answer_key.json;alt_answer_key.json;output_contract.json,主答案键 + 等价答案通道，逐字段容差,yes,no,A C1/C2；B 审核规则,等价解必须显式建模，不能让唯一写法误杀合法解
