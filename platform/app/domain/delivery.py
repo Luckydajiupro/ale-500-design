@@ -273,14 +273,14 @@ def build_package(
     task = task_repo.get_task(conn, task_id)
     if task is None:
         raise not_found("任务")
+    existing = delivery_repo.get_package_for_task(conn, task_id, int(task["current_version_no"]))
+    if existing and existing["state"] in ("built", "validated", "ingested"):
+        return existing
     if task["state"] != sm.FROZEN:
         raise conflict("TASK_NOT_FROZEN", "只有 frozen 任务可以组包")
     snapshot = delivery_repo.get_snapshot_for_task(conn, task_id, int(task["current_version_no"]))
     if snapshot is None:
         raise not_found("冻结快照")
-    existing = delivery_repo.get_package_for_task(conn, task_id, int(task["current_version_no"]))
-    if existing and existing["state"] in ("built", "validated", "ingested"):
-        return existing
 
     payload = json.loads(snapshot["payload_json"])
     identity = payload.get("identity") or {}

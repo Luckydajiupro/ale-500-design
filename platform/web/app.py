@@ -10,6 +10,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
 import sqlite3
 import urllib.parse
 from pathlib import Path
@@ -23,6 +24,7 @@ from fastapi.templating import Jinja2Templates
 from app.adapters import LocalObjectStore, new_id, now
 from app.auth import Principal, resolve_principal
 from app.db import connect, initialize, run_migrations, transaction
+from app.domain import agent_service
 from app.domain import delivery as delivery_service
 from app.domain import jobs as job_service
 from app.domain import materials as material_service
@@ -102,6 +104,7 @@ def _render(
         "dimensions": ["correctness", "completeness", "format", "professional_judgment", "process"],
         "methods": ["auto_script", "artifact_diff", "llm_judge", "human_rubric"],
         "error": None,
+        "backend": "PostgreSQL" if request.app.state.settings.is_postgres else "SQLite",
     }
     values.update(context or {})
     response = TEMPLATES.TemplateResponse(request, template, values, status_code=status_code)
@@ -199,16 +202,42 @@ def _insert_suggestion_run(conn: sqlite3.Connection, task: Dict[str, Any], paylo
     return len(suggestions)
 
 
+def _path_tokens(path: str) -> List[Any]:
+    tokens: List[Any] = []
+    for match in re.finditer(r"([A-Za-z0-9_]+)|\[(\d+)\]", path):
+        if match.group(2) is not None:
+            tokens.append(int(match.group(2)))
+        else:
+            tokens.append(match.group(1))
+    if not tokens:
+        raise AppError("SUGGESTION_PATH", 422, "建议字段路径不可写")
+    return tokens
+
+
 def _set_path(payload: Dict[str, Any], path: str, value: Any) -> None:
+    tokens = _path_tokens(path)
     node: Any = payload
-    parts = path.split(".")
-    for key in parts[:-1]:
+    for index, token in enumerate(tokens[:-1]):
+        nxt = tokens[index + 1]
+        if isinstance(token, int):
+            if not isinstance(node, list) or token >= len(node):
+                raise AppError("SUGGESTION_PATH", 422, "建议字段路径不可写")
+            node = node[token]
+        else:
+            if not isinstance(node, dict):
+                raise AppError("SUGGESTION_PATH", 422, "建议字段路径不可写")
+            if token not in node:
+                node[token] = [] if isinstance(nxt, int) else {}
+            node = node[token]
+    last = tokens[-1]
+    if isinstance(last, int):
+        if not isinstance(node, list) or last >= len(node):
+            raise AppError("SUGGESTION_PATH", 422, "建议字段路径不可写")
+        node[last] = value
+    else:
         if not isinstance(node, dict):
             raise AppError("SUGGESTION_PATH", 422, "建议字段路径不可写")
-        node = node.setdefault(key, {})
-    if not isinstance(node, dict):
-        raise AppError("SUGGESTION_PATH", 422, "建议字段路径不可写")
-    node[parts[-1]] = value
+        node[last] = value
 
 
 def _parse_value(raw: str) -> Any:
@@ -520,13 +549,22 @@ def create_app() -> FastAPI:
         form = dict(await request.form())
         _check_csrf(request, form)
         task = task_repo.get_task(conn, task_id)
-        if task is None or task["owner_expert_id"] != principal.user_id:
-            raise AppError("FORBIDDEN", 403, "只能为自己的任务生成建议")
-        if task["state"] not in sm.EDITABLE_STATES:
+        capability = str(form.get("capability") or "structuring")
+        if task is None:
+            raise AppError("NOT_FOUND", 404, "任务不存在")
+        if capability != "review_assist" and task["state"] not in sm.EDITABLE_STATES:
             raise AppError("TASK_NOT_EDITABLE", 409, "当前状态不能生成建议")
-        with transaction(conn):
-            count = _insert_suggestion_run(conn, task, json.loads(task["draft_payload"]))
-        return _redirect("/tasks/%s" % task_id, msg="已生成 %d 条建议，等待逐条确认" % count)
+        try:
+            with transaction(conn):
+                result = agent_service.generate(conn, principal, task_id, capability)
+        except agent_service.AgentServiceError as exc:
+            raise AppError(exc.code, exc.status, exc.message)
+        if result["degraded"]:
+            message = "模型暂不可用，未生成建议；请使用人工清单继续"
+        else:
+            label = "真实模型" if not result["mock_only"] else "Mock 模式"
+            message = "已生成 %d 条建议（%s），等待逐条确认" % (result["count"], label)
+        return _redirect("/tasks/%s" % task_id, msg=message)
 
     @app.post("/tasks/{task_id:path}/agent/{suggestion_id}/confirm")
     async def agent_confirm(request: Request, task_id: str, suggestion_id: str, conn=Depends(db_dependency)):
@@ -651,5 +689,18 @@ def create_app() -> FastAPI:
         with transaction(conn):
             receipt = delivery_service.ingest_package(conn, principal, package["package_id"], settings.package_root)
         return _redirect("/tasks/%s" % task_id, msg="已入库 %s" % receipt.get("ingest_id", ""))
+
+    @app.exception_handler(AppError)
+    async def app_error(request: Request, exc: AppError):
+        return _render(
+            request,
+            "error.html",
+            {"code": exc.code, "message": exc.message, "details": exc.details},
+            status_code=exc.status_code,
+        )
+
+    @app.exception_handler(RedirectLogin)
+    async def login_redirect(request: Request, exc: RedirectLogin):
+        return _redirect("/login", msg="请先登录")
 
     return app

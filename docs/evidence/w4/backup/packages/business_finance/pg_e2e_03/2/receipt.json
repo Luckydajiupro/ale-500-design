@@ -1,0 +1,12 @@
+{
+  "file_count": 3,
+  "native_hash": "9ccf186eec70f9db5cb7dfd25c541ae5574e55d7dec92e4cf4a580d19bb16252",
+  "package_hash": "7a6b4c00cd3d49e1d82fc442bc3cec91df8336898ff0feb80fdc7026581c1b7e",
+  "package_id": "pkg_9503cad2bf2441848a03",
+  "received_at": "2026-11-14T09:59:30Z",
+  "received_by": "u_admin",
+  "state": "published",
+  "task_id": "business_finance/pg_e2e_03",
+  "task_version": 2,
+  "validation_report_sha256": "ad541c072cf6e6b80dae37c76a6c10ac37c340c3970bf818bd7f42b124f0f79a"
+}

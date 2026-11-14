@@ -256,7 +256,13 @@ CREATE TABLE IF NOT EXISTS agent_runs (
     status        TEXT NOT NULL,
     latency_ms    INTEGER,
     cost_cents    INTEGER NOT NULL DEFAULT 0,
-    created_at    TEXT NOT NULL
+    created_at    TEXT NOT NULL,
+    prompt_version TEXT NOT NULL DEFAULT '',
+    tokens_in     INTEGER NOT NULL DEFAULT 0,
+    tokens_out    INTEGER NOT NULL DEFAULT 0,
+    degraded      INTEGER NOT NULL DEFAULT 0,
+    mock_only     INTEGER NOT NULL DEFAULT 0,
+    error_code    TEXT
 );
 
 CREATE TABLE IF NOT EXISTS agent_suggestions (

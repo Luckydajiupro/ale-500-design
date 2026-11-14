@@ -80,6 +80,30 @@ def is_append_only_violation(error: Exception) -> bool:
     return "append-only" in str(error)
 
 
+def ensure_agent_run_columns(conn: Any) -> None:
+    """Add audit columns for databases created before the Agent gateway."""
+
+    additions = (
+        ("prompt_version", "TEXT NOT NULL DEFAULT ''"),
+        ("tokens_in", "INTEGER NOT NULL DEFAULT 0"),
+        ("tokens_out", "INTEGER NOT NULL DEFAULT 0"),
+        ("degraded", "INTEGER NOT NULL DEFAULT 0"),
+        ("mock_only", "INTEGER NOT NULL DEFAULT 0"),
+        ("error_code", "TEXT"),
+    )
+    if is_postgres(conn):
+        rows = conn.execute(
+            "SELECT column_name FROM information_schema.columns WHERE table_name = 'agent_runs'"
+        ).fetchall()
+        existing = {row["column_name"] if isinstance(row, dict) else row[0] for row in rows}
+    else:
+        rows = conn.execute("PRAGMA table_info(agent_runs)").fetchall()
+        existing = {row["name"] if isinstance(row, dict) else row[1] for row in rows}
+    for name, ddl in additions:
+        if name not in existing:
+            conn.execute("ALTER TABLE agent_runs ADD COLUMN %s %s" % (name, ddl))
+
+
 def run_migrations(conn: Any, migration_dir: Path) -> list[str]:
     applied: list[str] = []
     conn.execute(
@@ -99,4 +123,5 @@ def run_migrations(conn: Any, migration_dir: Path) -> list[str]:
             (migration.name, now()),
         )
         applied.append(migration.name)
+    ensure_agent_run_columns(conn)
     return applied

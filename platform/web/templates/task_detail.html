@@ -98,7 +98,14 @@
   {% if editable %}
   <form method="post" action="/tasks/{{ task.task_id }}/agent/suggest" class="inline">
     <input type="hidden" name="csrf" value="{{ csrf }}">
-    <button type="submit">生成结构化建议</button>
+    <select name="capability">
+      <option value="structuring">结构化标注</option>
+      <option value="interview">专家访谈</option>
+      <option value="followup">智能追问</option>
+      <option value="precheck">质量预检</option>
+      <option value="review_assist">审核辅助</option>
+    </select>
+    <button type="submit">生成建议</button>
   </form>
   {% endif %}
   {% if suggestions %}

@@ -1,0 +1,1 @@
+{"files_expected":["output/reconciliation.json"],"frozen_snapshot_id":"snap_6c3aa22c4641458294ba","known_gaps":"没有独立 reference，使用专业 rubric 与双人复核。","secrets_attestation":false,"target_format":"ale_task_toml","target_schema_version":"1.4+ale.1"}

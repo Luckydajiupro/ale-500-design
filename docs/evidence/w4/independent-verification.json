@@ -1,0 +1,21 @@
+{
+  "checks": {
+    "agent_view_no_metadata_sidecar": true,
+    "agent_view_no_package_json": true,
+    "agent_view_no_reference": true,
+    "files_list_matches_base": true,
+    "native_hash_matches_manifest": true,
+    "native_hash_matches_receipt": true,
+    "no_absolute_paths": true,
+    "no_declared_path_traversal": true,
+    "package_hash_matches_receipt": true,
+    "package_json_not_under_base": true
+  },
+  "expected_native_hash": "1e7cb980c4d65770718da46ce8df6f1c9a8c6bf7493fc0ffb33d20c07f125c0a",
+  "expected_package_hash": "790705df2942ea00bdeea5a0546a8d63251c99760570c53a009bb34c97e59932",
+  "file_count": 4,
+  "native_hash": "1e7cb980c4d65770718da46ce8df6f1c9a8c6bf7493fc0ffb33d20c07f125c0a",
+  "ok": true,
+  "package_dir": "docs/evidence/w4/package",
+  "package_hash": "790705df2942ea00bdeea5a0546a8d63251c99760570c53a009bb34c97e59932"
+}

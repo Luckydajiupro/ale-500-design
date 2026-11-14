@@ -12,5 +12,10 @@ COPY platform /app/platform
 COPY schemas /app/schemas
 COPY tools /app/tools
 
+RUN useradd --create-home --uid 10001 ale \
+    && mkdir -p /data/objects /data/packages /data/run \
+    && chown -R ale:ale /data
+USER ale
+
 EXPOSE 8080
 CMD ["python", "platform/run.py"]
