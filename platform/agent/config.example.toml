@@ -1,0 +1,48 @@
+# ALE Agent gateway configuration example.
+#
+# Copy to a private path, for example:
+#   cp platform/agent/config.example.toml ~/.config/ale/agent.toml
+#   chmod 600 ~/.config/ale/agent.toml
+#   export ALE_AGENT_CONFIG=~/.config/ale/agent.toml
+#
+# NEVER put an API key in this file. Keys come from the environment variable
+# named by api_key_env, or from a 0600 secret file. This example keeps every
+# sensitive value empty or a placeholder.
+
+[model]
+# "mock" for offline tests/demos; "openai_compatible" for a real endpoint.
+provider = "mock"
+
+# Real calls only. Use the OpenAI-compatible API root, without
+# /chat/completions (the gateway appends it). Placeholder domain on purpose.
+base_url = ""
+
+# Real calls only. Provider's exact model id.
+model_id = "mock-deterministic"
+
+# Environment variable that holds the key. The key is never a config value.
+api_key_env = "ALE_MODEL_API_KEY"
+
+# Optional alternative: an absolute path to a single-line UTF-8 key file with
+# permissions 0600 and no symlinks. Leave empty when using the env var.
+secret_file = ""
+
+timeout = 30.0
+max_retries = 2
+max_output_tokens = 2048
+
+# "json_schema" (strictest; requires provider support), "json_object", or
+# "none". The gateway validates locally in every mode.
+structured_output = "none"
+
+stream = false
+rate_limit_per_min = 60
+prompt_version = "agent-v1"
+
+# Cents per 1K tokens. Leave at 0.0 unless your provider's pricing is known;
+# zero means "not configured" and cost_cents is recorded as 0.
+input_cents_per_1k = 0.0
+output_cents_per_1k = 0.0
+
+# Reject prompts larger than this many characters before spending a call.
+max_input_chars = 20000
