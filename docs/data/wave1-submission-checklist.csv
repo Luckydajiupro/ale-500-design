@@ -1,0 +1,45 @@
+item_id,category,item,required,format,evidence,rejection_if_missing,notes
+T01,任务文本,task_id、中英文标题、域、子域、批次、负责人齐全且互相一致,yes,结构化字段,任务源首页与合同批次,rework,task_id 提交后冻结；标题承诺不能大于任务实际范围。
+T02,任务文本,场景写清具体岗位、组织情境、触发事件和受众,yes,四段叙述,场景块,rework,岗位不接受专业人士、分析师这类泛称。
+T03,任务文本,至少 2 条业务约束、至少 1 条明确不做范围,yes,数组,场景块,rework,约束要可检查，不写认真、准确。
+T04,任务文本,至少 3 个有依赖关系的步骤，至少 1 个检查点,yes,步骤表,步骤块与 checkpoint 字段,rework,删掉一步任务就做不成，才算真依赖。
+T05,任务文本,每步 expected_state 可观察、可核验,yes,文本,步骤块,rework,不写处理完成、结果正确。
+T06,任务文本,任务说明用英文，术语、单位和口径全文一致,yes,instruction 草稿,英文正文,rework,专有名词可保留原文；同一指标不要中英混用。
+T07,任务文本,说明中的输入输出路径与交付物、output_contract 逐字一致,yes,路径清单,逐字比对记录,rework,output 与 outputs 的差异也会阻断转换。
+T08,任务文本,任务不是问答化、单步化或只考格式,yes,说明与步骤,评审判断,reject,结构性不合格退回重做，不做局部修补。
+M01,资料与许可,至少 1 份 role=input 的资料,yes,资料清单,materials 表,rework,没有输入资料的任务不成立。
+M02,资料与许可,至少有 1 份真实来源文件，纯合成任务不合格,yes,来源文件与 URL,source_url 与文件,reject,合成件必须保留真实来源作结构锚。
+M03,资料与许可,所有资料路径存在、为相对路径、不含上级目录跳转,yes,文件树,路径清单,rework,路径带空格或中文会导致组包失败。
+M04,资料与许可,sha256 与 bytes 和实际文件一致,yes,64 位哈希与整数,复算记录,rework,上传错版本是最常见原因。
+M05,资料与许可,license.type 与许可文本一致，redistribution 判断有依据,yes,枚举与布尔,许可页或授权文件,reject,许可不明按不可用处理。
+M06,资料与许可,source_url 可访问，记录访问日期和许可名称,conditional,URL 与日期,来源页快照,rework,条件：非合成、非内部资料。
+M07,资料与许可,PII 已扫描，medium 有脱敏记录，high 未脱敏不提交,yes,分级与脱敏说明,扫描报告,reject,组合字段能反推到个人也算未脱敏。
+M08,资料与许可,合成件有标注、生成记录，并保留真实来源文件,conditional,合成说明与脚本,synthetic_disclosure,rework,条件：license.type=synthetic。
+M09,资料与许可,客户材料有书面授权、脱敏方案和删除承诺,yes,授权与方案,授权文件,reject,试点默认不允许客户材料。
+R01,reference/成功标准,参考解或答案键存在，且满足全部关键标准,yes,reference 文件,逐条核对记录,reject,只有一条路径的参考解不能证明标准公平，需说明等价解。
+R02,reference/成功标准,reference 不在 input 或任务说明可读范围内,yes,目录清单,输入文件清单,reject,答案泄漏直接拒收。
+R03,reference/成功标准,每个必填交付物至少对应 1 条成功标准,yes,映射表,deliverables.acceptance_ref,rework,孤儿交付物等于没有验收。
+R04,reference/成功标准,全部标准权重合计 100,yes,整数,权重计算记录,rework,平台自动检查会拦，但提交前应先算。
+R05,reference/成功标准,至少 1 条 critical=true 的关键标准,yes,布尔,criteria 表,rework,关键项要能区分做完和做对。
+R06,reference/成功标准,每条 threshold 可判定，写数值、容差、规则或档位,yes,文本,criteria 表,rework,不接受合理、基本正确。
+R07,reference/成功标准,check_method 与目标能力匹配，不用代理指标替代,yes,枚举与说明,verifier_hint,reject,截图存在不能证明操作正确。
+R08,reference/成功标准,任务说明、输入和示例中不含答案或隐藏测试,yes,全文扫描,泄漏检查记录,reject,包括文件名、注释和示例值。
+R09,reference/成功标准,至少 1 条 professional_judgment 维度标准,yes,枚举,criteria 表,rework,纯格式任务不符合 ALE 复杂度。
+E01,环境意图,os 与 os_version 明确，默认 Linux,yes,枚举与版本,environment 表,rework,首批 30 条不含 Windows。
+E02,环境意图,非基础软件写清名称、版本、许可和安装方式,conditional,对象数组,软件清单与许可,rework,条件：任务需要非基础软件；禁止 latest。
+E03,环境意图,network.mode 默认 none；非 none 时端点与理由齐全,yes,枚举与数组,environment 表,rework,运行期下载不算可行路径。
+E04,环境意图,CPU、内存、磁盘和超时与任务规模匹配,yes,整数,资源估算与试跑,rework,渲染、编译、大文件要单独估算。
+E05,环境意图,GUI、GPU、嵌套虚拟化和外部服务已声明,yes,枚举与布尔,environment 表,rework,unknown 不得定低风险。
+E06,环境意图,不依赖 latest 标签、运行期安装或未声明外部服务,yes,清单,依赖与网络检查,reject,不可复现环境直接拒收。
+S01,自检记录,九项自动检查已跑，报告随任务源提交,yes,检查报告,平台报告,rework,未跑检查等于未自检。
+S02,自检记录,无 error；warning 逐条解释，不批量忽略,yes,报告与说明,报告备注,rework,warning 堆积会拖慢评审。
+S03,自检记录,提交前人工清单 14 项逐项完成,yes,勾选清单,checklist 记录,rework,清单不是形式，评审会抽查。
+S04,自检记录,相似度与重复检查有记录,yes,检查编号,similar_check_ref,rework,平台未上线时写人工检索范围。
+S05,自检记录,AI 使用已披露，输出经人工确认,conditional,运行记录,agent_runs,reject,条件：author_type=agent_assisted；未确认输出不得提交。
+S06,自检记录,已知缺口和未决问题已列出，阻断项已关闭,yes,文本与列表,known_gaps、open_issues,rework,隐瞒缺口会在运行阶段暴露。
+H01,交接说明,target_format 与 target_schema_version 已填,yes,枚举与字符串,handoff 表,rework,默认 ale_task_toml 与 1.4+ale.1。
+H02,交接说明,files_expected 与交付物、output_contract 一致,yes,数组,逐项比对,rework,少一个文件就会转换失败。
+H03,交接说明,secrets_attestation=true，扫描无密钥和凭据,yes,布尔,扫描记录,reject,含密钥直接拒收。
+H04,交接说明,冻结快照 ID 已由平台回填,conditional,字符串,快照记录,rework,条件：任务冻结后。
+H05,交接说明,执行注意事项写清启动、编码、区域和宏设置,yes,文本,execution_notes,rework,跨平台差异要提前写。
+H06,交接说明,修订历史完整，版本、作者、时间、摘要齐全,yes,数组,revision_history,rework,只写修改视为不完整。

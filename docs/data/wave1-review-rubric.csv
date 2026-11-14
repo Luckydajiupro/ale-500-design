@@ -1,0 +1,37 @@
+dimension,question,blocking,evidence,decision,reviewer_role,notes
+professional_authenticity,岗位是否具体到可判断职责和权限，而非专业人士这类泛称,yes,scenario.role 与组织情境,rework,领域评审人,岗位决定专业边界；泛化岗位无法判断取舍。 本列表示该项不通过时的处置，通过时不触发。
+professional_authenticity,组织情境、触发事件和受众是否构成真实业务链条,no,scenario 四段,rework,领域评审人,情境是背景板还是任务起点，看触发事件是否必然导致交付。
+professional_authenticity,引用的准则、方法、标准是否现行、适用且被正确使用,yes,provenance.sources 与步骤,reject,领域评审人,用错准则或旧版本会误导整个任务。
+professional_authenticity,关键事实、数字和结论是否能追到来源或计算过程,yes,材料、计算表、引用,rework,领域评审人,无法复核的数字按专业错误处理。
+professional_authenticity,约束和禁止范围是否符合真实业务，而不是为了好评分而设,no,scenario.constraints、out_of_scope,rework,领域评审人,过度约束会把任务变成填空。
+professional_authenticity,是否存在编造的法规、文献、数据或客户,yes,来源页与引用,reject,领域评审人,编造来源按学术不端处理。
+professional_authenticity,专业判断点是否非平凡，错误后果是否真实,yes,步骤分支与 criteria,rework,领域评审人,机械套公式的任务达不到 ALE 复杂度。
+contract_consistency,任务说明里的每条要求是否都可执行且被验证,yes,说明、步骤、criteria,reject,领域评审人,要求了却不评分，或评分了却没要求，都是契约破裂。
+contract_consistency,验证器是否只测任务说明要求的内容，没有隐藏要求,yes,verifier_hint 与 reference,rework,质量审核人,隐藏要求会让合法解失分。
+contract_consistency,交付路径和格式是否与说明、output_contract、artifacts 完全一致,yes,三处路径清单,rework,工程负责人,路径差一个字符就会收集不到产物。
+contract_consistency,每个必填交付物是否由某一步骤产出，且步骤输入可追,yes,operations 与 deliverables,rework,领域评审人,没有产出步骤的交付物是凭空出现的。
+contract_consistency,权重是否合计 100，是否至少一条 critical,yes,success_criteria,rework,质量审核人,权重和关键项是评分结构的底线。
+contract_consistency,参考解是否满足全部关键标准，等价解是否也能通过,yes,reference 与 criteria,reject,领域评审人,只认一种写法会误杀合法解。
+contract_consistency,环境声明是否支撑步骤所需工具、数据和时限,yes,environment 与 operations,rework,工程负责人,环境不可执行时任务源不成立。
+contract_consistency,禁止范围是否被步骤或交付物违反,no,out_of_scope 与全文,rework,领域评审人,一边说不做，一边要求做，是常见矛盾。
+license,许可是否允许平台存储、使用和必要的再分发,yes,license 字段与许可页,reject,质量审核人,NC、ND 和许可不明按不可用处理。
+license,来源 URL、许可名称、访问日期和署名要求是否可核验,yes,source_url 与许可证据,reject,质量审核人,打不开的来源不算证据。
+license,PII 分级、脱敏方法和扫描记录是否成立,yes,pii_level 与脱敏记录,reject,质量审核人,高危未脱敏直接拒收。
+license,合成件是否标注、是否有生成记录和真实来源锚,yes,synthetic_disclosure,rework,质量审核人,纯合成且无真实来源的任务不合格。
+license,客户材料是否有书面授权、脱敏方案和删除承诺,yes,授权文件,reject,质量审核人,试点默认不允许客户材料。
+license,CC-BY 等署名要求是否在任务和导出包中保留,no, attribution 记录,rework,质量审核人,署名丢失会导致许可失效。
+verifiability,交付物是否可打开、可解析、结构是否与描述一致,yes,交付物样例或参考解,rework,工程负责人,二进制文件至少要能被目标工具打开。
+verifiability,成功标准是否测目标能力，而不是文件存在、截图存在等代理,yes,criteria 与 verifier_hint,reject,质量审核人,代理指标可被空产物绕过。
+verifiability,容差、确定性、随机性和评分档位是否写清,yes,threshold 与验证说明,rework,工程负责人,没有容差的数值比较会因浮点误差误判。
+verifiability,视觉或语义目标是否有参考图、rubric 或 Judge 配置,yes,reference 与 rubric,rework,领域评审人,只写美观无法形成一致评分。
+verifiability,是否存在廉价 reward hacking 路径,yes,输入、说明与验证逻辑,reject,质量审核人,自报成功、空文件、复制示例都要被排除。
+verifiability,评分证据是否对验证器可见、对执行者不可见,yes,目录与权限,reject,工程负责人,reference 进 input 等于泄题。
+difficulty_workload,是否至少 3 个有依赖的步骤和 1 个真实工具,yes,operations,rework,领域评审人,低于下限按单步任务处理。
+difficulty_workload,复杂度是否与官方三类任务同量级,yes,步骤、工具、交付物,rework,领域评审人,不是篇幅比较，是工作结构比较。
+difficulty_workload,工时估计是否与 14 到 22 小时的层级匹配,no,time_estimate_min 汇总,escalate,项目负责人,偏差过大影响报价和产能，升级处理。
+difficulty_workload,难度理由是否指向具体步骤和判断点,no,difficulty_rationale,rework,领域评审人,只写较难视为未说明。
+duplication_leakage,是否与官方任务或同批已有任务高度重复,yes,相似度报告与人工比对,reject,领域评审人,同工作流、同资料、同产物才算重复。
+duplication_leakage,是否复制了官方正文、reference 或第三方受限资产,yes,文本与文件比对,reject,质量审核人,复制即拒收，不进入返修。
+duplication_leakage,答案、参考解或隐藏测试是否出现在执行者可见范围,yes,input 与 instruction,reject,质量审核人,包括文件名和示例值。
+duplication_leakage,任务是否能被通用大模型不看资料直接答对,yes,无资料试跑或评审判断,rework,领域评审人,能直接答对说明资料和判断点没有起作用。
+duplication_leakage,同一工作流族在本批是否过度集中,no,批次分布,escalate,领域负责人,集中度过高会降低评测覆盖，升级调整配额。
