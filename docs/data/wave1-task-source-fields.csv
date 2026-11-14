@@ -40,7 +40,7 @@ operations,operations.checkpoint,checkpoint,是否检查点,yes,boolean,至少�
 operations,operations.time_estimate_min,time_estimate_min,预计分钟,yes,integer,1-480，按真实工作估,工时估算,none,difficulty_workload,45,总工时与报价层级要匹配。
 deliverables,deliverables.deliverable_id,deliverable_id,交付物 ID，D- 前缀,yes,string,任务内唯一,无,schema,contract_consistency,D-001,与成功标准引用一致。
 deliverables,deliverables.path,path,交付路径,yes,path,相对路径，与说明、output_contract、artifacts 完全一致,路径逐字比对,text_field_consistency,contract_consistency,outputs/lease_schedule.xlsx,路径不一致是最常见工程阻断。
-deliverables,deliverables.format,format,文件格式,yes,enum,docx/xlsx/pptx/pdf/csv/json/py/md/png/other,无,schema,contract_consistency,xlsx,扩展名要与 path 一致。
+deliverables,deliverables.format,format,文件格式,yes,enum,docx/xlsx/pptx/pdf/csv/json/py/md/png/svg/nii/nii.gz/obj/blend/dta/sav/rds/h5/tif/other,无,schema,contract_consistency,xlsx,扩展名要与 path 一致；领域原生格式用具体扩展名，不能一律写 other。
 deliverables,deliverables.description,description,交付物说明，20-300 字,yes,text,写内部结构、必填字段、行数或页数要求,样例或结构说明,none,verifiability,每份合同一行，列起租日、期限、折现率、期初负债、利息、付款、期末负债。,不要只写报告一份。
 deliverables,deliverables.produced_by_step,produced_by_step,产出步骤,yes,integer,引用 step_no,步骤清单,schema,contract_consistency,2,每个交付物至少被一步产出。
 deliverables,deliverables.mandatory,mandatory,是否必交,yes,boolean,至少一个 true,无,schema,contract_consistency,true,全部可选等于没有交付物。
@@ -84,7 +84,7 @@ provenance,provenance.sources,sources,参考来源，每项含 citation、url、
 provenance,provenance.originality.not_copied,originality.not_copied,原创声明,yes,boolean,声明未复制官方或第三方任务,相似度检查,duplicate_similarity,duplication_leakage,true,声明不实按拒收处理。平台来源字段，不导出；包级来源另写 PACKAGE.json。
 provenance,provenance.originality.similar_check_ref,originality.similar_check_ref,相似度检查编号,conditional,string,填平台检查批次或结果 ID,检查报告,duplicate_similarity,duplication_leakage,SIM-2026-11-14-001,条件：提交前必须做；平台未上线时写人工检索记录。平台来源字段，不导出；包级来源另写 PACKAGE.json。
 provenance,provenance.revision_history,revision_history,修订记录，每项含 version、author、at、summary,yes,array<object>,每次写 version/author/time/summary,版本记录,none,contract_consistency,"[{version: 1, author: E-0012, at: 2026-11-14, summary: 初稿}]",不要只写修改。平台来源字段，不导出；包级来源另写 PACKAGE.json。
-handoff,handoff.target_format,target_format,目标格式,yes,enum,ale_task_toml/harbor/other,工程约定,schema,contract_consistency,ale_task_toml,默认 ale_task_toml；运行框架未定不阻塞任务源。平台交接字段，不导出；转换时由工程侧消费。
+handoff,handoff.target_format,target_format,目标格式,yes,enum,ale_task_toml/other；harbor 仅记录，不在 P1 转换,工程约定,schema,contract_consistency,ale_task_toml,默认 ale_task_toml；运行框架未定不阻塞任务源；P1 不做 Harbor 转换。平台交接字段，不导出；转换时由工程侧消费。
 handoff,handoff.target_schema_version,target_schema_version,目标 schema,yes,string,填 1.4+ale.1 或双方确认版本,工程约定,lint_smoke,contract_consistency,1.4+ale.1,与 task.toml schema 对齐。平台交接字段，不导出；转换时由工程侧消费。
 handoff,handoff.engine_commit,engine_commit,引擎 commit,conditional,string,不填，冻结时平台回填 40 位 commit,快照记录,none,contract_consistency,0000000000000000000000000000000000000000,条件：冻结快照生成时。平台交接字段，不导出；转换时由工程侧消费。
 handoff,handoff.files_expected,files_expected,期望文件清单,yes,array<string>,与交付物和 output_contract 一致,文件清单,package_build,contract_consistency,outputs/lease_schedule.xlsx、outputs/review_memo.docx,不一致会阻断转换。平台交接字段，不导出；转换时由工程侧消费。

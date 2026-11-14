@@ -16,7 +16,7 @@ M06,资料与许可,source_url 可访问，记录访问日期和许可名称,con
 M07,资料与许可,PII 已扫描，medium 有脱敏记录，high 未脱敏不提交,yes,分级与脱敏说明,扫描报告,reject,组合字段能反推到个人也算未脱敏。
 M08,资料与许可,合成件有标注、生成记录，并保留真实来源文件,conditional,合成说明与脚本,synthetic_disclosure,rework,条件：license.type=synthetic。
 M09,资料与许可,客户材料有书面授权、脱敏方案和删除承诺,yes,授权与方案,授权文件,reject,试点默认不允许客户材料。
-R01,reference/成功标准,参考解或答案键存在，且满足全部关键标准,yes,reference 文件,逐条核对记录,reject,只有一条路径的参考解不能证明标准公平，需说明等价解。
+R01,reference/成功标准,参考解或答案键存在并满足全部关键标准；无唯一参考解时提交 rubric、合格样例与反例,conditional,reference 文件或 rubric,逐条核对记录,reject,只有一条路径的参考解不能证明标准公平，需说明等价解；human_rubric 任务按条件项审。
 R02,reference/成功标准,reference 不在 input 或任务说明可读范围内,yes,目录清单,输入文件清单,reject,答案泄漏直接拒收。
 R03,reference/成功标准,每个必填交付物至少对应 1 条成功标准,yes,映射表,deliverables.acceptance_ref,rework,孤儿交付物等于没有验收。
 R04,reference/成功标准,全部标准权重合计 100,yes,整数,权重计算记录,rework,平台自动检查会拦，但提交前应先算。

@@ -39,7 +39,7 @@ ALE 要测的是智能体在真实专业工作里能否使用工具、处理多�
 - 一套可授权、可追溯的原始资料，至少一份真实来源文件；合成件必须标注。
 - 预期产物清单，写清相对路径、格式、结构、必填项和验收对应关系。
 - 成功标准，写清维度、检查方式、权重、阈值、证据和关键项。
-- 一份参考解或答案键，足以证明标准可被满足；参考解不进智能体可见输入。
+- 一份参考解或答案键，足以证明标准可被满足；参考解不进智能体可见输入。若任务经批准采用 `human_rubric` 且没有唯一参考解，改为提交评分 rubric、至少一份合格样例和一个反例，并在成功标准中说明为什么不能给出参考解。
 - 一份自检记录，覆盖九项自动检查和人工清单。
 - 一份交接说明，写清目标格式、已知缺口、执行注意事项和保密声明。
 
@@ -171,11 +171,11 @@ v0 假设：平台内工单是主渠道，领域负责人在 2 个工作日内�
 
 十块是平台保存任务源的固定结构。字段名用英文，字段值可以用中文；任务说明、交付物、评审记录和交接材料最终用英文。机器可读的字段定义另存为 `docs/data/wave1-task-source-fields.csv`，本节解释每个块的判断标准。
 
-平台承载与 ALE-data 承载不是一回事。官方 `task-data-v1.1` 实际包通常只有 `input/`、`software/`、`reference/` 三类目录，没有统一的包级 manifest，也没有逐资料的许可字段。平台草案增加 `PACKAGE.json`、`task_brief.md`、`output_contract.json`、`answer_key.json` 作为边车，但这些边车尚未被官方包证明。导出时必须把平台字段映射到实际可承载的文件，不能假设官方包已经存在这些字段。
+平台承载与 ALE-data 承载不是一回事。官方 `task-data-v1.1` 实际包通常只有 `input/`、`software/`、`reference/` 三类目录，没有统一的包级 manifest，也没有逐资料的许可字段。平台草案新增 `PACKAGE.json` 作为包级边车；`task_brief.md`、`output_contract.json`、`answer_key.json` 在部分官方任务中已经作为内容文件存在，不能重复造同名边车。平台只在缺失时补入口或答案键，并在 `PACKAGE.json` 中引用它们。这些新增字段尚未被官方包证明。导出时必须把平台字段映射到实际可承载的文件，不能假设官方包已经存在这些字段。
 
 | 块 | 目的 | 平台承载 | ALE-data 实际承载 |
 |---|---|---|---|
-| 任务身份 | 唯一标识、分类、批次、责任人 | 任务表主键与索引 | 目录 `<domain>/<slug>/base/` 与 `task_brief` 标题 |
+| 任务身份 | 唯一标识、分类、批次、责任人 | 任务表主键与索引 | 新建任务用 `<domain>/<slug>/base/`；官方导入保留原 variant 名，不强行改成 base |
 | 场景 | 说明谁在什么情境下为什么做 | 结构化字段，供审核与检索 | `task_brief.md` 或 `instruction.md` 的叙述部分 |
 | 资料 | 输入、参考、模板及其许可 | 对象存储、逐文件元数据 | `input/`、`software/` 的字节；许可与 PII 只在平台侧 |
 | 步骤 | 工作过程与检查点 | 结构化步骤表 | 只以用户可见形式出现在 `instruction.md`；不给智能体逐步答案 |
@@ -248,7 +248,7 @@ v0 假设：平台内工单是主渠道，领域负责人在 2 个工作日内�
 
 **专家要填**：`deliverable_id`、`path`、`format`、`description`、`produced_by_step`、`mandatory`、`acceptance_ref`。
 
-**必填与条件**：至少 1 个 `mandatory=true`。`path` 使用相对路径，扩展名在白名单内；`format` 取 `docx`、`xlsx`、`pptx`、`pdf`、`csv`、`json`、`py`、`md`、`png` 或 `other`；`acceptance_ref` 至少引用 1 条成功标准。
+**必填与条件**：至少 1 个 `mandatory=true`。`path` 使用相对路径，扩展名在白名单内；`format` 取常见办公与数据格式（`docx`、`xlsx`、`pptx`、`pdf`、`csv`、`json`、`py`、`md`、`png`、`svg`）或领域原生格式（如 `nii`、`nii.gz`、`obj`、`blend`、`dta`、`sav`、`rds`、`h5`、`tif`），无法归类时用 `other` 并写真实扩展名；`acceptance_ref` 至少引用 1 条成功标准。
 
 **证据**：交付路径必须与任务说明、`output_contract` 和运行包 `artifacts` 完全一致。路径不一致是最常见的工程阻断，专家要在提交前逐字比对。描述写清文件内部结构，不只写“报告一份”。
 
@@ -318,7 +318,7 @@ v0 假设：平台内工单是主渠道，领域负责人在 2 个工作日内�
 
 **专家要填**：`target_format`、`target_schema_version`、`files_expected`、`known_gaps`、`execution_notes`、`secrets_attestation`。`engine_commit`、`converter_version`、`frozen_snapshot_id` 由平台在冻结和转换时回填。
 
-**必填与条件**：`target_format` 取 `ale_task_toml`、`harbor` 或 `other`；`target_schema_version` 填 `1.4+ale.1` 或双方确认的版本；`secrets_attestation` 必须为 `true`；`known_gaps` 至少写“无”或具体缺口，不能留空。
+**必填与条件**：`target_format` 取 `ale_task_toml` 或 `other`；`harbor` 只作为未来选项记录，P1 不做 Harbor 转换，也不据此改变运行框架选型；`target_schema_version` 填 `1.4+ale.1` 或双方确认的版本；`secrets_attestation` 必须为 `true`；`known_gaps` 至少写“无”或具体缺口，不能留空。
 
 **证据**：`files_expected` 与交付物清单、`output_contract` 一致；`execution_notes` 写启动方式、语言、区域设置、文件编码、可能的版本差异；`known_gaps` 写清尚未验证的环节，例如“LibreOffice 重算缓存与 Excel 显示值可能不同，验证器需重算”。
 
@@ -396,7 +396,7 @@ v0 假设：平台内工单是主渠道，领域负责人在 2 个工作日内�
 
 ### 5.2 最低资料集
 
-每条任务至少要有：一份 `input` 资料；一份真实来源文件，即使主体是合成数据；一份参考解或答案键；一份成功标准与证据的对应关系。没有真实来源文件的纯合成任务不合格，因为无法证明专业结构来自真实工作。
+每条任务至少要有：一份 `input` 资料；一份真实来源文件，即使主体是合成数据；一份参考解或答案键，或经批准的 `human_rubric` 加合格样例与反例；一份成功标准与证据的对应关系。没有真实来源文件的纯合成任务不合格，因为无法证明专业结构来自真实工作。
 
 涉及计算的任务要有输入数据和计算依据；涉及文档审查的任务要有原始文档和适用标准；涉及视觉产物的任务要有参考图或评分 rubric；涉及外部服务的任务要有本地替选或冻结快照。
 
@@ -465,7 +465,7 @@ PII 分四级：`none`、`low`、`medium`、`high`。姓名、邮箱、电话、
 5. 每个必填交付物是否有步骤产出，路径是否与说明、契约、`artifacts` 一致。
 6. 每条成功标准是否有检查方式、权重、阈值和证据，权重是否合计 100。
 7. 是否至少 1 条关键标准能区分“做完”和“做对”，而不是只查格式。
-8. 参考解是否真的满足所有关键标准，是否放在执行者看不到的位置。
+8. 参考解是否真的满足所有关键标准，是否放在执行者看不到的位置；没有唯一参考解时，rubric、合格样例与反例是否足以判定。
 9. 资料是否至少有一份真实来源文件，许可是否允许存储和再分发。
 10. 是否完成 PII 扫描和脱敏，合成件是否标注并保留生成记录。
 11. 环境是否默认离线可跑，软件、资源、超时是否足够，GUI/GPU 是否声明。
