@@ -1,0 +1,9 @@
+case_id,task_id,contract_kind,mode,oracle_kind,oracle_required,tolerance,scoring,partial_credit,hard_gates,judge,human_review,handoff_status,fixture
+c1-equity-deterministic,business_finance/equity_research_summary,tabular_columns,deterministic,independent_oracle,true,absolute,ratio,true,1,no,no,draft,tools/wave2/fixtures/c1-equity-deterministic.json
+c2-taxform-deterministic,business_finance/taxform_4_1,numeric_cases,deterministic,equivalence_class,true,decimal,ratio,true,1,no,no,draft,tools/wave2/fixtures/c2-taxform-deterministic.json
+c3-scene2-hybrid,psychology_neuro/scene2_resample,artifact_diff,hybrid,recomputed_oracle,true,geometric,ratio,true,1,no,no,draft,tools/wave2/fixtures/c3-scene2-hybrid.json
+c4-building-judge,engineering/2d_drawings_to_3d_building_model,artifact_diff,judge,independent_oracle,true,geometric,ratio,true,1,yes,no,draft,tools/wave2/fixtures/c4-building-judge.json
+c5-chisel-deterministic,engineering/chisel_verilog_alignment_seq_1,code_artifact,deterministic,independent_oracle,true,set_exact,binary,false,1,no,no,draft,tools/wave2/fixtures/c5-chisel-deterministic.json
+c6-legal-deterministic,legal/legal_dr_fees_01,document_qa,deterministic,independent_oracle,true,decimal,ratio,true,1,no,no,draft,tools/wave2/fixtures/c6-legal-deterministic.json
+v7-human-rubric,social_sciences/atwood_2022_measles_vaccine_reproduction,document_qa,human_review,rubric_only,false,decimal,binary,false,1,no,yes,draft,tools/wave2/fixtures/v7-human-rubric.json
+v8-alt-oracle,business_finance/taxform_4_1,numeric_cases,deterministic,equivalence_class,true,decimal,ratio,true,1,no,no,draft,tools/wave2/fixtures/v8-alt-oracle.json

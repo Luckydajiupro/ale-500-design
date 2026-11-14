@@ -1,0 +1,39 @@
+group,canonical_field,package_field,package_schema_path,verification_field,owner,visibility,freeze_status,evidence,notes
+identity,identity.task_id,task_id,/properties/task_id,task_id,expert,public,frozen,schema + registry,canonical <domain>/<slug>
+identity,identity.task_version,task_version,/properties/task_version,task_id suffix,platform,public,frozen,schema,starts at 1; submit increments
+identity,identity.source_task_id,source_task_id,/properties/source_task_id,none,expert,platform_only,draft,official compat csv,official prefix preserved
+identity,identity.source_variant,source_variant,/properties/source_variant,none,expert,platform_only,draft,official compat csv,100 base + 22 named
+identity,identity.domain_code,domain_code,/properties/domain_code,task_id prefix,expert,public,frozen,registry enums,13 domains + unknown
+identity,identity.subdomain_code,subdomain_code,/properties/subdomain_code,none,expert,public,frozen,registry enums,56 subdomains
+identity,identity.language,language,/properties/language,none,expert,public,frozen,registry,task text English per docs/07
+materials,materials.path,files[].path,/properties/files/items/properties/path,artifacts[].path,expert,agent_visible or evaluator_only,frozen,schema,role decides visibility
+materials,materials.role,files[].role,/properties/files/items/properties/role,artifacts[].role,expert,public,frozen,schema,input/software/reference/document
+materials,materials.sha256,files[].sha256,/properties/files/items/properties/sha256,artifacts[].sha256,platform,platform_only,frozen,schema,64 hex; computed on upload
+materials,materials.bytes,files[].bytes,/properties/files/items/properties/bytes,none,platform,platform_only,frozen,schema,byte length
+materials,materials.license.type,license.type,/properties/license/properties/type,none,expert,platform_only,frozen,schema,six values
+materials,materials.license.status,license.status,/properties/license/properties/status,none,expert,platform_only,frozen,schema,cleared/pending/restricted
+materials,materials.pii_level,pii.level,/properties/pii/properties/level,none,expert,platform_only,frozen,schema,none/low/medium/high
+materials,materials.source_url,provenance.sources[],/properties/provenance,none,expert,platform_only,draft,schema,source evidence
+deliverables,deliverables.path,deliverables[].path,/properties/deliverables/items/properties/path,artifacts[].path,expert,agent_visible,frozen,schema,must match instruction
+deliverables,deliverables.format,deliverables[].format,/properties/deliverables/items/properties/format,contract_kind,expert,public,frozen,schema,domain formats from registry
+deliverables,deliverables.required,deliverables[].required,/properties/deliverables/items/properties/required,artifacts[].required,expert,public,frozen,schema,boolean
+success,success_criteria[].criterion_id,verification.criteria[],/properties/verification,scoring.components[].criterion_id,expert,evaluator_only,frozen,schema,stable id
+success,success_criteria[].dimension,verification.dimensions[],/properties/verification,scoring.components[].dimension,expert,evaluator_only,frozen,schema,five dimensions
+success,success_criteria[].check_method,verification.mode,/properties/verification/properties/mode,mode,expert,evaluator_only,frozen,schema,five modes
+success,success_criteria[].weight,verification.scoring.weights,/properties/verification,scoring.components[].weight,expert,evaluator_only,frozen,schema,sum equals weights_total
+success,success_criteria[].threshold,verification.tolerance,/properties/verification,tolerance,expert,evaluator_only,frozen,schema,type + value
+success,success_criteria[].critical,verification.hard_gates[],/properties/verification,scoring.hard_gates[],expert,evaluator_only,frozen,schema,at least one gate
+environment,environment.os,environment.os,/properties/environment/properties/os,none,expert,public,frozen,schema,linux/windows/mixed
+environment,environment.gui_required,environment.gui,/properties/environment/properties/gui,none,expert,public,frozen,schema,GUI flag
+environment,environment.network.mode,environment.network,/properties/environment/properties/network,none,expert,public,frozen,schema,none/allowlist/public
+environment,environment.software,environment.software[],/properties/environment/properties/software,none,expert,agent_visible,frozen,schema,software ids and versions
+environment,environment.external_services,environment.external_services[],/properties/environment/properties/external_services,none,expert,platform_only,draft,schema,13 external services flagged
+verification,verification.contract_id,verification.contract_id,/properties/verification/properties/contract_id,contract_id,platform,evaluator_only,draft,B schema,VC- prefix
+verification,verification.oracle.kind,oracle.kind,/properties/oracle/properties/kind,oracle.kind,expert,evaluator_only,frozen,B schema,independent/recomputed/equivalence
+verification,verification.artifacts[],verification.artifacts[],/properties/verification/properties/artifacts,artifacts[],platform,evaluator_only,candidate,B schema,role + visibility + hash
+package,package.schema_version,schema_version,/properties/schema_version,none,platform,platform_only,candidate,A schema,ale-pkg-1.2-draft
+package,package.native_hash,native_hash,/properties/native_hash,none,platform,platform_only,candidate,hash PoC,base content only
+package,package.package_hash,package_hash,/properties/package_hash,none,platform,platform_only,candidate,hash PoC,stored in DB/receipt
+package,package.files[],files[],/properties/files,artifacts[],platform,platform_only,candidate,A schema,path/bytes/mode/role/sha256
+package,package.counted_in_500,counted_in_500,/properties/counted_in_500,none,partner,platform_only,frozen,docs/08,only acceptance receipt changes
+review,review.risk_tier,review.risk_tier,/properties/review/properties/risk_tier,human_review,expert,platform_only,draft,docs/03,low/medium/high

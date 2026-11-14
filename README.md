@@ -10,7 +10,7 @@
 
 本仓库收三类东西。一类是当前被批准的设计，在 `docs/`。另一类是阶段目录的完整内容，在 `stages/`，用来证明每个阶段的结论。第三类是对外沟通材料，在 `deliverables/`，从设计派生，不是设计源。
 
-302 个文件，约 6.5 MB，克隆下来就是全部内容。
+378 个文件，约 7.0 MB，克隆下来就是全部内容。
 
 克隆下来能读设计，也能复跑两个阶段的出口检查。阶段 0 的 65 条校验和、阶段 1 的 15 项和 16 项校验、阶段 2 工程冒烟检查器与试点出口检查器的自检，都在仓库里跑，不需要额外准备。阶段 2 出口只跑 `pilot_gate.py`，`phase2_gate.py` 的 PASS 不是出口。
 
@@ -71,7 +71,7 @@
 
 `stages/` 现在整目录进仓库。它的作用是让"已关闭"和"已收口"这两句话能被外部复核，不是当时那台机器上的自言自语。
 
-## 十二份设计文档
+## 十六份设计文档
 
 | 文件 | 回答什么问题 |
 |---|---|
@@ -87,21 +87,33 @@
 | `docs/10-expert-annotation-spec-v0.md` | 专家实际做什么、一条合格任务怎么设计、十块任务源与 94 个字段怎么填、怎么自检和送审 |
 | `docs/11-platform-product-design.md` | 平台完整功能地图、用户旅程、页面、Agent 介入点、组包校验入库、P1 与完整产品边界 |
 | `docs/12-wave1-integration.md` | 三条线怎么合、Canonical 字段怎么统一、官方包与平台包怎么对齐、哪些要 PoC、下一波做什么 |
+| `docs/13-canonical-schema-v1.md` | 规范任务源 112 个字段、41 个核心必填叶子、官方 variant 导入矩阵、平台包 overlay 与候选哈希 |
+| `docs/14-verification-contract.md` | 验证意图合同十键、五种模式、六案例映射、Judge 校准与工程交接 |
+| `docs/15-platform-architecture.md` | 平台分层、20 张表、九态状态机、22 个 API 动作、专家工作台与组包入库流程 |
+| `docs/16-wave2-integration.md` | 三份合同怎么拼、哪些已有证据、哪些仍是候选、骨架启动条件与下一波模块 |
 
-`docs/data/` 放第一波的证据、字段、冲突、验证模式、PoC 与待裁决表，随对应文档一起读。
+`docs/data/` 放第一波与第二波的证据、字段、冲突、验证模式、PoC、合同对照与待裁决表，随对应文档一起读。
 
 ## 怎么校验
 
 六条检查在这个仓库里就能跑，每次 PR 自动跑。
 
 ```bash
-python3 tools/check_docs.py                    # 18 份活文档的写作规则
+python3 tools/check_docs.py                    # 22 份活文档的写作规则
 python3 tools/check_numbers.py                 # 文档里的数字与仓库表格一致
 python3 tools/exit/selftest_phase2_gate.py     # 阶段 2 工程冒烟检查器自检
 python3 tools/exit/selftest_pilot_gate.py      # 阶段 2 试点出口检查器自检
 cd stages/s0-baseline && shasum -a 256 -c FINAL_CHECKSUMS.sha256
 cd stages/s1-research && python3 -B scripts/35_validate_s1_02c.py
 cd stages/s1-research && python3 -B scripts/36_validate_s1_02c_c16.py
+```
+
+第二波新增三条可复现检查。
+
+```bash
+python3 tools/wave2/hash_poc.py
+python3 tools/wave2/verify_contract_check.py --selftest
+PYTHONPATH=platform python3 -m unittest discover -s platform/tests -v
 ```
 
 第七条要完整工作副本，仓库里没有那 88 GiB。

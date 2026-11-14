@@ -22,6 +22,12 @@ jobs:
 
       - name: 阶段 2 出口检查器自检
         run: python3 tools/exit/selftest_phase2_gate.py
+      - name: 第二波合同与骨架
+        run: |
+          python3 tools/wave2/hash_poc.py
+          python3 tools/wave2/verify_contract_check.py --selftest
+          PYTHONPATH=platform python3 -m unittest discover -s platform/tests -v
+
 
       - name: 阶段 0 校验和
         working-directory: stages/s0-baseline

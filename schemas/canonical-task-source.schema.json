@@ -1,0 +1,1485 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ale.local/schemas/canonical-task-source-1.0.json",
+  "title": "ALE canonical task source v1",
+  "description": "Canonical expert-facing task source. v1 freezes five core blocks (identity, materials, deliverables, success_criteria, environment) with 41 required leaf fields; seven further blocks are optional extension. Unknown x-* keys are allowed only as explicit extensions.",
+  "$comment": "Frozen range: 5 core blocks, 41 required leaves. No external $ref. Scenario, operations, review, provenance, handoff, verification and package are optional in v1 and become mandatory only at publication checks. All paths are base-relative POSIX paths.",
+  "type": "object",
+  "required": [
+    "identity",
+    "materials",
+    "deliverables",
+    "success_criteria",
+    "environment"
+  ],
+  "properties": {
+    "identity": {
+      "type": "object",
+      "properties": {
+        "task_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*/[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "description": "<domain_code>/<task_slug>; task slug keeps official case for imports"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "domain_code": {
+          "type": "string",
+          "enum": [
+            "business_finance",
+            "computing_math",
+            "education_info",
+            "engineering",
+            "health_medicine",
+            "legal",
+            "life_sciences",
+            "other",
+            "physical_sciences",
+            "psychology_neuro",
+            "social_sciences",
+            "transport_safety",
+            "visual_media",
+            "agriculture_env",
+            "unknown"
+          ]
+        },
+        "subdomain_code": {
+          "type": "string",
+          "enum": [
+            "accounting",
+            "actuarial_risk",
+            "compliance",
+            "enterprise_analytics",
+            "hr_pm",
+            "quant_finance",
+            "sales_marketing",
+            "supply_chain",
+            "ai_cs_research",
+            "cybersecurity",
+            "data_analytics",
+            "infra_cloud",
+            "math_ops_research",
+            "quantum",
+            "software_eng",
+            "educational_technology",
+            "library_info",
+            "translation",
+            "aerospace_mech",
+            "chemical_process",
+            "civil_geo",
+            "electronics",
+            "energy_power",
+            "manufacturing",
+            "mining_petroleum",
+            "robotics",
+            "semiconductor",
+            "urban_planning",
+            "clinical_diagnostics",
+            "clinical_informatics",
+            "clinical_trials",
+            "public_health",
+            "therapeutic_oncology",
+            "legal_research",
+            "litigation",
+            "biomolecular",
+            "cell_imaging",
+            "genomics",
+            "systems_microbial",
+            "sports",
+            "astronomy",
+            "chemistry_materials",
+            "earth_atmo",
+            "physics",
+            "comp_neuro",
+            "exp_psychology",
+            "economics",
+            "aviation",
+            "fire_safety",
+            "maritime_port",
+            "animation_3d",
+            "audio_music",
+            "graphic_design",
+            "env_water",
+            "precision_agriculture",
+            "unknown"
+          ]
+        },
+        "title_zh": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 120
+        },
+        "title_en": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 160
+        },
+        "language": {
+          "type": "string",
+          "enum": [
+            "en",
+            "zh",
+            "bilingual"
+          ]
+        },
+        "batch_id": {
+          "type": "string",
+          "enum": [
+            "A",
+            "B1",
+            "B2",
+            "B3",
+            "W1",
+            "W2",
+            "W3",
+            "W4"
+          ]
+        },
+        "owner_expert_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "difficulty_rationale": {
+          "type": "string",
+          "minLength": 20,
+          "maxLength": 1000
+        }
+      },
+      "additionalProperties": false,
+      "patternProperties": {
+        "^x-": {}
+      },
+      "required": [
+        "task_id",
+        "domain_code",
+        "subdomain_code",
+        "title_zh",
+        "language",
+        "batch_id",
+        "owner_expert_id",
+        "difficulty_rationale"
+      ]
+    },
+    "scenario": {
+      "type": "object",
+      "properties": {
+        "role": {
+          "type": "string"
+        },
+        "organization_context": {
+          "type": "string"
+        },
+        "trigger": {
+          "type": "string"
+        },
+        "audience": {
+          "type": "string"
+        },
+        "constraints": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "out_of_scope": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "realism_evidence": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "patternProperties": {
+        "^x-": {}
+      }
+    },
+    "materials": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "material_id": {
+            "type": "string",
+            "pattern": "^M-[0-9]{3,5}$"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "dataset",
+              "document",
+              "image",
+              "code",
+              "url",
+              "template",
+              "other"
+            ]
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "input",
+              "reference",
+              "template"
+            ]
+          },
+          "path": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$",
+            "description": "base-relative POSIX path; no leading slash and no '..' segment"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "bytes": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "license": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "public_domain",
+                  "cc_by",
+                  "proprietary",
+                  "internal",
+                  "synthetic"
+                ]
+              },
+              "redistribution": {
+                "type": "boolean"
+              },
+              "evidence_ref": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+              "^x-": {}
+            },
+            "required": [
+              "type",
+              "redistribution"
+            ]
+          },
+          "source_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "pii_level": {
+            "type": "string",
+            "enum": [
+              "none",
+              "low",
+              "medium",
+              "high"
+            ]
+          },
+          "deidentification": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 1000
+          },
+          "irb": {
+            "type": "object",
+            "properties": {
+              "protocol_id": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+              "^x-": {}
+            },
+            "required": [
+              "protocol_id"
+            ]
+          },
+          "used_by": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1
+          },
+          "synthetic_disclosure": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 2000
+          }
+        },
+        "additionalProperties": false,
+        "patternProperties": {
+          "^x-": {}
+        },
+        "required": [
+          "material_id",
+          "kind",
+          "role",
+          "path",
+          "sha256",
+          "bytes",
+          "license",
+          "pii_level",
+          "used_by"
+        ],
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "license": {
+                  "properties": {
+                    "type": {
+                      "not": {
+                        "enum": [
+                          "synthetic",
+                          "internal"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "source_url"
+              ]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "pii_level": {
+                  "enum": [
+                    "medium",
+                    "high"
+                  ]
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "deidentification"
+              ]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "pii_level": {
+                  "const": "high"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "irb": {
+                  "required": [
+                    "protocol_id"
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      "minItems": 1
+    },
+    "operations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "step_no": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "actor": {
+            "type": "string",
+            "enum": [
+              "human",
+              "agent",
+              "system"
+            ]
+          },
+          "action": {
+            "type": "string"
+          },
+          "tool": {
+            "type": "string"
+          },
+          "inputs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1
+          },
+          "expected_state": {
+            "type": "string"
+          },
+          "checkpoint": {
+            "type": "boolean"
+          },
+          "time_estimate_min": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "additionalProperties": false,
+        "patternProperties": {
+          "^x-": {}
+        },
+        "required": [
+          "step_no",
+          "actor",
+          "action",
+          "inputs",
+          "expected_state",
+          "checkpoint",
+          "time_estimate_min"
+        ]
+      },
+      "minItems": 1
+    },
+    "deliverables": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "deliverable_id": {
+            "type": "string",
+            "pattern": "^D-[0-9]{3,5}$"
+          },
+          "path": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$",
+            "description": "base-relative POSIX path; no leading slash and no '..' segment"
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "docx",
+              "xlsx",
+              "pptx",
+              "pdf",
+              "csv",
+              "json",
+              "py",
+              "md",
+              "png",
+              "svg",
+              "nii",
+              "nii.gz",
+              "obj",
+              "blend",
+              "dta",
+              "sav",
+              "rds",
+              "h5",
+              "tif",
+              "other"
+            ]
+          },
+          "description": {
+            "type": "string"
+          },
+          "produced_by_step": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "mandatory": {
+            "type": "boolean"
+          },
+          "acceptance_ref": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1
+          }
+        },
+        "additionalProperties": false,
+        "patternProperties": {
+          "^x-": {}
+        },
+        "required": [
+          "deliverable_id",
+          "path",
+          "format",
+          "description",
+          "produced_by_step",
+          "mandatory",
+          "acceptance_ref"
+        ]
+      },
+      "minItems": 1
+    },
+    "success_criteria": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "criterion_id": {
+            "type": "string",
+            "pattern": "^C-[0-9]{3,5}$"
+          },
+          "dimension": {
+            "type": "string",
+            "enum": [
+              "correctness",
+              "completeness",
+              "format",
+              "professional_judgment",
+              "process"
+            ]
+          },
+          "check_method": {
+            "type": "string",
+            "enum": [
+              "auto_script",
+              "artifact_diff",
+              "llm_judge",
+              "human_rubric"
+            ]
+          },
+          "weight": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "threshold": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "evidence_required": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          },
+          "verifier_hint": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 1000
+          },
+          "critical": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false,
+        "patternProperties": {
+          "^x-": {}
+        },
+        "required": [
+          "criterion_id",
+          "dimension",
+          "check_method",
+          "weight",
+          "threshold",
+          "evidence_required",
+          "critical"
+        ],
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "check_method": {
+                  "not": {
+                    "const": "human_rubric"
+                  }
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "verifier_hint"
+              ]
+            }
+          }
+        ]
+      },
+      "minItems": 1
+    },
+    "environment": {
+      "type": "object",
+      "properties": {
+        "os": {
+          "type": "string",
+          "enum": [
+            "linux",
+            "windows",
+            "macos",
+            "any"
+          ]
+        },
+        "os_version": {
+          "type": "string"
+        },
+        "gui_required": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no",
+            "unknown"
+          ]
+        },
+        "gpu": {
+          "type": "object",
+          "properties": {
+            "required": {
+              "type": "boolean"
+            },
+            "vram_gb": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "cuda_version": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "patternProperties": {
+            "^x-": {}
+          },
+          "required": [
+            "required"
+          ]
+        },
+        "software": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "version": {
+                "type": "string",
+                "minLength": 1
+              },
+              "license_type": {
+                "type": "string",
+                "minLength": 1
+              },
+              "install_method": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+              "^x-": {}
+            },
+            "required": [
+              "name",
+              "version",
+              "license_type",
+              "install_method"
+            ]
+          },
+          "minItems": 1
+        },
+        "network": {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "type": "string",
+              "enum": [
+                "none",
+                "staged-local",
+                "online-required",
+                "public-ref"
+              ]
+            },
+            "endpoints": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1
+            },
+            "justification": {
+              "type": "string",
+              "minLength": 20,
+              "maxLength": 600
+            }
+          },
+          "additionalProperties": false,
+          "patternProperties": {
+            "^x-": {}
+          },
+          "required": [
+            "mode"
+          ]
+        },
+        "resources": {
+          "type": "object",
+          "properties": {
+            "cpu": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "ram_gb": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "disk_gb": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "time_limit_min": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "additionalProperties": false,
+          "patternProperties": {
+            "^x-": {}
+          },
+          "required": [
+            "cpu",
+            "ram_gb",
+            "disk_gb",
+            "time_limit_min"
+          ]
+        },
+        "nested_virt": {
+          "type": "boolean"
+        },
+        "external_services": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "purpose": {
+                "type": "string"
+              },
+              "auth": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+              "^x-": {}
+            },
+            "required": [
+              "name",
+              "purpose"
+            ]
+          },
+          "minItems": 1
+        }
+      },
+      "additionalProperties": false,
+      "patternProperties": {
+        "^x-": {}
+      },
+      "required": [
+        "os",
+        "gui_required",
+        "gpu",
+        "network",
+        "resources",
+        "nested_virt"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "os": {
+                "not": {
+                  "const": "any"
+                }
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "os_version"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "network": {
+                "properties": {
+                  "mode": {
+                    "not": {
+                      "const": "none"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "network": {
+                "required": [
+                  "endpoints"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "network": {
+                "properties": {
+                  "mode": {
+                    "const": "online-required"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "network": {
+                "required": [
+                  "endpoints",
+                  "justification"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "gpu": {
+                "properties": {
+                  "required": {
+                    "const": true
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "gpu": {
+                "required": [
+                  "vram_gb",
+                  "cuda_version"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "review": {
+      "type": "object",
+      "properties": {
+        "risk_tier": {
+          "type": "string",
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "unknown"
+          ]
+        },
+        "tier_rationale": {
+          "type": "string"
+        },
+        "required_reviewers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "role": {
+                "type": "string"
+              },
+              "count": {
+                "type": "integer",
+                "minimum": 1
+              }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+              "^x-": {}
+            },
+            "required": [
+              "role",
+              "count"
+            ]
+          },
+          "minItems": 1
+        },
+        "reviews": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "reviewer_id": {
+                "type": "string"
+              },
+              "role": {
+                "type": "string"
+              },
+              "conclusion": {
+                "type": "string"
+              },
+              "reviewed_at": {
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+              "^x-": {}
+            },
+            "required": [
+              "reviewer_id",
+              "role",
+              "conclusion"
+            ]
+          },
+          "minItems": 1
+        },
+        "sign_offs": {
+          "type": "object",
+          "properties": {
+            "content": {
+              "type": "boolean"
+            },
+            "domain": {
+              "type": "boolean"
+            },
+            "engineering": {
+              "type": "boolean"
+            },
+            "license": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false,
+          "patternProperties": {
+            "^x-": {}
+          }
+        },
+        "open_issues": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "issue_id": {
+                "type": "string"
+              },
+              "severity": {
+                "type": "string",
+                "enum": [
+                  "low",
+                  "medium",
+                  "high"
+                ]
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "open",
+                  "resolved",
+                  "accepted"
+                ]
+              },
+              "note": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+              "^x-": {}
+            },
+            "required": [
+              "issue_id",
+              "severity",
+              "status"
+            ]
+          },
+          "minItems": 1
+        }
+      },
+      "additionalProperties": false,
+      "patternProperties": {
+        "^x-": {}
+      },
+      "required": [
+        "risk_tier",
+        "tier_rationale",
+        "required_reviewers",
+        "open_issues"
+      ]
+    },
+    "provenance": {
+      "type": "object",
+      "properties": {
+        "author_type": {
+          "type": "string",
+          "enum": [
+            "human",
+            "agent_assisted"
+          ]
+        },
+        "agent_runs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "run_id": {
+                "type": "string"
+              },
+              "model": {
+                "type": "string"
+              },
+              "purpose": {
+                "type": "string"
+              },
+              "reviewed_by": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+              "^x-": {}
+            },
+            "required": [
+              "run_id",
+              "model",
+              "purpose"
+            ]
+          },
+          "minItems": 1
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "source_id": {
+                "type": "string"
+              },
+              "url_or_path": {
+                "type": "string"
+              },
+              "accessed_at": {
+                "type": "string"
+              },
+              "note": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+              "^x-": {}
+            },
+            "required": [
+              "source_id",
+              "url_or_path"
+            ]
+          },
+          "minItems": 1
+        },
+        "originality": {
+          "type": "object",
+          "properties": {
+            "not_copied": {
+              "type": "boolean"
+            },
+            "similar_check_ref": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "patternProperties": {
+            "^x-": {}
+          },
+          "required": [
+            "not_copied"
+          ]
+        },
+        "revision_history": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "version": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "by": {
+                "type": "string"
+              },
+              "change": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+              "^x-": {}
+            },
+            "required": [
+              "version",
+              "at",
+              "by",
+              "change"
+            ]
+          },
+          "minItems": 1
+        }
+      },
+      "additionalProperties": false,
+      "patternProperties": {
+        "^x-": {}
+      },
+      "required": [
+        "author_type",
+        "originality",
+        "revision_history"
+      ]
+    },
+    "handoff": {
+      "type": "object",
+      "properties": {
+        "target_format": {
+          "type": "string",
+          "enum": [
+            "ale_task_toml",
+            "other"
+          ]
+        },
+        "target_schema_version": {
+          "type": "string"
+        },
+        "engine_commit": {
+          "type": "string"
+        },
+        "files_expected": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "converter_version": {
+          "type": "string"
+        },
+        "known_gaps": {
+          "type": "string"
+        },
+        "execution_notes": {
+          "type": "string"
+        },
+        "secrets_attestation": {
+          "type": "boolean"
+        },
+        "frozen_snapshot_id": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "patternProperties": {
+        "^x-": {}
+      },
+      "required": [
+        "target_format",
+        "target_schema_version",
+        "files_expected",
+        "known_gaps",
+        "secrets_attestation"
+      ]
+    },
+    "verification": {
+      "type": "object",
+      "properties": {
+        "contract_kind": {
+          "type": "string",
+          "enum": [
+            "numeric_cases",
+            "tabular_columns",
+            "document_qa",
+            "artifact_diff",
+            "code_artifact",
+            "unknown"
+          ]
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "deterministic",
+            "rubric",
+            "judge",
+            "hybrid",
+            "human_review"
+          ]
+        },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "artifact_id": {
+                "type": "string"
+              },
+              "path": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$",
+                "description": "base-relative POSIX path; no leading slash and no '..' segment"
+              },
+              "role": {
+                "type": "string",
+                "enum": [
+                  "oracle",
+                  "rubric",
+                  "judge_config",
+                  "fixture",
+                  "reference_render",
+                  "answer_key",
+                  "output_contract",
+                  "verifier",
+                  "sample_good",
+                  "sample_bad",
+                  "reference_manifest",
+                  "fixture_scores"
+                ]
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "visibility": {
+                "type": "string",
+                "enum": [
+                  "agent",
+                  "reviewer",
+                  "platform"
+                ]
+              }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+              "^x-": {}
+            },
+            "required": [
+              "role"
+            ]
+          },
+          "minItems": 1
+        },
+        "oracle_required": {
+          "type": "boolean"
+        },
+        "tolerance": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "judge_config": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "verifier_entry": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$",
+          "description": "base-relative POSIX path; no leading slash and no '..' segment"
+        },
+        "verifier_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "additionalProperties": false,
+      "patternProperties": {
+        "^x-": {}
+      },
+      "required": [
+        "contract_kind",
+        "mode",
+        "artifacts",
+        "oracle_required"
+      ]
+    },
+    "package": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "ale-pkg-1.2"
+        },
+        "ale_data_version": {
+          "const": "task-data-v1.1"
+        },
+        "entrypoints": {
+          "type": "object",
+          "properties": {
+            "brief": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$",
+              "description": "base-relative POSIX path; no leading slash and no '..' segment"
+            },
+            "contract": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$",
+              "description": "base-relative POSIX path; no leading slash and no '..' segment"
+            },
+            "answer_key": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$",
+              "description": "base-relative POSIX path; no leading slash and no '..' segment"
+            },
+            "document_manifest": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$",
+              "description": "base-relative POSIX path; no leading slash and no '..' segment"
+            }
+          },
+          "additionalProperties": false,
+          "patternProperties": {
+            "^x-": {}
+          }
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "path": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$",
+                "description": "base-relative POSIX path; no leading slash and no '..' segment"
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "bytes": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "mode": {
+                "type": "string",
+                "pattern": "^0[0-7]{3}$"
+              },
+              "role": {
+                "type": "string",
+                "enum": [
+                  "input",
+                  "software",
+                  "reference",
+                  "template"
+                ]
+              }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+              "^x-": {}
+            },
+            "required": [
+              "path",
+              "sha256",
+              "bytes",
+              "mode",
+              "role"
+            ]
+          },
+          "minItems": 1
+        },
+        "native_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "package_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "built_by": {
+          "type": "string"
+        },
+        "built_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "counted_in_500": {
+          "type": "boolean"
+        },
+        "scope_exception": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "patternProperties": {
+        "^x-": {}
+      }
+    }
+  },
+  "additionalProperties": false,
+  "patternProperties": {
+    "^x-": {}
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "identity": {
+            "properties": {
+              "language": {
+                "enum": [
+                  "en",
+                  "bilingual"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "identity": {
+            "required": [
+              "title_en"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "properties": {
+        "success_criteria": {
+          "contains": {
+            "properties": {
+              "critical": {
+                "const": true
+              }
+            },
+            "required": [
+              "critical"
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

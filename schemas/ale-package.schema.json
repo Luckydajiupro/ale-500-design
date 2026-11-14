@@ -1,0 +1,190 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ale-500.local/schemas/ale-package.schema.json",
+  "title": "ALE-data platform package overlay (draft, ale-pkg-1.2)",
+  "description": "Candidate overlay for a platform-built ALE-data package. The official task-data-v1.1 tree has no package-level manifest; this schema describes the platform sidecar only.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "ale_data_version", "task_id", "task_version",
+    "domain_code", "subdomain_code", "title", "summary", "language",
+    "entrypoints", "deliverables", "oracle", "verification",
+    "environment_intent", "sandbox", "license", "pii", "provenance",
+    "files", "hashes", "package", "built_by", "built_at"
+  ],
+  "properties": {
+    "schema_version": {"const": "ale-pkg-1.2", "description": "Candidate version. Not frozen before P12."},
+    "ale_data_version": {"const": "task-data-v1.1"},
+    "task_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*/[a-z0-9][a-z0-9_./-]*$"},
+    "task_version": {"type": "integer", "minimum": 1},
+    "source_task_id": {"type": "string"},
+    "source_variant": {"type": "string"},
+    "domain_code": {"$ref": "#/$defs/domain"},
+    "subdomain_code": {"type": "string", "minLength": 1},
+    "title": {"type": "string", "minLength": 1, "maxLength": 200},
+    "summary": {"type": "string", "minLength": 1},
+    "language": {"enum": ["en", "zh"]},
+    "entrypoints": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["brief"],
+      "properties": {
+        "brief": {"$ref": "#/$defs/agentPath"},
+        "contract": {"$ref": "#/$defs/agentPath"},
+        "instruction": {"$ref": "#/$defs/agentPath"}
+      }
+    },
+    "deliverables": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["path", "kind", "description"],
+        "properties": {
+          "path": {"type": "string", "minLength": 1},
+          "kind": {"enum": ["file", "directory", "workbook", "document", "image", "archive", "code"]},
+          "description": {"type": "string"},
+          "required": {"type": "boolean", "default": true}
+        }
+      }
+    },
+    "oracle": {
+      "type": "object", "additionalProperties": false,
+      "required": ["required", "kind"],
+      "properties": {
+        "required": {"type": "boolean"},
+        "kind": {"enum": ["independent_oracle", "recomputed_oracle", "equivalence_class", "none", "rubric_only", "visual_reference_family"]},
+        "paths": {"type": "array", "items": {"$ref": "#/$defs/packagePath"}},
+        "rationale": {"type": "string"},
+        "approved_without_reference": {"type": "boolean"},
+        "approval_ref": {"type": "string"}
+      }
+    },
+    "verification": {
+      "type": "object", "additionalProperties": false,
+      "required": ["mode", "artifacts"],
+      "properties": {
+        "mode": {"enum": ["deterministic", "rubric", "judge", "hybrid", "human_review"]},
+        "contract_ref": {"type": "string"},
+        "artifacts": {
+          "type": "array", "minItems": 1,
+          "items": {
+            "type": "object", "additionalProperties": false,
+            "required": ["role", "path", "visibility"],
+            "properties": {
+              "role": {"enum": ["oracle", "rubric", "judge_config", "fixture", "reference_render", "answer_key", "output_contract", "verifier", "sample_good", "sample_bad"]},
+              "path": {"$ref": "#/$defs/packagePath"},
+              "visibility": {"enum": ["agent_visible", "evaluator_only", "platform_only"]},
+              "in_package_hash": {"type": "boolean"}
+            }
+          }
+        }
+      }
+    },
+    "environment_intent": {
+      "type": "object", "additionalProperties": false,
+      "required": ["os", "gui", "network"],
+      "properties": {
+        "os": {"enum": ["linux", "windows", "macos", "any"]},
+        "gui": {"type": "boolean"},
+        "network": {"enum": ["none", "allowlist", "public"]},
+        "software": {"type": "array", "items": {"type": "string"}},
+        "gpu": {"type": "boolean", "default": false},
+        "external_services": {"type": "array", "items": {"type": "string"}},
+        "notes": {"type": "string"}
+      }
+    },
+    "sandbox": {
+      "type": "object", "additionalProperties": false,
+      "required": ["input_root", "output_root"],
+      "properties": {
+        "input_root": {"$ref": "#/$defs/packagePath"},
+        "output_root": {"$ref": "#/$defs/packagePath"},
+        "timeout_sec": {"type": "integer", "minimum": 1}
+      }
+    },
+    "license": {
+      "type": "object", "additionalProperties": false,
+      "required": ["type", "status"],
+      "properties": {
+        "type": {"enum": ["public_domain", "cc_by", "cc_by_nc", "proprietary", "internal", "synthetic"]},
+        "status": {"enum": ["cleared", "pending", "restricted"]},
+        "url": {"type": "string"},
+        "scope_exception": {"type": "string"}
+      }
+    },
+    "pii": {
+      "type": "object", "additionalProperties": false,
+      "required": ["level", "reviewed"],
+      "properties": {
+        "level": {"enum": ["none", "low", "medium", "high"]},
+        "reviewed": {"type": "boolean"},
+        "deidentified": {"type": "boolean"},
+        "notes": {"type": "string"}
+      }
+    },
+    "provenance": {
+      "type": "object", "additionalProperties": false,
+      "required": ["source", "captured_at", "owner_expert_id"],
+      "properties": {
+        "source": {"type": "string", "minLength": 1},
+        "source_url": {"type": "string"},
+        "captured_at": {"type": "string", "format": "date-time"},
+        "owner_expert_id": {"type": "string"},
+        "license_evidence": {"type": "string"},
+        "batch_id": {"type": "string"}
+      }
+    },
+    "files": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["path", "sha256", "bytes", "mode", "role"],
+        "properties": {
+          "path": {"$ref": "#/$defs/packagePath"},
+          "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+          "bytes": {"type": "integer", "minimum": 0},
+          "mode": {"type": "string", "pattern": "^0[0-7]{3}$"},
+          "role": {"enum": ["input", "software", "reference", "document"]},
+          "visibility": {"enum": ["agent_visible", "evaluator_only", "platform_only"]}
+        }
+      }
+    },
+    "hashes": {
+      "type": "object", "additionalProperties": false,
+      "required": ["native_hash"],
+      "properties": {
+        "native_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "package_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$", "description": "Candidate only. Stored in the database or ingest receipt, not written into the hashed bytes."},
+        "hash_contract": {"enum": ["candidate-v1"], "default": "candidate-v1"}
+      }
+    },
+    "package": {
+      "type": "object", "additionalProperties": false,
+      "required": ["layout", "built_from_snapshot"],
+      "properties": {
+        "layout": {"enum": ["version_base", "version_sidecar", "official_variant"]},
+        "package_root": {"type": "string"},
+        "built_from_snapshot": {"type": "string", "pattern": "^[a-f0-9]{40,64}$"},
+        "agents_see_package_json": {"type": "boolean", "default": false},
+        "sidecars": {"type": "array", "items": {"enum": ["package_manifest.json", "materials.json", "provenance.json", "handoff.json", "supersedes.json"]}}
+      }
+    },
+    "built_by": {"type": "string", "minLength": 1},
+    "built_at": {"type": "string", "format": "date-time"},
+    "counted_in_500": {"type": "boolean", "default": false},
+    "scope_exception": {"type": "string"}
+  },
+  "$defs": {
+    "domain": {
+      "enum": ["business_finance", "computing_math", "education_info", "engineering", "health_medicine", "legal", "life_sciences", "other", "physical_sciences", "psychology_neuro", "social_sciences", "transport_safety", "visual_media", "agriculture_env", "unknown"]
+    },
+    "packagePath": {
+      "type": "string", "minLength": 1,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))[^\\\\]+$"
+    },
+    "agentPath": {
+      "type": "string", "minLength": 1,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))[^\\\\]+$"
+    }
+  }
+}

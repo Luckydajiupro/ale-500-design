@@ -1,0 +1,24 @@
+method,path,allowed_roles,purpose,idempotency_key,response_summary
+POST,/api/v1/sessions,public,login,no,session and roles
+GET,/api/v1/me,authenticated,current principal,no,roles and scopes
+GET,/api/v1/tasks,expert/reviewer/admin,list tasks,no,"filter by state, domain, batch"
+POST,/api/v1/tasks,expert,create draft,yes,task_id and scope
+GET,/api/v1/tasks/{id},scoped,task detail,no,draft and version summary
+PATCH,/api/v1/tasks/{id},expert,patch field path,yes,dotted path update
+POST,/api/v1/tasks/{id}/validate,expert,structural check,yes,blockers and warnings
+POST,/api/v1/tasks/{id}/submit,expert,submit version,yes,new immutable version
+POST,/api/v1/tasks/{id}/return,reviewer/quality,return with reason,yes,state to returned
+POST,/api/v1/tasks/{id}/approve,quality,quality pass,yes,state to approved
+POST,/api/v1/tasks/{id}/freeze,quality/admin,freeze snapshot,yes,state to frozen
+POST,/api/v1/materials,expert,register material,yes,metadata only
+POST,/api/v1/materials/{id}/versions,expert,upload new version,yes,hash and storage key
+GET,/api/v1/materials/{id},scoped,material metadata,no,versions and licence
+GET,/api/v1/checks/{task_id},scoped,check results,no,L1/L2 findings
+GET,/api/v1/reviews/queue,reviewer,review queue,no,domain and load
+POST,/api/v1/reviews/{id}/claim,reviewer,claim task,yes,assignment
+POST,/api/v1/reviews/{id}/decision,reviewer,pass/return/reject,yes,review items
+GET,/api/v1/packages/{task_id},admin/engineer,package record,no,hashes and status
+POST,/api/v1/packages/{task_id}/build,admin/system,build package,yes,frozen snapshot only
+POST,/api/v1/packages/{task_id}/validate,admin/system,run L1-L5,yes,validation report
+POST,/api/v1/ingest,admin/system,idempotent ingest,yes,receipt
+GET,/api/v1/admin/stats,lead/admin,production counters,no,produced vs accepted

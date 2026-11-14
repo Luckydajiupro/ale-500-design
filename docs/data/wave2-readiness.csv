@@ -1,0 +1,16 @@
+item,status,evidence,blocker,next_action,owner,gate
+canonical-registry,ready,112 fields in wave2-field-registry.csv,none,use as form source,schema,G3-M1a-Core
+canonical-core-freeze,candidate,41 required leaves in schema,owner confirmation,freeze or version,lead,G3-M1a-Core
+official-compat,ready,122 rows in wave2-official-compat.csv,none,use as importer matrix,schema,wave3
+package-overlay,candidate,ale-package.schema.json,PACKAGE.json location,P12,schema,G3-M1b
+package-hash,candidate,7 PoC pass,cross-machine and receipt,P12,schema,G3-M1b
+agent-isolation,candidate,files[].visibility + L4 code,agent view test,P12 security test,platform,G3-M1b
+verification-contract,ready,29 selftests pass,none,use as handoff,verification,wave3
+judge-calibration,candidate,schema only,sample set and threshold,pilot calibration,domain,G4
+handoff-register,candidate,5-state model,engineering endpoint,design API,platform,wave3
+platform-schema,ready,20 tables and 14 tests,none,use as DB baseline,platform,wave3
+auth-api,candidate,role scopes and 22 APIs,framework choice,select HTTP adapter,platform,wave3
+concurrency,blocked,not tested,22 concurrent writers,load test,platform,G3-M1a-R
+postgres-s3,blocked,SQLite/local only,migration and adapter,prototype,platform,wave3
+data-authorization,blocked,docs/06 blocker,external confirmation,owner action,lead,G4
+legal-scope,blocked,docs/06 blocker,partner written acceptance,owner action,lead,G4
