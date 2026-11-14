@@ -37,7 +37,7 @@ class DeliveryFlowTests(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.root = Path(self.tmp.name)
         self.db_path = self.root / "platform.db"
-        seed(self.db_path, "AleDemo123!")
+        seed(self.db_path, "AleDemo123!", allow_demo=True)
         self.db = connect(self.db_path)
         self.expert = resolve_principal(self.db, "u_expert")
         self.domain = resolve_principal(self.db, "u_domain")

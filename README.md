@@ -10,7 +10,7 @@
 
 本仓库收三类东西。一类是当前被批准的设计，在 `docs/`。另一类是阶段目录的完整内容，在 `stages/`，用来证明每个阶段的结论。第三类是对外沟通材料，在 `deliverables/`，从设计派生，不是设计源。
 
-513 个文件，约 7.5 MB，克隆下来就是全部内容。
+523 个文件，约 7.5 MB，克隆下来就是全部内容。
 
 克隆下来能读设计，也能复跑两个阶段的出口检查。阶段 0 的 65 条校验和、阶段 1 的 15 项和 16 项校验、阶段 2 工程冒烟检查器与试点出口检查器的自检，都在仓库里跑，不需要额外准备。阶段 2 出口只跑 `pilot_gate.py`，`phase2_gate.py` 的 PASS 不是出口。
 
@@ -71,7 +71,7 @@
 
 `stages/` 现在整目录进仓库。它的作用是让"已关闭"和"已收口"这两句话能被外部复核，不是当时那台机器上的自言自语。
 
-## 二十份设计文档
+## 二十一份设计文档
 
 | 文件 | 回答什么问题 |
 |---|---|
@@ -93,6 +93,7 @@
 | `docs/16-wave2-integration.md` | 三份合同怎么拼、哪些已有证据、哪些仍是候选、骨架启动条件与下一波模块 |
 | `docs/17-wave3-implementation.md` | 真实工作台怎么跑、P12 包合同与哈希怎么验、两个验收节点的实际证据、已实现与未实现 |
 | `docs/18-local-integration.md` | 本地 Docker Compose、PostgreSQL、Worker、Agent Gateway、P12 加固、备份恢复与浏览器验收证据 |
+| `docs/19-agent-readiness.md` | 真实模型接入、密钥隔离、成本状态、备份与演示账号门禁、Agent 校准和 T1/T2 准入 |
 | `docs/20-expert-pilot-handbook.md` | 专家试点操作手册：按实际页面写登录、任务源、资料、Agent 建议、检查、提交、返修 |
 | `docs/21-expert-pilot-materials.md` | 试点项目说明、示范任务、不合格示例、审核清单、T1/T2 模板与反馈表 |
 
@@ -103,7 +104,7 @@
 六条检查在这个仓库里就能跑，每次 PR 自动跑。
 
 ```bash
-python3 tools/check_docs.py                    # 26 份活文档的写作规则
+python3 tools/check_docs.py                    # 27 份活文档的写作规则
 python3 tools/check_numbers.py                 # 文档里的数字与仓库表格一致
 python3 tools/exit/selftest_phase2_gate.py     # 阶段 2 工程冒烟检查器自检
 python3 tools/exit/selftest_pilot_gate.py      # 阶段 2 试点出口检查器自检

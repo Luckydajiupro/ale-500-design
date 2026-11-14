@@ -1,0 +1,12 @@
+{
+  "checks": {
+    "native_hash_matches_fixed_vector": true,
+    "package_hash_matches_fixed_vector": true,
+    "package_hash_not_in_manifest": true,
+    "package_json_not_under_base": true
+  },
+  "native_hash": "1e7cb980c4d65770718da46ce8df6f1c9a8c6bf7493fc0ffb33d20c07f125c0a",
+  "ok": true,
+  "package": "docs/evidence/w4/package",
+  "package_hash": "790705df2942ea00bdeea5a0546a8d63251c99760570c53a009bb34c97e59932"
+}

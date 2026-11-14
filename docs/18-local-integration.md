@@ -56,11 +56,16 @@ Django、FastAPI、Dify、LangGraph 之中，本波只对 Django 与 FastAPI 做
 本地集成环境的启动顺序：
 
 ```bash
+# Mock 模式也必须有一个占位 secret 文件，Compose 才能挂载
+printf '%s' 'mock-placeholder-key' > .secrets/model_api_key
+chmod 600 .secrets/model_api_key
 docker compose -p ale500 up -d db
 docker compose -p ale500 run --rm migrate
 docker compose -p ale500 up -d web worker
 curl http://127.0.0.1:8088/healthz
 ```
+
+真实密钥用 `tools/wave5/setup_model_secret.sh --from-file <受保护文件>` 安装到 `.secrets/model_api_key`，不要把密钥写进 `.env`、Compose 文件或镜像。
 
 当前健康检查返回：
 
@@ -68,7 +73,7 @@ curl http://127.0.0.1:8088/healthz
 {"status":"ok","backend":"postgresql"}
 ```
 
-演示账号由 `platform/seed.py` 幂等创建，默认密码为 `AleDemo123!`。账号包括专家、第二专家、领域评审、质量审核、管理员和项目负责人。种子密码可由 `ALE_SEED_PASSWORD` 覆盖。生产环境不得使用默认密码。
+演示账号由 `platform/seed.py` 幂等创建，默认密码为 `AleDemo123!`。账号包括专家、第二专家、领域评审、质量审核、管理员和项目负责人。种子密码可由 `ALE_SEED_PASSWORD` 覆盖。Compose 显式设置 `ALE_ENV=local` 和 `ALE_ALLOW_DEMO_SEED=1`；非本地环境不设置这两个变量时，启动不会自动创建演示账号，生产环境也不得使用默认密码。
 
 `.env.example` 只包含本地开发占位值，不包含真实密钥。`ALE_MODEL_API_KEY` 不写入仓库、镜像、构建参数、Prompt、日志或测试夹具。
 
@@ -166,7 +171,7 @@ packages/<task_id>/<version>/
 
 ## 9. Agent Gateway
 
-`platform/agent/` 提供 provider 适配、Gateway、结构化输出 schema、密钥配置、脱敏和 38 项单元测试。当前默认 provider 为 `mock`，模型为 `mock-deterministic`，`mock_only=1`。这不是真实模型调用，不能计为真实 Agent 质量通过。
+`platform/agent/` 提供 provider 适配、Gateway、结构化输出 schema、密钥配置、脱敏和 39 项单元测试。当前默认 provider 为 `mock`，模型为 `mock-deterministic`，`mock_only=1`。这不是真实模型调用，不能计为真实 Agent 质量通过。
 
 Web 接入层在 `platform/app/domain/agent_service.py`。它先做任务权限检查，`review_assist` 只允许分配给该任务的评审；再把 reference 资料从 payload 中移除；然后调用 Gateway；最后把 `agent_runs` 和 `agent_suggestions` 写入数据库。专家接受、编辑后接受或拒绝，才会修改草稿。
 
@@ -203,7 +208,7 @@ HTTP 权限测试覆盖匿名读取跳登录、其他专家读取私有任务返
 
 ## 11. 备份与恢复
 
-`tools/wave4/backup.sh` 生成 PostgreSQL custom dump、对象目录、包目录、计数文件和 SHA-256 清单。当前备份位于 `docs/evidence/w4/backup/`，大小约 220 KiB，计数为：
+`tools/wave4/backup.sh` 默认把 PostgreSQL custom dump、对象目录、包目录、计数文件和 SHA-256 清单写到 `work/backups/w4-<时间戳>/`。`work/` 已被 Git 忽略，数据库转储不会进入仓库。需要生成可提交的证据时，显式传入 `docs/evidence/` 下的路径，并自行确认其中不含敏感数据。`docs/evidence/w4/backup/` 只保留历史计数与文件校验和，数据库转储已从 Git 移除。历史备份的计数为：
 
 ```text
 tasks=2
@@ -213,7 +218,7 @@ ingests=1
 
 `tools/wave4/restore_drill.sh` 启动独立的 `postgres:16-alpine` 容器，创建 `ale500_restore` 数据库，执行 `pg_restore`，再用只读文件卷启动一个临时 Web 容器，检查 `/healthz` 和三类计数。恢复环境与运行中的 `ale500` 容器、数据库、卷分离。
 
-恢复演练通过，计数与备份一致。备份不依赖运行中的容器或卷，dump 与文件目录都在宿主仓库的证据目录中。
+恢复演练通过，计数与备份一致。恢复脚本默认读取 `work/backups/` 下最新的 `w4-*` 目录，也可显式传入备份路径。备份不依赖运行中的容器或卷。
 
 ## 12. 独立复核
 
@@ -245,7 +250,7 @@ ok true
 PYTHONPATH=platform .venv/bin/python -m pytest platform/tests platform/agent/tests -q
 ```
 
-结果：`70 passed`。其中平台测试覆盖交付链、哈希、篡改、路径穿越、追加写、Unicode 路径和 HTTP 权限；Agent 测试覆盖 provider、Gateway、结构化输出、超时、限流和脱敏。
+第四波提交时为 `70 passed`；第五波加入成本状态、演示账号门禁和校准测试后为 `77 passed`。平台测试覆盖交付链、哈希、篡改、路径穿越、追加写、Unicode 路径、HTTP 权限、种子门禁和成本状态；Agent 测试覆盖 provider、Gateway、结构化输出、超时、限流和脱敏。
 
 公开检查器仍通过：`check_docs.py`、`check_numbers.py`、阶段 2 自检、试点自检、s0 校验和、s1 校验器。CI 增加平台测试命令。
 

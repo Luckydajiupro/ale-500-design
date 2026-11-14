@@ -94,7 +94,7 @@
 
 <section class="card">
   <h2>Agent 建议</h2>
-  <p class="muted small">Agent 只写建议。每条建议必须由专家接受、编辑或拒绝后才可能写入任务源。</p>
+  <p class="muted small">Agent 只写建议。每条建议必须由专家接受、编辑或拒绝后才可能写入任务源。成本状态为 <strong>{{ agent_cost_status or "unknown" }}</strong>：unknown 表示未配置计价，not_applicable 表示 Mock 运行。</p>
   {% if editable %}
   <form method="post" action="/tasks/{{ task.task_id }}/agent/suggest" class="inline">
     <input type="hidden" name="csrf" value="{{ csrf }}">

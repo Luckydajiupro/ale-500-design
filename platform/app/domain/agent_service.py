@@ -96,13 +96,13 @@ def generate(
     conn.execute(
         """INSERT INTO agent_runs
            (run_id, task_id, capability, model, model_version, prompt_hash, input_hash, status,
-            latency_ms, cost_cents, created_at, prompt_version, tokens_in, tokens_out,
+            latency_ms, cost_cents, cost_status, created_at, prompt_version, tokens_in, tokens_out,
             degraded, mock_only, error_code)
-           VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+           VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
         (
             run.run_id, task_id, capability, model_name, str(run.model_version or ""),
             run.prompt_hash, run.input_hash, run.status, int(run.latency_ms or 0),
-            int(run.cost_cents or 0), created, gateway.config.prompt_version,
+            int(run.cost_cents or 0), str(run.cost_status or "unknown"), created, gateway.config.prompt_version,
             int(run.tokens_in or 0), int(run.tokens_out or 0),
             1 if run.degraded else 0, 1 if run.mock_only else 0, run.error_code,
         ),

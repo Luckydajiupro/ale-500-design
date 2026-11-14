@@ -32,6 +32,17 @@ jobs:
           PYTHONPATH=platform python3 -m unittest discover -s platform/tests -v
           PYTHONPATH=platform python3 -m pytest platform/agent/tests -q
 
+      - name: P12 独立复核固定样本
+        run: |
+          PYTHONPATH=platform python3 tools/wave3/verify_package.py             --package docs/evidence/w4/package             --expected-package-hash 790705df2942ea00bdeea5a0546a8d63251c99760570c53a009bb34c97e59932             --expected-native-hash 1e7cb980c4d65770718da46ce8df6f1c9a8c6bf7493fc0ffb33d20c07f125c0a             --agent-view docs/evidence/w4/agent-view             --out /tmp/p12-verification.json
+
+      - name: P12 独立哈希实现
+        run: |
+          PYTHONPATH=platform python3 tools/wave5/independent_package_check.py             --package docs/evidence/w4/package             --expected-package-hash 790705df2942ea00bdeea5a0546a8d63251c99760570c53a009bb34c97e59932             --expected-native-hash 1e7cb980c4d65770718da46ce8df6f1c9a8c6bf7493fc0ffb33d20c07f125c0a             --out /tmp/independent-package-check.json
+
+      - name: Agent 校准与降级
+        run: |
+          PYTHONPATH=platform python3 tools/wave5/agent_calibration.py             --out /tmp/agent-calibration.json
 
       - name: 阶段 0 校验和
         working-directory: stages/s0-baseline

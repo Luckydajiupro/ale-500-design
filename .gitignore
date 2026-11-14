@@ -13,3 +13,8 @@ tools/freeze/
 stages/s1-research/.audit/s1-02c-validator.log
 
 platform/var/
+
+# Model credentials and local backups are never tracked.
+.secrets/*
+!.secrets/README.md
+docs/evidence/*/backup/db.dump

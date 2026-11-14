@@ -39,7 +39,7 @@ class WorkbenchSecurityTests(unittest.TestCase):
         self.patch.start()
         for key in ("ALE_DB_URL", "ALE_ASYNC_PACKAGE"):
             os.environ.pop(key, None)
-        seed(self.root / "platform.db", "AleDemo123!")
+        seed(self.root / "platform.db", "AleDemo123!", allow_demo=True)
         self.app = create_app()
         self.conn = connect(self.root / "platform.db")
         expert = resolve_principal(self.conn, "u_expert")

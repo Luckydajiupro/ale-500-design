@@ -177,6 +177,7 @@ class MockCapabilityTests(unittest.TestCase):
                 self.assertGreater(result.run.tokens_in, 0)
                 self.assertGreater(result.run.tokens_out, 0)
                 self.assertEqual(result.run.cost_cents, 0)
+                self.assertEqual(result.run.cost_status, "not_applicable")
                 json.dumps(result.to_dict(), ensure_ascii=False)
 
     def test_suggestions_are_legal_canonical_paths(self) -> None:
@@ -645,6 +646,14 @@ class ConfigTests(unittest.TestCase):
             with self.assertRaises(SecretError) as ctx:
                 load_api_key(config, env={})
             self.assertNotIn(SECRET, str(ctx.exception))
+
+    def test_container_secret_permissions_allow_read_only_root_secret(self) -> None:
+        from agent.config import _secret_permissions_ok
+
+        self.assertTrue(_secret_permissions_ok(0o600, "/tmp/key"))
+        self.assertTrue(_secret_permissions_ok(0o444, "/run/secrets/model_api_key"))
+        self.assertFalse(_secret_permissions_ok(0o644, "/tmp/key"))
+        self.assertFalse(_secret_permissions_ok(0o444, "/tmp/key"))
 
     def test_secret_file_symlink_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

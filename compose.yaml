@@ -39,6 +39,20 @@ services:
       ALE_HOST: 0.0.0.0
       ALE_PORT: 8080
       ALE_SEED_PASSWORD: ${ALE_SEED_PASSWORD:-AleDemo123!}
+      ALE_ENV: local
+      ALE_ALLOW_DEMO_SEED: "1"
+      ALE_MODEL_PROVIDER: ${ALE_MODEL_PROVIDER:-mock}
+      ALE_MODEL_BASE_URL: ${ALE_MODEL_BASE_URL:-}
+      ALE_MODEL_ID: ${ALE_MODEL_ID:-mock-deterministic}
+      ALE_MODEL_STRUCTURED_OUTPUT: ${ALE_MODEL_STRUCTURED_OUTPUT:-none}
+      ALE_MODEL_SECRET_FILE: /run/secrets/model_api_key
+      ALE_MODEL_PROMPT_VERSION: ${ALE_MODEL_PROMPT_VERSION:-agent-v1}
+    secrets:
+      - source: model_api_key
+        target: model_api_key
+        uid: "10001"
+        gid: "10001"
+        mode: 0400
     ports:
       - "127.0.0.1:8088:8080"
     volumes:
@@ -65,6 +79,20 @@ services:
       ALE_PACKAGE_ROOT: /data/packages
       ALE_SECRET_PATH: /data/session.key
       ALE_WORKER_ID: compose-worker
+      ALE_ENV: local
+      ALE_ALLOW_DEMO_SEED: "1"
+      ALE_MODEL_PROVIDER: ${ALE_MODEL_PROVIDER:-mock}
+      ALE_MODEL_BASE_URL: ${ALE_MODEL_BASE_URL:-}
+      ALE_MODEL_ID: ${ALE_MODEL_ID:-mock-deterministic}
+      ALE_MODEL_STRUCTURED_OUTPUT: ${ALE_MODEL_STRUCTURED_OUTPUT:-none}
+      ALE_MODEL_SECRET_FILE: /run/secrets/model_api_key
+      ALE_MODEL_PROMPT_VERSION: ${ALE_MODEL_PROMPT_VERSION:-agent-v1}
+    secrets:
+      - source: model_api_key
+        target: model_api_key
+        uid: "10001"
+        gid: "10001"
+        mode: 0400
     volumes:
       - objects:/data/objects
       - packages:/data/packages
@@ -74,6 +102,10 @@ services:
         condition: service_completed_successfully
     networks:
       - ale500
+
+secrets:
+  model_api_key:
+    file: ${ALE_MODEL_SECRET_FILE_HOST:-./.secrets/model_api_key}
 
 networks:
   ale500:

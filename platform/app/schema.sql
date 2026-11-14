@@ -256,6 +256,7 @@ CREATE TABLE IF NOT EXISTS agent_runs (
     status        TEXT NOT NULL,
     latency_ms    INTEGER,
     cost_cents    INTEGER NOT NULL DEFAULT 0,
+    cost_status   TEXT NOT NULL DEFAULT 'unknown',
     created_at    TEXT NOT NULL,
     prompt_version TEXT NOT NULL DEFAULT '',
     tokens_in     INTEGER NOT NULL DEFAULT 0,
