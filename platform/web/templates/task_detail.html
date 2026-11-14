@@ -67,8 +67,9 @@
           <label>类型<select name="kind"><option value="document">document</option><option value="dataset">dataset</option><option value="code">code</option><option value="image">image</option></select></label>
           <label>角色<select name="role"><option value="input">input</option><option value="reference">reference</option><option value="template">template</option></select></label>
           <label>层<select name="layer"><option value="raw">raw</option><option value="deidentified">deidentified</option><option value="work">work</option><option value="reference">reference</option></select></label>
-          <label>许可<select name="license_type"><option value="synthetic">synthetic</option><option value="public_domain">public_domain</option><option value="cc_by">cc_by</option><option value="proprietary">proprietary</option><option value="internal">internal</option></select></label>
-          <label>PII<select name="pii_level"><option value="none">none</option><option value="low">low</option><option value="medium">medium</option><option value="high">high</option></select></label>
+          <label>许可<select name="license_type" required><option value="">请选择</option><option value="synthetic">synthetic</option><option value="public_domain">public_domain</option><option value="cc_by">cc_by</option><option value="proprietary">proprietary</option><option value="internal">internal</option></select></label>
+          <label>可再分发<select name="license_redistribution"><option value="">否</option><option value="1">是，已确认许可允许</option></select></label>
+          <label>PII<select name="pii_level"><option value="none">none</option><option value="low">low</option><option value="medium">medium</option></select></label>
         </div>
         <button type="submit">上传并挂到任务源</button>
       </form>
@@ -84,7 +85,7 @@
     <thead><tr><th>检查</th><th>结果</th><th>级别</th><th>字段</th><th>说明</th><th>时间</th></tr></thead>
     <tbody>
     {% for c in task.checks %}
-      <tr><td>{{ c.check_code }}</td><td>{% if c.passed %}通过{% else %}<strong class="bad">未通过</strong>{% endif %}</td><td>{{ c.severity }}</td><td class="mono small">{{ c.field_path }}</td><td>{{ c.message }}</td><td class="muted small">{{ c.created_at }}</td></tr>
+      <tr><td>{{ c.check_code }}</td><td>{% if c.passed %}通过{% elif c.message.startswith("[未检查]") %}<strong class="muted">未检查</strong>{% else %}<strong class="bad">未通过</strong>{% endif %}</td><td>{{ c.severity }}</td><td class="mono small">{{ c.field_path }}</td><td>{{ c.message }}</td><td class="muted small">{{ c.created_at }}</td></tr>
     {% endfor %}
     </tbody>
   </table>

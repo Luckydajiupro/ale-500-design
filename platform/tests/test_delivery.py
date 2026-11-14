@@ -173,12 +173,29 @@ class DeliveryFlowTests(unittest.TestCase):
         reviews.claim(self.db, self.quality, quality_review[0]["review_id"])
         reviews.decide(self.db, self.quality, quality_review[0]["review_id"], "pass", "", [])
 
-    def _package(self) -> dict:
-        self._create()
+    def _package(self, with_reference: bool = False) -> dict:
+        self._create(with_reference=with_reference)
         self._approve()
         delivery.freeze_task(self.db, self.admin, self.task_id)
         package = delivery.build_package(self.db, self.admin, self.task_id, self.packages, self.store)
         return package
+
+    def test_license_is_derived_from_material_records(self) -> None:
+        package = self._package(with_reference=True)
+        data = json.loads((self.packages / self.task_id / str(package["version_no"]) / "PACKAGE.json").read_text())
+        self.assertEqual(data["license"]["sources"], ["M-001", "M-002"])
+        self.assertFalse(data["license"]["redistribution"])
+        self.assertEqual(data["pii"]["level"], "none")
+
+    def test_build_refuses_target_directory_without_package_row(self) -> None:
+        self._create()
+        self._approve()
+        delivery.freeze_task(self.db, self.admin, self.task_id)
+        target = self.packages / self.task_id / "1"
+        target.mkdir(parents=True)
+        with self.assertRaises(Exception) as ctx:
+            delivery.build_package(self.db, self.admin, self.task_id, self.packages, self.store)
+        self.assertIn("拒绝覆盖", str(ctx.exception))
 
     def test_package_validate_and_idempotent_ingest(self) -> None:
         package = self._package()

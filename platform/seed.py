@@ -17,7 +17,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from app.adapters import now  # noqa: E402
-from app.db import connect, initialize, transaction  # noqa: E402
+from app.db import connect, initialize, is_postgres, run_migrations, transaction  # noqa: E402
 from app.repo import users as user_repo  # noqa: E402
 from web.security import hash_password  # noqa: E402
 
@@ -40,9 +40,13 @@ ROLE_NAMES = {
 }
 
 
-def seed(database: Path, password: str) -> None:
+def seed(database, password: str) -> None:
     conn = connect(database)
-    initialize(conn, ROOT / "app" / "schema.sql")
+    if is_postgres(conn):
+        run_migrations(conn, ROOT / "pg" / "migrations")
+    else:
+        initialize(conn, ROOT / "app" / "schema.sql")
+        run_migrations(conn, ROOT / "migrations")
     with transaction(conn):
         user_repo.create_batch(conn, "w1-demo", "W1 演示批次", 30, "active")
         for role, name in ROLE_NAMES.items():
@@ -74,10 +78,10 @@ def seed(database: Path, password: str) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--db", default=os.environ.get("ALE_DB_PATH", str(ROOT / "var" / "platform.db")))
+    parser.add_argument("--db", default=os.environ.get("ALE_DB_URL") or os.environ.get("ALE_DB_PATH", str(ROOT / "var" / "platform.db")))
     parser.add_argument("--password", default=DEFAULT_PASSWORD)
     args = parser.parse_args()
-    seed(Path(args.db), args.password)
+    seed(args.db, args.password)
     print("seeded %s" % args.db)
     for user_id, email, display_name, role, scope in USERS:
         print("%s  %s  %s  %s  %s" % (user_id, email, display_name, role, scope))

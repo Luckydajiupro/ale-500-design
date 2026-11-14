@@ -147,7 +147,7 @@ def checks_for_run(conn: sqlite3.Connection, task_id: str, run_id: str) -> List[
 
 def latest_checks(conn: sqlite3.Connection, task_id: str) -> List[Dict[str, Any]]:
     row = conn.execute(
-        "SELECT run_id FROM checks WHERE task_id = ? ORDER BY created_at DESC, rowid DESC LIMIT 1",
+        "SELECT run_id FROM checks WHERE task_id = ? ORDER BY created_at DESC, check_id DESC LIMIT 1",
         (task_id,),
     ).fetchone()
     if row is None:
@@ -162,7 +162,7 @@ def latest_checks(conn: sqlite3.Connection, task_id: str) -> List[Dict[str, Any]
 
 def latest_blocking_checks(conn: sqlite3.Connection, task_id: str) -> List[Dict[str, Any]]:
     row = conn.execute(
-        "SELECT run_id FROM checks WHERE task_id = ? ORDER BY created_at DESC, rowid DESC LIMIT 1",
+        "SELECT run_id FROM checks WHERE task_id = ? ORDER BY created_at DESC, check_id DESC LIMIT 1",
         (task_id,),
     ).fetchone()
     if row is None:

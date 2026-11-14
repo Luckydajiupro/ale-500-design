@@ -205,32 +205,117 @@ def run_checks(
         )
         findings.append(finding)
 
-    for code, severity, message in (
-        ("ACHK_ENV_OFFLINE", "info", "环境默认离线；运行器未在骨架内实现"),
-        ("ACHK_DUPLICATE", "info", "重复与相似度检查未在骨架内实现"),
-        ("ACHK_PACKAGE_DRY_RUN", "info", "包生成预检未在骨架内实现"),
-        ("ACHK_LINT", "info", "lint 与冒烟未在骨架内实现"),
-    ):
+    def record(code: str, severity: str, passed: bool, field_path: str, message: str) -> None:
         task_repo.insert_check(
-            conn, new_id("chk"), task["task_id"], version_no, run_id, code, severity, True, "", message, timestamp
+            conn, new_id("chk"), task["task_id"], version_no, run_id, code, severity, passed, field_path, message, timestamp
         )
+        findings.append({"check_code": code, "severity": severity, "passed": passed, "field_path": field_path, "message": message})
 
-    if not findings:
-        task_repo.insert_check(
-            conn,
-            new_id("chk"),
-            task["task_id"],
-            version_no,
-            run_id,
-            "ACHK_SCHEMA",
-            "info",
-            True,
-            "",
-            "结构与必填项通过",
-            timestamp,
-        )
+    if not any(item.get("severity") == "blocker" for item in findings):
+        record("ACHK_SCHEMA", "info", True, "", "结构与必填项通过")
+
+    lint_issues = _check_lint(payload)
+    for issue in lint_issues:
+        record("ACHK_LINT", "blocker", False, issue["field_path"], issue["message"])
+    if not lint_issues:
+        record("ACHK_LINT", "info", True, "", "文本、步骤与权重 lint 通过")
+
+    env_issues = _check_environment(payload)
+    for issue in env_issues:
+        record("ACHK_ENV_OFFLINE", issue["severity"], issue["severity"] != "warning", issue["field_path"], issue["message"])
+    if not env_issues:
+        record("ACHK_ENV_OFFLINE", "info", True, "", "运行环境为离线或受控网络")
+
+    duplicate_issues = _check_duplicates(conn, task["task_id"], payload)
+    for issue in duplicate_issues:
+        record("ACHK_DUPLICATE", "warning", True, issue["field_path"], issue["message"])
+    if not duplicate_issues:
+        record("ACHK_DUPLICATE", "info", True, "", "没有发现同名任务")
+
+    dry_run_issues = _check_package_dry_run(payload)
+    for issue in dry_run_issues:
+        record("ACHK_PACKAGE_DRY_RUN", "blocker", False, issue["field_path"], issue["message"])
+    if not dry_run_issues:
+        record("ACHK_PACKAGE_DRY_RUN", "info", True, "", "交付物与资料路径预检通过")
+
+    for code, message in (
+        ("ACHK_TEXT_CONSISTENCY", "中英文字段一致性检查尚未实现"),
+        ("ACHK_SENSITIVE", "敏感信息扫描尚未独立实现"),
+        ("ACHK_REPRODUCIBILITY", "同源重建检查在组包阶段执行，当前不预判"),
+    ):
+        record(code, "info", False, "", "[未检查] " + message)
     return run_id, findings
 
+
+
+def _check_lint(payload: Dict[str, Any]) -> List[Dict[str, str]]:
+    issues: List[Dict[str, str]] = []
+    identity = payload.get("identity") or {}
+    for key in ("title_zh", "title_en"):
+        value = str(identity.get(key) or "")
+        if len(value.strip()) < 4:
+            issues.append({"field_path": "identity.%s" % key, "message": "标题过短或为空"})
+        if "TODO" in value or "待填" in value:
+            issues.append({"field_path": "identity.%s" % key, "message": "标题含占位文本"})
+    operations = payload.get("operations") or []
+    if len(operations) < 2:
+        issues.append({"field_path": "operations", "message": "至少需要两个操作步骤"})
+    deliverables = payload.get("deliverables") or []
+    if not deliverables:
+        issues.append({"field_path": "deliverables", "message": "至少需要一个交付物"})
+    criteria = payload.get("success_criteria") or []
+    total = sum(int(item.get("weight") or 0) for item in criteria if isinstance(item, dict))
+    if criteria and total != 100:
+        issues.append({"field_path": "success_criteria", "message": "成功标准权重合计必须为 100，当前 %d" % total})
+    return issues
+
+
+def _check_environment(payload: Dict[str, Any]) -> List[Dict[str, str]]:
+    environment = payload.get("environment") or {}
+    network = environment.get("network") or {}
+    mode = str(network.get("mode") or "")
+    if mode in ("online-required", "public-ref"):
+        return [{"field_path": "environment.network.mode", "severity": "warning", "message": "任务依赖在线服务，必须记录允许端点与失败处理"}]
+    if mode == "staged-local" and not network.get("endpoints"):
+        return [{"field_path": "environment.network.endpoints", "severity": "warning", "message": "本地托管服务未列出端点"}]
+    return []
+
+
+def _check_duplicates(conn: sqlite3.Connection, task_id: str, payload: Dict[str, Any]) -> List[Dict[str, str]]:
+    title = str((payload.get("identity") or {}).get("title_zh") or "").strip().lower()
+    if not title:
+        return []
+    rows = conn.execute("SELECT task_id, draft_payload FROM tasks WHERE task_id <> ?", (task_id,)).fetchall()
+    for row in rows:
+        try:
+            other_payload = json.loads(row["draft_payload"] or "{}")
+        except (TypeError, ValueError):
+            continue
+        other = str((other_payload.get("identity") or {}).get("title_zh") or "").strip().lower()
+        if other and other == title:
+            return [{"field_path": "identity.title_zh", "message": "与任务 %s 标题完全相同" % row["task_id"]}]
+    return []
+
+
+def _check_package_dry_run(payload: Dict[str, Any]) -> List[Dict[str, str]]:
+    issues: List[Dict[str, str]] = []
+    seen: set = set()
+    for index, item in enumerate(payload.get("deliverables") or []):
+        path = str(item.get("path") or "")
+        if not path or path.startswith("/") or ".." in path.split("/"):
+            issues.append({"field_path": "deliverables[%d].path" % index, "message": "交付物路径为空、绝对路径或含 .."})
+        elif path in seen:
+            issues.append({"field_path": "deliverables[%d].path" % index, "message": "交付物路径重复"})
+        seen.add(path)
+    material_seen: set = set()
+    for index, item in enumerate(payload.get("materials") or []):
+        path = str(item.get("path") or "")
+        if not path or path.startswith("/") or ".." in path.split("/"):
+            issues.append({"field_path": "materials[%d].path" % index, "message": "资料路径为空、绝对路径或含 .."})
+        elif path in material_seen:
+            issues.append({"field_path": "materials[%d].path" % index, "message": "资料路径重复"})
+        material_seen.add(path)
+    return issues
 
 def _check_material_assets(
     conn: sqlite3.Connection, task_id: str, payload: Dict[str, Any]

@@ -1,0 +1,2 @@
+-- The PostgreSQL baseline already includes the ingested package state.
+-- This migration exists so the migration ledger stays aligned with SQLite.

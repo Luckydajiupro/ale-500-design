@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import sqlite3
 import urllib.parse
 from pathlib import Path
@@ -21,14 +22,16 @@ from fastapi.templating import Jinja2Templates
 
 from app.adapters import LocalObjectStore, new_id, now
 from app.auth import Principal, resolve_principal
-from app.db import connect, initialize, transaction
+from app.db import connect, initialize, run_migrations, transaction
 from app.domain import delivery as delivery_service
+from app.domain import jobs as job_service
 from app.domain import materials as material_service
 from app.domain import reviews as review_service
 from app.domain import state_machine as sm
 from app.domain import tasks as task_service
 from app.errors import AppError
 from app.repo import delivery as delivery_repo
+from app.repo import jobs as job_repo
 from app.repo import reviews as review_repo
 from app.repo import tasks as task_repo
 from contracts import canonical_schema
@@ -43,10 +46,17 @@ class Settings:
     def __init__(self, repo_root: Path = ROOT) -> None:
         import os
 
+        self.database_url = os.environ.get("ALE_DB_URL", "").strip()
         self.database_path = Path(os.environ.get("ALE_DB_PATH", str(repo_root / "var" / "platform.db")))
+        self.database = self.database_url or self.database_path
         self.storage_root = Path(os.environ.get("ALE_STORAGE_ROOT", str(repo_root / "var" / "objects")))
         self.package_root = Path(os.environ.get("ALE_PACKAGE_ROOT", str(repo_root / "var" / "packages")))
         self.secret_path = Path(os.environ.get("ALE_SECRET_PATH", str(repo_root / "var" / "session.key")))
+        self.is_postgres = bool(self.database_url)
+
+    @property
+    def bootstrap_schema(self) -> Path:
+        return ROOT / "pg" / "schema.sql" if self.is_postgres else ROOT / "app" / "schema.sql"
 
 
 class RedirectLogin(Exception):
@@ -211,7 +221,8 @@ def _parse_value(raw: str) -> Any:
 def create_app() -> FastAPI:
     app = FastAPI(title="ALE Expert Workbench", docs_url=None, redoc_url=None)
     settings = Settings()
-    settings.database_path.parent.mkdir(parents=True, exist_ok=True)
+    if not settings.is_postgres:
+        settings.database_path.parent.mkdir(parents=True, exist_ok=True)
     settings.storage_root.mkdir(parents=True, exist_ok=True)
     settings.package_root.mkdir(parents=True, exist_ok=True)
     app.state.settings = settings
@@ -220,29 +231,30 @@ def create_app() -> FastAPI:
     app.mount("/static", StaticFiles(directory=str(ROOT / "web" / "static")), name="static")
 
     def db_dependency():
-        conn = connect(settings.database_path)
+        conn = connect(settings.database)
         try:
             yield conn
         finally:
             conn.close()
 
-    def bootstrap(conn: sqlite3.Connection) -> None:
-        initialize(conn, ROOT / "app" / "schema.sql")
-        conn.execute(
-            "CREATE TABLE IF NOT EXISTS schema_migrations (migration_id TEXT PRIMARY KEY, applied_at TEXT NOT NULL)"
-        )
-        for migration in sorted((ROOT / "migrations").glob("*.sql")):
-            row = conn.execute("SELECT 1 FROM schema_migrations WHERE migration_id = ?", (migration.name,)).fetchone()
-            if row is None:
-                conn.executescript(migration.read_text(encoding="utf-8"))
-                conn.execute("INSERT INTO schema_migrations (migration_id, applied_at) VALUES (?, ?)", (migration.name, now()))
+    def bootstrap(conn) -> None:
+        if settings.is_postgres:
+            run_migrations(conn, ROOT / "pg" / "migrations")
+        else:
+            initialize(conn, ROOT / "app" / "schema.sql")
+            run_migrations(conn, ROOT / "migrations")
         if conn.execute("SELECT COUNT(*) AS n FROM users").fetchone()["n"] == 0:
             from seed import seed
-            seed(settings.database_path, "AleDemo123!")
+            seed(settings.database, os.environ.get("ALE_SEED_PASSWORD", "AleDemo123!"))
 
-    bootstrap_conn = connect(settings.database_path)
+    bootstrap_conn = connect(settings.database)
     bootstrap(bootstrap_conn)
     bootstrap_conn.close()
+
+    @app.get("/healthz")
+    def healthz(conn=Depends(db_dependency)):
+        conn.execute("SELECT 1 AS ok").fetchone()
+        return {"status": "ok", "backend": getattr(conn, "backend", "unknown")}
 
     @app.get("/login", response_class=HTMLResponse)
     def login_page(request: Request):
@@ -353,12 +365,21 @@ def create_app() -> FastAPI:
             row = conn.execute("SELECT * FROM ingest_records WHERE package_id = ? ORDER BY received_at DESC LIMIT 1", (package["package_id"],)).fetchone()
             ingest = dict(row) if row else None
             if package.get("package_hash") and ingest and ingest.get("receipt_json"):
-                receipt = json.loads(ingest["receipt_json"])
+                receipt = ingest["receipt_json"]
+                if isinstance(receipt, str):
+                    receipt = json.loads(receipt)
                 package["native_hash"] = receipt.get("native_hash")
         return _render(
             request,
             "task_detail.html",
-            {"task": task, "editable": editable, "package": package, "ingest": ingest, "suggestions": _suggestions(conn, task_id)},
+            {
+                "task": task,
+                "editable": editable,
+                "package": package,
+                "ingest": ingest,
+                "suggestions": _suggestions(conn, task_id),
+                "jobs": job_repo.list_jobs(conn, task_id, limit=5),
+            },
         )
 
     @app.post("/tasks/{task_id:path}/draft")
@@ -445,6 +466,11 @@ def create_app() -> FastAPI:
             material_id = "M-%03d" % (count + 1)
         role = str(flat.get("role") or "input")
         layer = "reference" if role == "reference" else str(flat.get("layer") or "raw")
+        license_type = str(flat.get("license_type") or "").strip()
+        if not license_type:
+            raise AppError("MATERIAL_LICENSE_REQUIRED", 422, "上传资料前必须选择许可类型")
+        redistribution = str(flat.get("license_redistribution") or "") in ("1", "on", "true")
+        pii_level = str(flat.get("pii_level") or "none")
         with transaction(conn):
             if conn.execute("SELECT 1 FROM materials WHERE material_id = ?", (material_id,)).fetchone() is None:
                 material_service.register(
@@ -456,9 +482,9 @@ def create_app() -> FastAPI:
                         "kind": str(flat.get("kind") or "document"),
                         "role": role,
                         "layer": layer,
-                        "license_type": str(flat.get("license_type") or "synthetic"),
-                        "license_redistribution": True,
-                        "pii_level": str(flat.get("pii_level") or "none"),
+                        "license_type": license_type,
+                        "license_redistribution": redistribution,
+                        "pii_level": pii_level,
                     },
                 )
             uploaded = material_service.upload(conn, principal, request.app.state.store, material_id, file.filename or "file.bin", data)
@@ -473,8 +499,8 @@ def create_app() -> FastAPI:
                 "path": path,
                 "sha256": version["sha256"],
                 "bytes": version["bytes"],
-                "license": {"type": str(flat.get("license_type") or "synthetic"), "redistribution": True},
-                "pii_level": str(flat.get("pii_level") or "none"),
+                "license": {"type": license_type, "redistribution": redistribution},
+                "pii_level": pii_level,
                 "used_by": ["1"],
             }
             materials = [entry for entry in payload.get("materials", []) if entry.get("material_id") != material_id]
@@ -605,6 +631,10 @@ def create_app() -> FastAPI:
         principal = _require(conn, request)
         form = dict(await request.form())
         _check_csrf(request, form)
+        if os.environ.get("ALE_ASYNC_PACKAGE") == "1":
+            with transaction(conn):
+                job = job_service.enqueue(conn, "package.build", task_id, {"task_id": task_id})
+            return _redirect("/tasks/%s" % task_id, msg="组包任务已排队 %s" % job.get("job_id", ""))
         with transaction(conn):
             package = delivery_service.build_package(conn, principal, task_id, settings.package_root, request.app.state.store)
         return _redirect("/tasks/%s" % task_id, msg="已组包 %s" % package.get("package_id", ""))

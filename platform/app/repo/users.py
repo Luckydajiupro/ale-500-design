@@ -36,7 +36,7 @@ def disable_user(conn: sqlite3.Connection, user_id: str, at: str) -> None:
 
 def upsert_role(conn: sqlite3.Connection, role_code: str, name_zh: str, description: str = "") -> None:
     conn.execute(
-        "INSERT OR REPLACE INTO roles (role_code, name_zh, description) VALUES (?, ?, ?)",
+        "INSERT INTO roles (role_code, name_zh, description) VALUES (?, ?, ?) ON CONFLICT(role_code) DO UPDATE SET name_zh = excluded.name_zh, description = excluded.description",
         (role_code, name_zh, description),
     )
 
@@ -53,9 +53,12 @@ def grant_role(
     scope_batch: str = "*",
 ) -> None:
     conn.execute(
-        """INSERT OR REPLACE INTO user_roles
+        """INSERT INTO user_roles
            (user_role_id, user_id, role_code, scope_domain, scope_subdomain, scope_batch, granted_at, granted_by)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+           ON CONFLICT(user_id, role_code, scope_domain, scope_subdomain, scope_batch) DO UPDATE SET
+             granted_at = excluded.granted_at,
+             granted_by = excluded.granted_by""",
         (user_role_id, user_id, role_code, scope_domain, scope_subdomain, scope_batch, granted_at, granted_by),
     )
 
@@ -72,7 +75,7 @@ def create_batch(
     conn: sqlite3.Connection, batch_id: str, name: str, quota_total: int, state: str = "planned"
 ) -> None:
     conn.execute(
-        "INSERT OR REPLACE INTO batches (batch_id, name, quota_total, state) VALUES (?, ?, ?, ?)",
+        "INSERT INTO batches (batch_id, name, quota_total, state) VALUES (?, ?, ?, ?) ON CONFLICT(batch_id) DO UPDATE SET name = excluded.name, quota_total = excluded.quota_total, state = excluded.state",
         (batch_id, name, quota_total, state),
     )
 
