@@ -59,7 +59,7 @@ agent 先跑 `software\launch_calc.bat` 打开 Calc；按 instruction 建立六�
 
 ### 8. 评分与验证
 
-代码事实来自 `inputs/frozen/01_agents-last-exam/tasks/business_finance/equity_research_summary/scripts/score_workbook.py`。标签定位不依赖坐标：`_build_label_map` 把“非公式文本单元格”映射到“同一行下一列”（`:216-232`），`_find_label` 还接受 `label — value` 的合并写法（`:235-248`）。公式判定不是看有没有等号，而是用 `FormulaEvaluator` 在四组扰动场景（scale 1.137、0.863，两组 0.9–1.1；offset 13.7、7.3、3–12）下重算，要求结果随输入变化且与规则一致（`:372-481`）。固定值容差 1.0（`:353-370`）。实时字段只做 `_parse_numeric`，即只要求“是数值”，不校验数值本身（`:483-494`）。最终 `score = passed / total`，而 `passed = (score >= 1.0)`（`:496-497`），也就是 43 项必须全对才得 1.0，错一项即 0.0。43 由 1 个 sheet 名、6 个表头、10 个固定值、9 个公式、5 个 dashboard 公式、12 个实时标签相加得到（code fact + inference）。硬门：缺输出返回 `[0.0]`（`main.py:190-200`），缺 manifest 抛错。文件上限：xlsx 成员不超过 2,000 个、不超过 64 MB（`:282-290`），单表不超过 20 万格（`:296-297`）。
+代码事实来自 `inputs/frozen/01_agents-last-exam/tasks/business_finance/equity_research_summary/scripts/score_workbook.py`。标签定位不依赖坐标：`_build_label_map` 把“非公式文本单元格”映射到“同一行下一列”（`:216-232`），`_find_label` 还接受 `label — value` 的合并写法（`:235-248`）。公式判定不是看有没有等号，而是用 `FormulaEvaluator` 在四组扰动场景（scale 1.137、0.863，两组 0.9–1.1；offset 13.7、7.3、3–12）下重算，要求结果随输入变化且与规则一致（`:372-481`）。固定值容差 1.0（`:353-370`）。实时字段只做 `_parse_numeric`，即只要求“是数值”，不校验数值本身（`:483-494`）。最终 `score = passed / total`（`:496`），`WorkbookScoreResult` 的 `passed` 布尔只在 `score >= 1.0` 时为真（`:497`）；但 `main.py:210` 返回的是 `result["score"]`，所以 43 项按通过占比给分，全对才得 1.0，错一项只失该项分，不是 0.0。43 由 1 个 sheet 名、6 个表头、10 个固定值、9 个公式、5 个 dashboard 公式、12 个实时标签相加得到（code fact + inference）。硬门：缺输出返回 `[0.0]`（`main.py:190-200`），缺 manifest 抛错。文件上限：xlsx 成员不超过 2,000 个、不超过 64 MB（`:282-290`），单表不超过 20 万格（`:296-297`）。
 
 ### 9. 证据表
 
@@ -68,7 +68,7 @@ agent 先跑 `software\launch_calc.bat` 打开 Calc；按 instruction 建立六�
 | 参考工作簿与提交者原件字节相同 | `.../tsla_fy2023/reference/reference_workbook.xlsx` 与同目录 `raw_submission/...xlsx`，MD5 均为 8864a767192d27d1d8e98c75a90eff2c | file fact | oracle 不能直接复用提交件，500 条要独立复算或双人复核 |
 | 公式必须随输入变化 | `scripts/score_workbook.py:372-481` | code fact | 表格类任务的验证要能识别硬编码数字 |
 | 实时字段只验类型不验值 | `scripts/score_workbook.py:483-494` | code fact | 联网取数不适合做可复现评分，500 条应改为给定时点快照 |
-| 43 项全对才 1.0 | `scripts/score_workbook.py:496-497` | code fact | 表格任务的分数是二值的，没有部分分 |
+| 43 项按通过占比计分，全对才 1.0 | `scripts/score_workbook.py:496-497`、`main.py:210` | code fact | reward 是 score，存在部分分；`passed` 布尔只在 1.0 时为真 |
 | LibreOffice 靠 winget 现场安装 | `.../tsla_fy2023/software/bootstrap_libreoffice.ps1:19` | file fact | 软件必须预装进镜像，不能依赖运行期联网 |
 
 ### 10. 这个案例证明了什么
@@ -335,7 +335,7 @@ taskPrompt 在 `task_card.json:9`，要求按北京仲裁委员会（BAC）收�
 
 第三维是判定确定性。C2、C5、C6 完全确定；C1、C3 确定但依赖解析器实现（浮点、仿射、样式）；C4 含 LLM 判定，是唯一非确定的。官方对非确定判定的处理是“拆成 8 条二元问题 + 保存原始回答”，这比一个 1–10 分的整体打分更容易复核。
 
-第四维是失败模式。硬门失败（缺文件、格式错、几何不一致）在六条案例里都是 0 分；部分分只出现在 C2（逐字段）、C3（0.7/0.3）与 C4（8 问）；C1 与 C5 实际是全有全无。500 条如果统一按“检查项比例”给分，会与官方的二值风格不一致，需要在契约里显式声明。
+第四维是失败模式。硬门失败（缺文件、格式错、几何不一致）在六条案例里都是 0 分；部分分出现在 C1（43 项占比，reward 直接取 score）、C2（逐字段）、C3（0.7/0.3）、C4（8 问）；C5 的集合部分 0.8 是二值，但仍有 0.2 格式分。C1 的 `passed` 与 C4 的 `passed` 只是报告字段，不决定 reward，不能把 `passed` 当分数。500 条如果统一按“检查项比例”给分，会与官方的二值通过字段风格不一致，需要在契约里显式声明。
 
 **专家必须提供的字段。** 按原型分四组。表格/工作簿原型（C1）：节名与顺序、每个标签的精确文本、每个值的来源单元格或公式依赖、容差、表头样式要求、允许的 sheet 名匹配方式。表单/数值原型（C2、C6）：字段清单与类型、哪些字段计分（informative）、数值容差与舍入、字段别名、多解答案（alt reference）、输入归一化规则。二进制/3D 原型（C3、C4）：几何契约（shape/affine/单位/坐标系）、派生量的定义与容差、渲染视角与判定问题、产物一致性阈值（1 mm）、禁止的格式。代码证据原型（C5）：目标符号、允许的工具链版本、真值集合、集合比较口径、源文件不可修改的校验方式。
 
@@ -347,7 +347,7 @@ taskPrompt 在 `task_card.json:9`，要求按北京仲裁委员会（BAC）收�
 
 先给官方事实。`inputs/frozen/03_ale-data/task-data-v1.1/` 下 13 个 domain 目录、122 个任务目录、122 个变体目录，共 79,065 个文件、磁盘占用约 50 GB。每个变体目录只有三类子目录：104 个包有 `input/`、`reference/`、`software/` 三件套；16 个包只有 `input/` 与 `reference/`；2 个包只有 `input/` 与 `software/`（`engineering/cailian_road_highway_alignment_2/base`、`engineering/inner_support_elevation_optimization/base`，两者都没有 `reference/`）。包内文件数中位数 16，最少 3（`computing_math/newyear_keygen2/base` 等三个），最多 41,775（`life_sciences/idp_ensemble_scoring/default`，约 11.8 GB）。变体根目录下没有 `output/`，唯一的 `output` 目录是 `engineering/chisel_verilog_alignment_seq_1/base/input/workdir/output`（含一个 0 B 的 `.keep`）。
 
-`PACKAGE.json` 不存在。对整个 `task-data-v1.1` 递归查找 `PACKAGE*.json` 命中 0 个。`docs/02-plan.md:68` 写“包结构按 `task-data-v1.1`，`PACKAGE.json` 边车可以放平台字段”，`docs/02-plan.md:135` 写“全部按冻结的 `task-data-v1.1` 和 `PACKAGE.json` 契约”，这两句是平台设计意图，不是对官方包现状的描述。官方包里没有任何边车文件，平台要放自己的字段，只能新增文件并自己定义校验规则。
+包级 `PACKAGE.json` 不存在。对整个 `task-data-v1.1` 递归查找 `PACKAGE*.json` 命中 2 个，但两个都是任务内容而非包描述：`computing_math/k8s_migration_1/base/input/app/frontend/PACKAGE.json` 是前端应用清单，`visual_media/skeletal_animation_reproduction/.../reference/PACKAGE.json` 是参考产物；没有任何任务根或 `base/` 下的包级元数据。`docs/02-plan.md:68` 写“包结构按 `task-data-v1.1`，`PACKAGE.json` 边车可以放平台字段”，`docs/02-plan.md:135` 写“全部按冻结的 `task-data-v1.1` 和 `PACKAGE.json` 契约”，这两句是平台设计意图，不是对官方包现状的描述。官方包里没有任何边车文件，平台要放自己的字段，只能新增文件并自己定义校验规则。
 
 官方唯一的发布级元数据在 `inputs/frozen/03_ale-data/archive/release-v1.1.json`：`version: "1.1"`、`source_revision: "5e077cc254535f479e425ad3aaa4621dce62fc00"`、`selected_tasks: 122`、`logical_members: 79494`、`archive.bytes: 39155440558`、`archive.sha256`、`data_manifest_sha256`。逐文件元数据在 `selected-members.jsonl`，每行五字段：`path`、`bytes`、`mode`、`sha256`、`type`。`inputs/frozen/03_ale-data/archive/README.md` 说明存档包含 input、setup software 与 evaluator references，保留原生文件名、权限与符号链接，访问受 gated 审批。
 
