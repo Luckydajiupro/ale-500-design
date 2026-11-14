@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}工作台 · ALE{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>工作台</h1>
+    <p class="muted">当前角色：{{ principal.role_codes|join(' / ') }}</p>
+  </div>
+  {% if principal.has('task:create') %}<a class="button primary" href="/tasks/new">新建任务</a>{% endif %}
+</div>
+
+<div class="grid two">
+  <section class="card">
+    <h2>我的任务</h2>
+    {% if tasks %}
+    <table>
+      <thead><tr><th>任务</th><th>状态</th><th>版本</th><th>更新时间</th></tr></thead>
+      <tbody>
+      {% for task in tasks %}
+        <tr>
+          <td><a href="/tasks/{{ task.task_id }}">{{ task.task_id }}</a><div class="muted small">{{ task.title_zh or task.title_en }}</div></td>
+          <td><span class="badge state-{{ task.state }}">{{ task.state }}</span></td>
+          <td>v{{ task.current_version_no }}</td>
+          <td class="muted small">{{ task.updated_at }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="muted">还没有任务。创建第一条任务后，任务源、资料、检查和审核记录都会留在这条任务下。</p>
+    {% endif %}
+  </section>
+
+  <section class="card">
+    <h2>待办与入口</h2>
+    {% if principal.has('review:claim') %}
+    <p><a class="button" href="/reviews">进入评审队列</a></p>
+    {% endif %}
+    {% if principal.has('task:read:all') %}
+    <p class="muted">管理员视图可以查看全部任务、冻结、组包、校验和入库。</p>
+    {% endif %}
+    <h3>演示流程</h3>
+    <ol class="muted small">
+      <li>专家新建任务并填写任务源。</li>
+      <li>上传资料，保存草稿，运行自动检查。</li>
+      <li>提交后领域评审核验，退回则专家修改重提。</li>
+      <li>领域评审通过后质量审核通过。</li>
+      <li>管理员冻结、组包、校验、入库。</li>
+    </ol>
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+{% block title %}编辑任务源 · {{ task.task_id }}{% endblock %}
+{% block content %}
+{% set p = task.draft_payload %}
+<div class="page-head">
+  <div>
+    <p class="muted"><a href="/tasks/{{ task.task_id }}">← 返回任务</a></p>
+    <h1>编辑任务源</h1>
+    <p class="muted">{{ task.task_id }} · 状态 <span class="badge state-{{ task.state }}">{{ task.state }}</span></p>
+  </div>
+  <div class="muted small">保存草稿不会冻结版本。提交后才生成不可变版本。</div>
+</div>
+
+<form method="post" action="/tasks/{{ task.task_id }}/draft" class="stack" id="task-source-form">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <input type="hidden" name="expected_lock_version" value="{{ task.lock_version }}">
+
+  <section class="card">
+    <h2>1. 任务身份</h2>
+    <div class="grid two">
+      <label>任务 ID<input value="{{ task.task_id }}" disabled></label>
+      <label>批次<input name="batch_id" value="{{ p.get('identity', {}).get('batch_id', 'w1-demo') }}"></label>
+      <label>一级领域
+        <select name="domain_code" disabled>
+          {% for d in domains %}<option value="{{ d }}" {% if d == task.domain_code %}selected{% endif %}>{{ d }}</option>{% endfor %}
+        </select>
+      </label>
+      <label>二级子域<input name="subdomain_code" value="{{ task.subdomain_code }}" disabled></label>
+      <label>中文标题<input name="title_zh" value="{{ p.get('identity', {}).get('title_zh', '') }}" required></label>
+      <label>英文标题<input name="title_en" value="{{ p.get('identity', {}).get('title_en', '') }}"></label>
+      <label>语言
+        <select name="language">
+          <option value="en" {% if p.get('identity', {}).get('language') == 'en' %}selected{% endif %}>en</option>
+          <option value="zh" {% if p.get('identity', {}).get('language') == 'zh' %}selected{% endif %}>zh</option>
+        </select>
+      </label>
+    </div>
+    <label>难度理由（必填）<textarea name="difficulty_rationale" rows="3" required>{{ p.get('identity', {}).get('difficulty_rationale', '') }}</textarea></label>
+  </section>
+
+  <section class="card">
+    <h2>2. 场景与专业判断</h2>
+    <div class="grid two">
+      <label>角色<input name="scenario_role" value="{{ p.get('scenario', {}).get('role', '') }}" placeholder="例如 财务分析师"></label>
+      <label>触发原因<input name="scenario_trigger" value="{{ p.get('scenario', {}).get('trigger', '') }}" placeholder="例如 季度结账"></label>
+      <label>受众<input name="scenario_audience" value="{{ p.get('scenario', {}).get('audience', '') }}" placeholder="例如 CFO"></label>
+      <label>真实工作证据<input name="scenario_evidence" value="{{ p.get('scenario', {}).get('realism_evidence', '') }}" placeholder="访谈、流程记录或公开规范"></label>
+    </div>
+    <label>组织情境<textarea name="scenario_context" rows="3">{{ p.get('scenario', {}).get('organization_context', '') }}</textarea></label>
+    <div class="grid two">
+      <label>约束（每行一条）<textarea name="scenario_constraints" rows="3">{{ p.get('scenario', {}).get('constraints', [])|join('\n') }}</textarea></label>
+      <label>不做什么（每行一条）<textarea name="scenario_out_of_scope" rows="3">{{ p.get('scenario', {}).get('out_of_scope', [])|join('\n') }}</textarea></label>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>3. 资料</h2>
+    <p class="muted small">资料文件在任务详情页上传。这里展示已经挂到任务源的资料；不要手填哈希。</p>
+    {% if p.get('materials') %}
+    <table>
+      <thead><tr><th>ID</th><th>角色</th><th>路径</th><th>许可</th><th>PII</th><th>大小</th></tr></thead>
+      <tbody>
+      {% for m in p.get('materials') %}
+        <tr>
+          <td>{{ m.get('material_id') }}<input type="hidden" name="material.material_id" value="{{ m.get('material_id') }}"></td>
+          <td>{{ m.get('role') }}<input type="hidden" name="material.role" value="{{ m.get('role') }}"></td>
+          <td><code>{{ m.get('path') }}</code><input type="hidden" name="material.path" value="{{ m.get('path') }}"></td>
+          <td>{{ m.get('license', {}).get('type') }}<input type="hidden" name="material.license" value="{{ m.get('license', {}).get('type', 'synthetic') }}"></td>
+          <td>{{ m.get('pii_level') }}<input type="hidden" name="material.pii_level" value="{{ m.get('pii_level', 'none') }}"></td>
+          <td>{{ m.get('bytes') }} B<input type="hidden" name="material.bytes" value="{{ m.get('bytes', 0) }}"></td>
+          <input type="hidden" name="material.sha256" value="{{ m.get('sha256') }}">
+          <input type="hidden" name="material.kind" value="{{ m.get('kind', 'document') }}">
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="muted">还没有资料。先保存草稿，再在任务详情页上传。</p>
+    {% endif %}
+  </section>
+
+  <section class="card">
+    <h2>4. 操作步骤</h2>
+    <table class="rows" id="operation-rows">
+      <thead><tr><th>#</th><th>动作</th><th>工具</th><th>输入</th><th>预期状态</th><th>检查点</th><th>分钟</th></tr></thead>
+      <tbody>
+      {% for op in p.get('operations') or [] %}
+        <tr>
+          <td><input name="operation.step_no" value="{{ op.get('step_no', loop.index) }}" size="2"></td>
+          <td><textarea name="operation.action" rows="2">{{ op.get('action', '') }}</textarea></td>
+          <td><input name="operation.tool" value="{{ op.get('tool', '') }}"></td>
+          <td><input name="operation.inputs" value="{{ (op.get('inputs') or [])|join(',') }}"></td>
+          <td><input name="operation.expected_state" value="{{ op.get('expected_state', '') }}"></td>
+          <td><input type="checkbox" name="operation.checkpoint" value="1" {% if op.get('checkpoint') %}checked{% endif %}></td>
+          <td><input name="operation.time_estimate_min" value="{{ op.get('time_estimate_min', 10) }}" size="3"></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    <button type="button" class="link" data-add-row="operation-rows">+ 添加步骤</button>
+  </section>
+
+  <section class="card">
+    <h2>5. 交付物</h2>
+    <table class="rows" id="deliverable-rows">
+      <thead><tr><th>ID</th><th>路径</th><th>格式</th><th>说明</th><th>步骤</th><th>验收标准</th></tr></thead>
+      <tbody>
+      {% for d in p.get('deliverables') or [] %}
+        <tr>
+          <td><input name="deliverable.deliverable_id" value="{{ d.get('deliverable_id', 'D-001') }}" size="6"></td>
+          <td><input name="deliverable.path" value="{{ d.get('path', '') }}"></td>
+          <td><select name="deliverable.format">{% for f in formats %}<option value="{{ f }}" {% if f == d.get('format') %}selected{% endif %}>{{ f }}</option>{% endfor %}</select></td>
+          <td><input name="deliverable.description" value="{{ d.get('description', '') }}"></td>
+          <td><input name="deliverable.produced_by_step" value="{{ d.get('produced_by_step', 1) }}" size="2"></td>
+          <td><input name="deliverable.acceptance_ref" value="{{ (d.get('acceptance_ref') or [])|join(',') }}"></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    <button type="button" class="link" data-add-row="deliverable-rows">+ 添加交付物</button>
+  </section>
+
+  <section class="card">
+    <h2>6. 成功标准</h2>
+    <table class="rows" id="criterion-rows">
+      <thead><tr><th>ID</th><th>维度</th><th>检查方式</th><th>权重</th><th>阈值</th><th>证据</th><th>关键</th></tr></thead>
+      <tbody>
+      {% for c in p.get('success_criteria') or [] %}
+        <tr>
+          <td><input name="criterion.criterion_id" value="{{ c.get('criterion_id', 'C-001') }}" size="6"></td>
+          <td><select name="criterion.dimension">{% for x in dimensions %}<option value="{{ x }}" {% if x == c.get('dimension') %}selected{% endif %}>{{ x }}</option>{% endfor %}</select></td>
+          <td><select name="criterion.check_method">{% for x in methods %}<option value="{{ x }}" {% if x == c.get('check_method') %}selected{% endif %}>{{ x }}</option>{% endfor %}</select></td>
+          <td><input name="criterion.weight" value="{{ c.get('weight', 100) }}" size="3"></td>
+          <td><input name="criterion.threshold" value="{{ c.get('threshold', '') }}"></td>
+          <td><input name="criterion.evidence_required" value="{{ c.get('evidence_required', '') }}"></td>
+          <td><input type="checkbox" name="criterion.critical" value="1" {% if c.get('critical') %}checked{% endif %}></td>
+          <input type="hidden" name="criterion.verifier_hint" value="{{ c.get('verifier_hint', '') }}">
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    <button type="button" class="link" data-add-row="criterion-rows">+ 添加标准</button>
+    <p class="muted small">权重之和应为 100。非 human_rubric 标准必须能在工程侧实现检查。</p>
+  </section>
+
+  <section class="card">
+    <h2>7. 环境与资源</h2>
+    <div class="grid three">
+      <label>OS<select name="os"><option value="linux" {% if p.get('environment', {}).get('os') == 'linux' %}selected{% endif %}>linux</option><option value="windows" {% if p.get('environment', {}).get('os') == 'windows' %}selected{% endif %}>windows</option></select></label>
+      <label>OS 版本<input name="os_version" value="{{ p.get('environment', {}).get('os_version', '') }}"></label>
+      <label>GUI<select name="gui_required"><option value="no" {% if p.get('environment', {}).get('gui_required') == 'no' %}selected{% endif %}>no</option><option value="yes" {% if p.get('environment', {}).get('gui_required') == 'yes' %}selected{% endif %}>yes</option></select></label>
+      <label>CPU<input name="cpu" value="{{ p.get('environment', {}).get('resources', {}).get('cpu', 2) }}"></label>
+      <label>RAM GB<input name="ram_gb" value="{{ p.get('environment', {}).get('resources', {}).get('ram_gb', 4) }}"></label>
+      <label>磁盘 GB<input name="disk_gb" value="{{ p.get('environment', {}).get('resources', {}).get('disk_gb', 20) }}"></label>
+      <label>时限分钟<input name="time_limit_min" value="{{ p.get('environment', {}).get('resources', {}).get('time_limit_min', 60) }}"></label>
+      <label>网络<select name="network_mode">{% for x in ['none','staged-local','public-ref','online-required'] %}<option value="{{ x }}" {% if x == p.get('environment', {}).get('network', {}).get('mode') %}selected{% endif %}>{{ x }}</option>{% endfor %}</select></label>
+      <label>网络理由<input name="network_justification" value="{{ p.get('environment', {}).get('network', {}).get('justification', '') }}"></label>
+    </div>
+    <label>软件（每行 name|version|license|install）<textarea name="software" rows="3">{% for s in p.get('environment', {}).get('software', []) %}{{ s.get('name') }}|{{ s.get('version') }}|{{ s.get('license_type') }}|{{ s.get('install_method') }}
+{% endfor %}</textarea></label>
+    <label class="inline"><input type="checkbox" name="gpu_required" value="1" {% if p.get('environment', {}).get('gpu', {}).get('required') %}checked{% endif %}> 需要 GPU</label>
+  </section>
+
+  <section class="card">
+    <h2>8. 审核、来源与交接</h2>
+    <div class="grid two">
+      <label>风险等级<select name="risk_tier">{% for x in ['low','medium','high','unknown'] %}<option value="{{ x }}" {% if x == p.get('review', {}).get('risk_tier') %}selected{% endif %}>{{ x }}</option>{% endfor %}</select></label>
+      <label>风险理由<input name="tier_rationale" value="{{ p.get('review', {}).get('tier_rationale', '') }}"></label>
+    </div>
+    <label>所需评审（每行 role:count）<textarea name="required_reviewers" rows="2">{% for r in p.get('review', {}).get('required_reviewers', []) %}{{ r.get('role') }}:{{ r.get('count') }}
+{% endfor %}</textarea></label>
+    <label>来源（每行 id|url_or_path）<textarea name="sources" rows="3">{% for s in p.get('provenance', {}).get('sources', []) %}{{ s.get('source_id') }}|{{ s.get('url_or_path') }}
+{% endfor %}</textarea></label>
+    <label>已知缺口<textarea name="known_gaps" rows="2">{{ p.get('handoff', {}).get('known_gaps', '') }}</textarea></label>
+    <label class="inline"><input type="checkbox" name="secrets_attestation" value="1" {% if p.get('handoff', {}).get('secrets_attestation') %}checked{% endif %}> 我确认任务源与资料不含未授权秘密或客户数据</label>
+  </section>
+
+  <div class="actions sticky">
+    <button type="submit" class="primary">保存草稿</button>
+    <a class="button" href="/tasks/{{ task.task_id }}">取消</a>
+  </div>
+</form>
+
+<template id="operation-row-template">
+  <tr>
+    <td><input name="operation.step_no" value="1" size="2"></td>
+    <td><textarea name="operation.action" rows="2"></textarea></td>
+    <td><input name="operation.tool"></td>
+    <td><input name="operation.inputs"></td>
+    <td><input name="operation.expected_state"></td>
+    <td><input type="checkbox" name="operation.checkpoint" value="1"></td>
+    <td><input name="operation.time_estimate_min" value="10" size="3"></td>
+  </tr>
+</template>
+<template id="deliverable-row-template">
+  <tr>
+    <td><input name="deliverable.deliverable_id" value="D-001" size="6"></td>
+    <td><input name="deliverable.path" value="output/result.json"></td>
+    <td><select name="deliverable.format">{% for f in formats %}<option value="{{ f }}">{{ f }}</option>{% endfor %}</select></td>
+    <td><input name="deliverable.description"></td>
+    <td><input name="deliverable.produced_by_step" value="1" size="2"></td>
+    <td><input name="deliverable.acceptance_ref" value="C-001"></td>
+  </tr>
+</template>
+<template id="criterion-row-template">
+  <tr>
+    <td><input name="criterion.criterion_id" value="C-001" size="6"></td>
+    <td><select name="criterion.dimension">{% for x in dimensions %}<option value="{{ x }}">{{ x }}</option>{% endfor %}</select></td>
+    <td><select name="criterion.check_method">{% for x in methods %}<option value="{{ x }}">{{ x }}</option>{% endfor %}</select></td>
+    <td><input name="criterion.weight" value="100" size="3"></td>
+    <td><input name="criterion.threshold" value="Exact match"></td>
+    <td><input name="criterion.evidence_required" value="Output file and check log"></td>
+    <td><input type="checkbox" name="criterion.critical" value="1"></td>
+    <input type="hidden" name="criterion.verifier_hint" value="Compare the declared output against the acceptance rule.">
+  </tr>
+</template>
+{% endblock %}

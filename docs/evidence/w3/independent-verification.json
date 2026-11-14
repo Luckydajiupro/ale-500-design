@@ -1,0 +1,17 @@
+{
+  "checks": {
+    "files_list_matches_base": true,
+    "native_hash_matches_manifest": true,
+    "native_hash_matches_receipt": true,
+    "no_absolute_paths": true,
+    "package_hash_matches_receipt": true,
+    "package_json_not_under_base": true
+  },
+  "expected_native_hash": "9ccf186eec70f9db5cb7dfd25c541ae5574e55d7dec92e4cf4a580d19bb16252",
+  "expected_package_hash": "ff48e73e5697c37a972543461f60e1c86011744ca3a5dfcf1b8956d2ef2c346f",
+  "file_count": 3,
+  "native_hash": "9ccf186eec70f9db5cb7dfd25c541ae5574e55d7dec92e4cf4a580d19bb16252",
+  "ok": true,
+  "package_dir": "/tmp/w3-e2e/packages/business_finance/e2e_reconcile_01/2",
+  "package_hash": "ff48e73e5697c37a972543461f60e1c86011744ca3a5dfcf1b8956d2ef2c346f"
+}

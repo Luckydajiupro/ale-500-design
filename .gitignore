@@ -11,3 +11,5 @@ tools/freeze/
 
 # 校验器每次运行都追加这一份日志。它是运行的副产物，不是证据基线。
 stages/s1-research/.audit/s1-02c-validator.log
+
+platform/var/

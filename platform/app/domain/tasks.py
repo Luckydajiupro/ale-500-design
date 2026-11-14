@@ -90,10 +90,16 @@ def get_task(conn: sqlite3.Connection, principal: Principal, task_id: str) -> Di
     if task is None:
         raise not_found("任务")
     is_owner = task["owner_expert_id"] == principal.user_id
-    allowed = is_owner or principal.has("task:read:all") or principal.has("task:read:assigned")
-    if not allowed:
-        raise forbidden("task:read")
-    return _detail(conn, task)
+    if is_owner or principal.has("task:read:all"):
+        return _detail(conn, task)
+    if principal.has("task:read:assigned"):
+        assigned = conn.execute(
+            "SELECT 1 FROM reviews WHERE task_id = ? AND reviewer_id = ? LIMIT 1",
+            (task_id, principal.user_id),
+        ).fetchone()
+        if assigned:
+            return _detail(conn, task)
+    raise forbidden("task:read")
 
 
 def _detail(conn: sqlite3.Connection, task: Dict[str, Any]) -> Dict[str, Any]:
@@ -101,7 +107,7 @@ def _detail(conn: sqlite3.Connection, task: Dict[str, Any]) -> Dict[str, Any]:
     detail = dict(task)
     detail["draft_payload"] = payload
     detail["versions"] = task_repo.list_versions(conn, task["task_id"])
-    detail["checks"] = task_repo.checks_for_run(conn, task["task_id"])[:100]
+    detail["checks"] = task_repo.latest_checks(conn, task["task_id"])[:100]
     detail["reviews"] = review_repo.list_reviews(conn, task["task_id"])
     detail["materials"] = material_repo.list_materials(conn, task["task_id"])
     return detail
@@ -390,6 +396,7 @@ def submit(
             kind="domain",
             created_at=now(),
             sla_due_at=now_plus(days=5),
+            round_no=version_no,
         )
         audit.record(
             conn,

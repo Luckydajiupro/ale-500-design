@@ -215,7 +215,7 @@ CREATE TABLE IF NOT EXISTS packages (
     failure_code  TEXT,
     created_at    TEXT NOT NULL,
     updated_at    TEXT NOT NULL,
-    CHECK (state IN ('queued', 'building', 'built', 'validated', 'failed', 'quarantined'))
+    CHECK (state IN ('queued', 'building', 'built', 'validated', 'ingested', 'failed', 'quarantined'))
 );
 
 CREATE INDEX IF NOT EXISTS idx_packages_task ON packages(task_id, version_no);
@@ -357,3 +357,18 @@ BEFORE DELETE ON audit_events
 BEGIN
     SELECT RAISE(ABORT, 'audit_events is append-only');
 END;
+
+-- Web credential store. The skeleton authenticated with an X-Actor-Id header;
+-- the real workbench stores a PBKDF2 digest instead and never keeps plaintext.
+CREATE TABLE IF NOT EXISTS user_credentials (
+    user_id       TEXT PRIMARY KEY REFERENCES users(user_id),
+    password_hash TEXT NOT NULL,
+    updated_at    TEXT NOT NULL
+);
+
+-- Migration ledger. schema.sql is idempotent, but a deployed database needs an
+-- auditable record of which additive migration has run.
+CREATE TABLE IF NOT EXISTS schema_migrations (
+    migration_id TEXT PRIMARY KEY,
+    applied_at   TEXT NOT NULL
+);

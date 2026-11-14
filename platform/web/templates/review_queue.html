@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}评审队列 · ALE{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>评审队列</h1><p class="muted">按角色显示待领取的领域评审和质量审核。领取后任务进入评审中。</p></div></div>
+<section class="card">
+{% if rows %}
+<table>
+  <thead><tr><th>评审</th><th>任务</th><th>类型</th><th>轮次</th><th>SLA</th><th>状态</th><th></th></tr></thead>
+  <tbody>
+  {% for r in rows %}
+    <tr>
+      <td><a href="/reviews/{{ r.review_id }}">{{ r.review_id }}</a></td>
+      <td>{{ r.task_id }}</td>
+      <td>{{ r.kind }}</td>
+      <td>{{ r.round_no }}</td>
+      <td class="muted small">{{ r.sla_due_at }}</td>
+      <td>{{ r.state }}</td>
+      <td>
+        {% if r.state == 'pending' %}
+        <form method="post" action="/reviews/{{ r.review_id }}/claim" class="inline"><input type="hidden" name="csrf" value="{{ csrf }}"><button type="submit">领取</button></form>
+        {% endif %}
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}<p class="muted">当前没有待办评审。</p>{% endif %}
+</section>
+{% endblock %}

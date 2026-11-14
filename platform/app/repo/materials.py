@@ -52,7 +52,13 @@ def get_material(conn: sqlite3.Connection, material_id: str) -> Optional[Dict[st
 def list_materials(conn: sqlite3.Connection, task_id: str) -> List[Dict[str, Any]]:
     return rows_to_dicts(
         conn.execute(
-            "SELECT * FROM materials WHERE task_id = ? ORDER BY created_at", (task_id,)
+            """SELECT m.*, v.filename, v.bytes, v.sha256
+               FROM materials m
+               LEFT JOIN material_versions v
+                 ON v.material_id = m.material_id
+                AND v.version_no = (SELECT MAX(version_no) FROM material_versions WHERE material_id = m.material_id)
+               WHERE m.task_id = ? ORDER BY m.created_at""",
+            (task_id,),
         ).fetchall()
     )
 

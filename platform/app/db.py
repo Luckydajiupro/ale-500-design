@@ -15,7 +15,7 @@ from typing import Iterator, Optional
 
 def connect(database_path: Path) -> sqlite3.Connection:
     database_path.parent.mkdir(parents=True, exist_ok=True)
-    conn = sqlite3.connect(str(database_path), isolation_level=None, timeout=15)
+    conn = sqlite3.connect(str(database_path), isolation_level=None, timeout=15, check_same_thread=False)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")
     conn.execute("PRAGMA journal_mode = WAL")

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}登录 · ALE 专家工作台{% endblock %}
+{% block content %}
+<section class="login-card">
+  <h1>登录专家工作台</h1>
+  <p class="muted">使用项目分配的账号。演示环境已预置专家、领域评审、质量审核和管理员。</p>
+  <form method="post" action="/login" class="stack">
+    <input type="hidden" name="csrf" value="{{ csrf }}">
+    <label>邮箱<input type="email" name="email" value="{{ email or '' }}" required autofocus></label>
+    <label>密码<input type="password" name="password" required></label>
+    <button type="submit" class="primary">登录</button>
+  </form>
+  <details class="demo">
+    <summary>演示账号</summary>
+    <ul>
+      <li><code>expert@ale.local</code> 专家，密码 <code>AleDemo123!</code></li>
+      <li><code>reviewer@ale.local</code> 领域评审</li>
+      <li><code>quality@ale.local</code> 质量审核</li>
+      <li><code>admin@ale.local</code> 平台管理员</li>
+    </ul>
+  </details>
+</section>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}新建任务 · ALE{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><p class="muted"><a href="/dashboard">← 工作台</a></p><h1>新建任务</h1><p class="muted">先建草稿，再进入结构化任务源表单。任务 ID 采用 <code>domain/slug</code>。</p></div>
+</div>
+<section class="card narrow">
+  <form method="post" action="/tasks/new" class="stack">
+    <input type="hidden" name="csrf" value="{{ csrf }}">
+    <label>任务 ID<input name="task_id" required placeholder="business_finance/accounting_reconcile_02"></label>
+    <label>一级领域<select name="domain_code">{% for d in domains %}<option value="{{ d }}">{{ d }}</option>{% endfor %}</select></label>
+    <label>二级子域<input name="subdomain_code" required value="accounting"></label>
+    <label>中文标题<input name="title_zh" required></label>
+    <label>英文标题<input name="title_en"></label>
+    <label>批次<input name="batch_id" value="w1-demo"></label>
+    <button class="primary" type="submit">创建草稿</button>
+  </form>
+</section>
+{% endblock %}
