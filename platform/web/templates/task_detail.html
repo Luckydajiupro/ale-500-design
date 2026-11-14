@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% block title %}{{ task.task_id }} · ALE{% endblock %}
+{% block content %}
+{% set p = task.draft_payload %}
+<div class="page-head">
+  <div>
+    <p class="muted"><a href="/dashboard">← 工作台</a></p>
+    <h1>{{ p.get('identity', {}).get('title_zh') or task.task_id }}</h1>
+    <p class="muted"><code>{{ task.task_id }}</code> · v{{ task.current_version_no }} · <span class="badge state-{{ task.state }}">{{ task.state }}</span></p>
+  </div>
+  <div class="actions">
+    {% if editable %}<a class="button primary" href="/tasks/{{ task.task_id }}/edit">编辑任务源</a>{% endif %}
+    {% if editable %}
+    <form method="post" action="/tasks/{{ task.task_id }}/validate" class="inline"><input type="hidden" name="csrf" value="{{ csrf }}"><button type="submit">运行检查</button></form>
+    <form method="post" action="/tasks/{{ task.task_id }}/submit" class="inline"><input type="hidden" name="csrf" value="{{ csrf }}"><button type="submit" class="primary">提交审核</button></form>
+    {% endif %}
+    {% if principal.has('freeze:create') and task.state == 'approved' %}
+    <form method="post" action="/tasks/{{ task.task_id }}/freeze" class="inline"><input type="hidden" name="csrf" value="{{ csrf }}"><button type="submit">冻结快照</button></form>
+    {% endif %}
+    {% if principal.has('package:create') and task.state == 'frozen' %}
+    <form method="post" action="/tasks/{{ task.task_id }}/package" class="inline"><input type="hidden" name="csrf" value="{{ csrf }}"><button type="submit">自动组包</button></form>
+    {% endif %}
+    {% if principal.has('package:validate') and task.state == 'packaged' %}
+    <form method="post" action="/tasks/{{ task.task_id }}/package/validate" class="inline"><input type="hidden" name="csrf" value="{{ csrf }}"><button type="submit">L1–L5 校验</button></form>
+    {% endif %}
+    {% if principal.has('ingest:create') and task.state == 'package_validated' %}
+    <form method="post" action="/tasks/{{ task.task_id }}/ingest" class="inline"><input type="hidden" name="csrf" value="{{ csrf }}"><button type="submit" class="primary">幂等入库</button></form>
+    {% endif %}
+  </div>
+</div>
+
+<div class="grid two">
+  <section class="card">
+    <h2>任务源摘要</h2>
+    <dl class="facts">
+      <dt>场景角色</dt><dd>{{ p.get('scenario', {}).get('role', '未填写') }}</dd>
+      <dt>触发</dt><dd>{{ p.get('scenario', {}).get('trigger', '未填写') }}</dd>
+      <dt>难度理由</dt><dd>{{ p.get('identity', {}).get('difficulty_rationale', '未填写') }}</dd>
+      <dt>资料</dt><dd>{{ p.get('materials', [])|length }} 项</dd>
+      <dt>步骤</dt><dd>{{ (p.get('operations') or p.get('steps', {}).get('items') or [])|length }} 步</dd>
+      <dt>交付物</dt><dd>{{ p.get('deliverables', [])|length }} 项</dd>
+      <dt>成功标准</dt><dd>{{ p.get('success_criteria', [])|length }} 项</dd>
+    </dl>
+    <p class="muted small">专家看到的是结构化表单和此摘要，不直接编辑底层 JSON。</p>
+  </section>
+
+  <section class="card">
+    <h2>资料与上传</h2>
+    {% if task.materials %}
+    <table>
+      <thead><tr><th>ID</th><th>文件名</th><th>角色</th><th>层</th><th>许可</th><th>SHA-256</th></tr></thead>
+      <tbody>
+      {% for m in task.materials %}
+        <tr><td>{{ m.material_id }}</td><td>{{ m.filename or '—' }}</td><td>{{ m.role }}</td><td>{{ m.layer }}</td><td>{{ m.license_type }}</td><td class="mono small">{{ (m.sha256 or '')[:16] }}…</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% else %}<p class="muted">还没有上传资料。</p>{% endif %}
+    {% if editable %}
+    <details class="upload">
+      <summary>上传一份资料</summary>
+      <form method="post" action="/tasks/{{ task.task_id }}/materials" enctype="multipart/form-data" class="stack">
+        <input type="hidden" name="csrf" value="{{ csrf }}">
+        <div class="grid two">
+          <label>资料 ID（留空自动编号）<input name="material_id" placeholder="M-001"></label>
+          <label>文件<input type="file" name="file" required></label>
+          <label>类型<select name="kind"><option value="document">document</option><option value="dataset">dataset</option><option value="code">code</option><option value="image">image</option></select></label>
+          <label>角色<select name="role"><option value="input">input</option><option value="reference">reference</option><option value="template">template</option></select></label>
+          <label>层<select name="layer"><option value="raw">raw</option><option value="deidentified">deidentified</option><option value="work">work</option><option value="reference">reference</option></select></label>
+          <label>许可<select name="license_type"><option value="synthetic">synthetic</option><option value="public_domain">public_domain</option><option value="cc_by">cc_by</option><option value="proprietary">proprietary</option><option value="internal">internal</option></select></label>
+          <label>PII<select name="pii_level"><option value="none">none</option><option value="low">low</option><option value="medium">medium</option><option value="high">high</option></select></label>
+        </div>
+        <button type="submit">上传并挂到任务源</button>
+      </form>
+    </details>
+    {% endif %}
+  </section>
+</div>
+
+<section class="card">
+  <h2>自动检查</h2>
+  {% if task.checks %}
+  <table>
+    <thead><tr><th>检查</th><th>结果</th><th>级别</th><th>字段</th><th>说明</th><th>时间</th></tr></thead>
+    <tbody>
+    {% for c in task.checks %}
+      <tr><td>{{ c.check_code }}</td><td>{% if c.passed %}通过{% else %}<strong class="bad">未通过</strong>{% endif %}</td><td>{{ c.severity }}</td><td class="mono small">{{ c.field_path }}</td><td>{{ c.message }}</td><td class="muted small">{{ c.created_at }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}<p class="muted">还没有运行检查。</p>{% endif %}
+</section>
+
+<section class="card">
+  <h2>Agent 建议</h2>
+  <p class="muted small">Agent 只写建议。每条建议必须由专家接受、编辑或拒绝后才可能写入任务源。</p>
+  {% if editable %}
+  <form method="post" action="/tasks/{{ task.task_id }}/agent/suggest" class="inline">
+    <input type="hidden" name="csrf" value="{{ csrf }}">
+    <button type="submit">生成结构化建议</button>
+  </form>
+  {% endif %}
+  {% if suggestions %}
+  <table>
+    <thead><tr><th>字段</th><th>建议值</th><th>置信度</th><th>状态</th><th>确认</th></tr></thead>
+    <tbody>
+    {% for s in suggestions %}
+      <tr>
+        <td class="mono small">{{ s.field_path }}</td>
+        <td>{{ s.suggested_value }}</td>
+        <td>{{ '%.2f'|format(s.confidence) }}</td>
+        <td>{{ s.state }}</td>
+        <td>
+          {% if s.state == 'proposed' and editable %}
+          <form method="post" action="/tasks/{{ task.task_id }}/agent/{{ s.suggestion_id }}/confirm" class="confirm">
+            <input type="hidden" name="csrf" value="{{ csrf }}">
+            <input type="hidden" name="suggestion_id" value="{{ s.suggestion_id }}">
+            <input name="edited_value" placeholder="可编辑后接受">
+            <button name="decision" value="accepted">接受</button>
+            <button name="decision" value="edited">编辑后接受</button>
+            <button name="decision" value="rejected" class="danger">拒绝</button>
+          </form>
+          {% else %}<span class="muted small">{{ s.decision or '—' }}</span>{% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}<p class="muted">还没有建议。</p>{% endif %}
+</section>
+
+<section class="card">
+  <h2>审核与版本</h2>
+  <div class="grid two">
+    <div>
+      <h3>评审</h3>
+      {% if task.reviews %}
+      <ul class="plain">
+      {% for r in task.reviews %}
+        <li><a href="/reviews/{{ r.review_id }}">{{ r.review_id }}</a> · {{ r.kind }} · {{ r.state }} · 第 {{ r.round_no }} 轮</li>
+      {% endfor %}
+      </ul>
+      {% else %}<p class="muted">尚未提交评审。</p>{% endif %}
+    </div>
+    <div>
+      <h3>版本</h3>
+      {% if task.versions %}
+      <ul class="plain">
+      {% for v in task.versions %}<li>v{{ v.version_no }} · {{ v.created_at }} · <span class="mono small">{{ v.content_hash[:12] }}…</span></li>{% endfor %}
+      </ul>
+      {% else %}<p class="muted">还没有冻结版本。</p>{% endif %}
+    </div>
+  </div>
+  {% if package %}
+  <h3>包与入库</h3>
+  <dl class="facts">
+    <dt>包</dt><dd>{{ package.package_id }} · {{ package.state }}</dd>
+    <dt>native_hash</dt><dd class="mono small">{{ package.native_hash or '—' }}</dd>
+    <dt>package_hash</dt><dd class="mono small">{{ package.package_hash or '—' }}</dd>
+  </dl>
+  {% endif %}
+  {% if ingest %}
+  <p>入库回执：<code>{{ ingest.ingest_id }}</code> · {{ ingest.state }} · {{ ingest.received_at }}</p>
+  {% endif %}
+</section>
+{% endblock %}

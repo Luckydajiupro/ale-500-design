@@ -22,7 +22,7 @@ BLOCKS: Tuple[str, ...] = (
     "identity",
     "scenario",
     "materials",
-    "steps",
+    "operations",
     "deliverables",
     "success_criteria",
     "environment",
@@ -31,15 +31,17 @@ BLOCKS: Tuple[str, ...] = (
     "handoff",
 )
 
+LIST_BLOCKS: Tuple[str, ...] = ("materials", "operations", "deliverables", "success_criteria")
+
 # Placeholder required keys. Kept short on purpose: the frozen v1 will be wider
 # and the platform must not hard-code a shape it cannot yet guarantee.
 REQUIRED_FIELDS: Mapping[str, Tuple[str, ...]] = {
-    "identity": ("task_id", "domain_code", "subdomain_code", "title_zh", "title_en", "language"),
+    "identity": ("task_id", "domain_code", "subdomain_code", "title_zh", "language", "batch_id", "owner_expert_id", "difficulty_rationale"),
     "scenario": ("role", "trigger", "audience"),
-    "steps": (),
-    "deliverables": (),
-    "success_criteria": (),
-    "environment": ("os",),
+    "environment": ("os", "gui_required", "gpu", "network", "resources", "nested_virt"),
+    "review": ("risk_tier", "tier_rationale", "required_reviewers", "open_issues"),
+    "provenance": ("author_type", "originality", "revision_history"),
+    "handoff": ("target_format", "target_schema_version", "files_expected", "known_gaps", "secrets_attestation"),
 }
 
 # Fields that are platform-derived. Experts never write them; the platform fills
@@ -50,13 +52,7 @@ MATERIAL_ROLES: Tuple[str, ...] = ("input", "reference", "template")
 MATERIAL_LAYERS: Tuple[str, ...] = ("raw", "deidentified", "work", "reference")
 LICENSE_TYPES: Tuple[str, ...] = ("public_domain", "cc_by", "proprietary", "internal", "synthetic")
 PII_LEVELS: Tuple[str, ...] = ("none", "low", "medium", "high")
-CHECK_METHODS: Tuple[str, ...] = (
-    "deterministic",
-    "rubric",
-    "judge",
-    "hybrid",
-    "human_review",
-)
+CHECK_METHODS: Tuple[str, ...] = ("auto_script", "artifact_diff", "llm_judge", "human_rubric")
 
 # The five groups that the wave-1 design proposes to freeze; other fields are
 # versioned. Ordering here is the canonical projection order used for hashing.
@@ -200,8 +196,10 @@ def validate_source(payload: Mapping[str, Any], known_material_ids: Optional[Ite
         return result
 
     for block in BLOCKS:
-        if not isinstance(payload.get(block), Mapping):
-            result.issues.append(Issue("SCHEMA_BLOCK_MISSING", "blocker", block, f"缺少 {block} 块"))
+        value = payload.get(block)
+        expected = list if block in LIST_BLOCKS else Mapping
+        if not isinstance(value, expected):
+            result.issues.append(Issue("SCHEMA_BLOCK_MISSING", "blocker", block, f"缺少 {block} 块或类型不对"))
 
     for block, fields in REQUIRED_FIELDS.items():
         node = payload.get(block)
@@ -304,15 +302,9 @@ def validate_source(payload: Mapping[str, Any], known_material_ids: Optional[Ite
                 Issue("SCHEMA_ACCEPTANCE_REF", "blocker", "success_criteria", f"acceptance_ref {ref} 未指向交付物路径")
             )
 
-    steps = payload.get("steps")
-    if isinstance(steps, Mapping):
-        step_items = steps.get("items")
-    elif isinstance(steps, list):
-        step_items = steps
-    else:
-        step_items = []
-    if isinstance(step_items, list) and len(step_items) < 3:
-        result.issues.append(Issue("SCHEMA_STEPS_MIN", "blocker", "steps", "至少三步且有依赖"))
+    operations = payload.get("operations")
+    if isinstance(operations, list) and len(operations) < 3:
+        result.issues.append(Issue("SCHEMA_STEPS_MIN", "blocker", "operations", "至少三步且有依赖"))
 
     environment = payload.get("environment")
     if isinstance(environment, Mapping):

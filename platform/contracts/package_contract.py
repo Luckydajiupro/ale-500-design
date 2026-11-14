@@ -116,7 +116,11 @@ def package_hash(
     back into PACKAGE.json.
     """
 
-    projection = {key: value for key, value in package_json.items() if key != "package_hash"}
+    projection = {
+        key: value
+        for key, value in package_json.items()
+        if key not in ("package_hash", "built_at", "built_by")
+    }
     payload = {
         "native_hash": native_digest,
         "package_json": projection,

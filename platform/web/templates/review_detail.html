@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}评审 {{ review.review_id }} · ALE{% endblock %}
+{% block content %}
+{% set p = task.draft_payload %}
+<div class="page-head">
+  <div>
+    <p class="muted"><a href="/reviews">← 评审队列</a></p>
+    <h1>{{ review.kind }} 评审 · 第 {{ review.round_no }} 轮</h1>
+    <p class="muted"><code>{{ review.review_id }}</code> · {{ review.state }} · 任务 <a href="/tasks/{{ task.task_id }}">{{ task.task_id }}</a></p>
+  </div>
+</div>
+
+<div class="grid two">
+  <section class="card">
+    <h2>任务源</h2>
+    <dl class="facts">
+      <dt>标题</dt><dd>{{ p.get('identity', {}).get('title_zh') }}</dd>
+      <dt>角色</dt><dd>{{ p.get('scenario', {}).get('role') }}</dd>
+      <dt>难度理由</dt><dd>{{ p.get('identity', {}).get('difficulty_rationale') }}</dd>
+      <dt>资料</dt><dd>{{ p.get('materials', [])|length }} 项</dd>
+      <dt>交付物</dt><dd>{{ p.get('deliverables', [])|length }} 项</dd>
+    </dl>
+    <h3>交付物</h3>
+    <ul class="plain">{% for d in p.get('deliverables', []) %}<li><code>{{ d.get('path') }}</code> · {{ d.get('format') }}</li>{% endfor %}</ul>
+    <h3>成功标准</h3>
+    <ul class="plain">{% for c in p.get('success_criteria', []) %}<li>{{ c.get('criterion_id') }} · {{ c.get('dimension') }} · 权重 {{ c.get('weight') }} · {{ c.get('threshold') }}</li>{% endfor %}</ul>
+  </section>
+
+  <section class="card">
+    <h2>决定</h2>
+    <p class="muted small">退回必须写明问题。问题行格式：维度|字段|级别|说明，一行一条。</p>
+    <form method="post" action="/reviews/{{ review.review_id }}/decision" class="stack">
+      <input type="hidden" name="csrf" value="{{ csrf }}">
+      <label>问题<textarea name="issues" rows="5" placeholder="correctness|deliverables[0].path|blocker|输出路径与任务不一致"></textarea></label>
+      <label>总体说明<textarea name="reason" rows="3" required></textarea></label>
+      <div class="actions">
+        <button name="decision" value="pass" class="primary">通过</button>
+        <button name="decision" value="return" class="danger">退回返修</button>
+      </div>
+    </form>
+    {% if items %}
+    <h3>已有问题</h3>
+    <ul class="plain">{% for item in items %}<li>{{ item.dimension }} · {{ item.severity }} · {{ item.field_path }} · {{ item.comment }}</li>{% endfor %}</ul>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

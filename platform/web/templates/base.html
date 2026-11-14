@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}ALE 专家工作台{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='workbench.css') }}">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="/dashboard">ALE 专家工作台</a>
+  {% if principal %}
+  <nav>
+    <a href="/dashboard">工作台</a>
+    {% if principal.has('review:claim') %}<a href="/reviews">评审队列</a>{% endif %}
+    {% if principal.has('task:create') %}<a href="/tasks/new">新建任务</a>{% endif %}
+  </nav>
+  <div class="who">
+    <span>{{ principal.display_name }}</span>
+    <span class="muted">{{ principal.role_codes|join(' / ') }}</span>
+    <form method="post" action="/logout" class="inline">
+      <input type="hidden" name="csrf" value="{{ csrf }}">
+      <button class="link" type="submit">退出</button>
+    </form>
+  </div>
+  {% endif %}
+</header>
+<main class="page">
+  {% if request.query_params.get('msg') %}<div class="flash ok">{{ request.query_params.get('msg') }}</div>{% endif %}
+  {% if request.query_params.get('err') %}<div class="flash bad">{{ request.query_params.get('err') }}</div>{% endif %}
+  {% if error %}<div class="flash bad">{{ error }}</div>{% endif %}
+  {% block content %}{% endblock %}
+</main>
+<footer class="foot">本地演示环境。所有操作写入真实 SQLite 数据库与审计日志。</footer>
+<script src="{{ url_for('static', path='workbench.js') }}"></script>
+</body>
+</html>
