@@ -1233,6 +1233,8 @@ def check_schema_consistency():
             if not isinstance(node, dict) or part not in node:
                 return None
             node = node[part]
+        if isinstance(node, list):
+            return node
         return node.get("enum") if isinstance(node, dict) else None
 
     checks = [

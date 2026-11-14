@@ -1,0 +1,573 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ale.local/schemas/verification-contract-1.0.json",
+  "title": "ALE verification contract 1.0",
+  "description": "Platform-to-engineering contract for verification intent. It describes evidence, oracle, scoring, judge calibration and handoff state; it is not a runnable scorer.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "contract_id",
+    "task_id",
+    "contract_kind",
+    "mode",
+    "oracle",
+    "artifacts",
+    "tolerance",
+    "scoring",
+    "handoff"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "verification-contract-1.0"
+    },
+    "contract_id": {
+      "type": "string",
+      "pattern": "^VC-[A-Za-z0-9][A-Za-z0-9._-]*$"
+    },
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "contract_kind": {
+      "$ref": "#/$defs/contract/properties/contract_kind"
+    },
+    "mode": {
+      "$ref": "#/$defs/contract/properties/mode"
+    },
+    "oracle": {
+      "$ref": "#/$defs/oracle"
+    },
+    "artifacts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/artifact"
+      }
+    },
+    "tolerance": {
+      "$ref": "#/$defs/tolerance"
+    },
+    "scoring": {
+      "$ref": "#/$defs/scoring"
+    },
+    "judge": {
+      "$ref": "#/$defs/judge"
+    },
+    "human_review": {
+      "$ref": "#/$defs/human_review"
+    },
+    "handoff": {
+      "$ref": "#/$defs/handoff"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "$defs": {
+    "contract": {
+      "type": "object",
+      "properties": {
+        "contract_kind": {
+          "enum": [
+            "numeric_cases",
+            "tabular_columns",
+            "document_qa",
+            "artifact_diff",
+            "code_artifact"
+          ]
+        },
+        "mode": {
+          "enum": [
+            "deterministic",
+            "rubric",
+            "judge",
+            "hybrid",
+            "human_review"
+          ]
+        }
+      }
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role",
+        "path",
+        "visibility",
+        "in_package_hash",
+        "required"
+      ],
+      "properties": {
+        "role": {
+          "enum": [
+            "oracle",
+            "rubric",
+            "judge_config",
+            "fixture",
+            "reference_render",
+            "answer_key",
+            "output_contract",
+            "verifier",
+            "sample_good",
+            "sample_bad"
+          ]
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"
+        },
+        "visibility": {
+          "enum": [
+            "agent_visible",
+            "evaluator_only",
+            "platform_only"
+          ]
+        },
+        "in_package_hash": {
+          "type": "boolean"
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "tolerance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "absolute",
+            "relative",
+            "decimal",
+            "geometric",
+            "structural",
+            "set_exact",
+            "none"
+          ]
+        },
+        "value": {
+          "type": "number"
+        },
+        "unit": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "component": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "criterion_id",
+        "dimension",
+        "check_method",
+        "channel",
+        "weight",
+        "critical"
+      ],
+      "properties": {
+        "criterion_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "dimension": {
+          "enum": [
+            "correctness",
+            "completeness",
+            "format",
+            "professional_judgment",
+            "process"
+          ]
+        },
+        "check_method": {
+          "enum": [
+            "auto_script",
+            "artifact_diff",
+            "llm_judge",
+            "human_rubric"
+          ]
+        },
+        "channel": {
+          "enum": [
+            "recompute",
+            "declared_output",
+            "geometry",
+            "render_compare",
+            "judge",
+            "human_rubric",
+            "format"
+          ]
+        },
+        "weight": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "critical": {
+          "type": "boolean"
+        },
+        "evidence": {
+          "type": "string"
+        }
+      }
+    },
+    "handoff": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "handoff_id",
+        "status",
+        "exported_at",
+        "exported_by",
+        "verifier",
+        "accepted_at",
+        "rejection_reason"
+      ],
+      "properties": {
+        "handoff_id": {
+          "type": "string",
+          "pattern": "^HO-[A-Za-z0-9][A-Za-z0-9._-]*$"
+        },
+        "status": {
+          "enum": [
+            "draft",
+            "exported",
+            "accepted",
+            "rejected",
+            "registered"
+          ]
+        },
+        "exported_at": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "exported_by": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "accepted_at": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "rejection_reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "verifier": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "verifier_id",
+            "version",
+            "sha256",
+            "runtime",
+            "entrypoint",
+            "known_limits",
+            "sample_results"
+          ],
+          "properties": {
+            "verifier_id": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "version": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "sha256": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "runtime": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "entrypoint": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "known_limits": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "sample_results": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "scoring": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reward",
+        "score_type",
+        "score_range",
+        "partial_credit",
+        "components",
+        "hard_gates",
+        "passed"
+      ],
+      "properties": {
+        "reward": {
+          "enum": [
+            "score",
+            "passed"
+          ]
+        },
+        "score_type": {
+          "enum": [
+            "binary",
+            "ratio",
+            "weighted_sum",
+            "rubric_levels"
+          ]
+        },
+        "score_range": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {
+            "type": "number"
+          }
+        },
+        "partial_credit": {
+          "type": "boolean"
+        },
+        "weights_total": {
+          "type": "integer"
+        },
+        "composition": {
+          "enum": [
+            "weighted_sum",
+            "gate_then_weighted",
+            "sequential"
+          ]
+        },
+        "components": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/component"
+          }
+        },
+        "hard_gates": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/gate"
+          }
+        },
+        "passed": {
+          "type": "object"
+        }
+      }
+    },
+    "gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "gate_id",
+        "condition",
+        "enforced_by",
+        "on_fail",
+        "evidence"
+      ],
+      "properties": {
+        "gate_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "condition": {
+          "type": "string",
+          "minLength": 1
+        },
+        "enforced_by": {
+          "enum": [
+            "verifier",
+            "packaging",
+            "judge",
+            "human"
+          ]
+        },
+        "on_fail": {
+          "enum": [
+            "score_0",
+            "reject",
+            "task_fail"
+          ]
+        },
+        "evidence": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "judge": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "model_family": {
+          "type": "string"
+        },
+        "model_version_policy": {
+          "enum": [
+            "pinned",
+            "rolling_with_record"
+          ]
+        },
+        "answer_format": {
+          "enum": [
+            "YES_NO",
+            "LIKERT",
+            "JSON"
+          ]
+        },
+        "questions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "rubric_ref": {
+          "type": "string"
+        },
+        "pass_threshold": {
+          "type": "number"
+        },
+        "calibration": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "required",
+            "sample_set_ref",
+            "agreement_threshold",
+            "human_review_rate",
+            "repeat_runs",
+            "record_raw_response"
+          ],
+          "properties": {
+            "required": {
+              "type": "boolean"
+            },
+            "sample_set_ref": {
+              "type": "string"
+            },
+            "agreement_threshold": {
+              "type": "number"
+            },
+            "human_review_rate": {
+              "type": "number"
+            },
+            "repeat_runs": {
+              "type": "integer"
+            },
+            "record_raw_response": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    },
+    "human_review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reviewers_min",
+        "adjudication",
+        "blind_review",
+        "approval_ref"
+      ],
+      "properties": {
+        "reviewers_min": {
+          "type": "integer",
+          "minimum": 2
+        },
+        "adjudication": {
+          "type": "string"
+        },
+        "blind_review": {
+          "type": "boolean"
+        },
+        "approval_ref": {
+          "type": "string"
+        }
+      }
+    },
+    "oracle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "required",
+        "kind",
+        "rationale"
+      ],
+      "properties": {
+        "required": {
+          "type": "boolean"
+        },
+        "kind": {
+          "enum": [
+            "independent_oracle",
+            "recomputed_oracle",
+            "equivalence_class",
+            "none",
+            "rubric_only",
+            "visual_reference_family"
+          ]
+        },
+        "rationale": {
+          "type": "string"
+        },
+        "channels": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "approved_without_reference": {
+          "type": "boolean"
+        },
+        "approval_ref": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

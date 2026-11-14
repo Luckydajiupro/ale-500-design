@@ -1,0 +1,30 @@
+case,command,result,evidence
+selftest-00-schema-consistency,python3 tools/wave2/verify_contract_check.py --selftest,PASS,schema enums match checker; no external $refs
+selftest-01-c1-tabular-deterministic,python3 tools/wave2/verify_contract_check.py --check tools/wave2/fixtures/c1-equity-deterministic.json,PASS,expected=valid; got=valid
+selftest-02-c2-numeric-main-alt,python3 tools/wave2/verify_contract_check.py --check tools/wave2/fixtures/c2-taxform-deterministic.json,PASS,expected=valid; got=valid
+selftest-03-c3-artifact-hybrid,python3 tools/wave2/verify_contract_check.py --check tools/wave2/fixtures/c3-scene2-hybrid.json,PASS,expected=valid; got=valid
+selftest-04-c4-artifact-judge,python3 tools/wave2/verify_contract_check.py --check tools/wave2/fixtures/c4-building-judge.json,PASS,expected=valid; got=valid
+selftest-05-c5-code-deterministic,python3 tools/wave2/verify_contract_check.py --check tools/wave2/fixtures/c5-chisel-deterministic.json,PASS,expected=valid; got=valid
+selftest-06-c6-document-deterministic,python3 tools/wave2/verify_contract_check.py --check tools/wave2/fixtures/c6-legal-deterministic.json,PASS,expected=valid; got=valid
+selftest-07-v7-human-rubric,python3 tools/wave2/verify_contract_check.py --check tools/wave2/fixtures/v7-human-rubric.json,PASS,expected=valid; got=valid
+selftest-08-v8-alt-oracle,python3 tools/wave2/verify_contract_check.py --check tools/wave2/fixtures/v8-alt-oracle.json,PASS,expected=valid; got=valid
+selftest-09-missing-mode,python3 tools/wave2/verify_contract_check.py --check tools/wave2/fixtures/neg-missing-mode.json,PASS,expected=CONTRACT_REQUIRED_MISSING; got=CONTRACT_REQUIRED_MISSING
+selftest-10-bad-kind,python3 tools/wave2/verify_contract_check.py --check tools/wave2/fixtures/neg-bad-kind.json,PASS,expected=CONTRACT_ENUM_INVALID; got=CONTRACT_ENUM_INVALID
+selftest-11-bad-role,python3 tools/wave2/verify_contract_check.py --check tools/wave2/fixtures/neg-bad-role.json,PASS,"expected=CONTRACT_ARTIFACT_ROLE_INVALID; got=CONTRACT_ARTIFACT_ROLE_INVALID,CONTRACT_ORACLE_MISSING"
+selftest-12-absolute-path,python3 tools/wave2/verify_contract_check.py --check tools/wave2/fixtures/neg-absolute-path.json,PASS,expected=CONTRACT_ARTIFACT_PATH_UNSAFE; got=CONTRACT_ARTIFACT_PATH_UNSAFE
+selftest-13-traversal-path,python3 tools/wave2/verify_contract_check.py --check tools/wave2/fixtures/neg-traversal-path.json,PASS,expected=CONTRACT_ARTIFACT_PATH_UNSAFE; got=CONTRACT_ARTIFACT_PATH_UNSAFE
+selftest-14-deterministic-no-oracle,python3 tools/wave2/verify_contract_check.py --check tools/wave2/fixtures/neg-deterministic-no-oracle.json,PASS,expected=CONTRACT_ORACLE_MISSING; got=CONTRACT_ORACLE_MISSING
+selftest-15-oracle-unapproved,python3 tools/wave2/verify_contract_check.py --check tools/wave2/fixtures/neg-oracle-unapproved.json,PASS,"expected=CONTRACT_ORACLE_APPROVAL_MISSING; got=CONTRACT_ORACLE_APPROVAL_MISSING,CONTRACT_ORACLE_MISSING"
+selftest-16-judge-no-rubric,python3 tools/wave2/verify_contract_check.py --check tools/wave2/fixtures/neg-judge-no-rubric.json,PASS,expected=CONTRACT_JUDGE_RUBRIC_MISSING; got=CONTRACT_JUDGE_RUBRIC_MISSING
+selftest-17-judge-uncalibrated,python3 tools/wave2/verify_contract_check.py --check tools/wave2/fixtures/neg-judge-uncalibrated.json,PASS,expected=CONTRACT_JUDGE_CALIBRATION_MISSING; got=CONTRACT_JUDGE_CALIBRATION_MISSING
+selftest-18-hard-gate-missing,python3 tools/wave2/verify_contract_check.py --check tools/wave2/fixtures/neg-hard-gate-missing.json,PASS,expected=CONTRACT_HARD_GATE_MISSING; got=CONTRACT_HARD_GATE_MISSING
+selftest-19-hard-gate-not-explicit,python3 tools/wave2/verify_contract_check.py --check tools/wave2/fixtures/neg-hard-gate-not-explicit.json,PASS,expected=CONTRACT_HARD_GATE_NOT_EXPLICIT; got=CONTRACT_HARD_GATE_NOT_EXPLICIT
+selftest-20-answer-leak,python3 tools/wave2/verify_contract_check.py --check tools/wave2/fixtures/neg-answer-leak.json,PASS,expected=CONTRACT_ARTIFACT_VISIBILITY_LEAK; got=CONTRACT_ARTIFACT_VISIBILITY_LEAK
+selftest-21-verifier-in-hash,python3 tools/wave2/verify_contract_check.py --check tools/wave2/fixtures/neg-verifier-in-hash.json,PASS,expected=CONTRACT_ARTIFACT_VISIBILITY_LEAK; got=CONTRACT_ARTIFACT_VISIBILITY_LEAK
+selftest-22-weights-not-100,python3 tools/wave2/verify_contract_check.py --check tools/wave2/fixtures/neg-weights-not-100.json,PASS,expected=CONTRACT_WEIGHTS_INVALID; got=CONTRACT_WEIGHTS_INVALID
+selftest-23-passed-reward-mismatch,python3 tools/wave2/verify_contract_check.py --check tools/wave2/fixtures/neg-passed-reward-mismatch.json,PASS,expected=CONTRACT_REWARD_INVALID; got=CONTRACT_REWARD_INVALID
+selftest-24-handoff-registered-missing,python3 tools/wave2/verify_contract_check.py --check tools/wave2/fixtures/neg-handoff-registered-missing.json,PASS,expected=CONTRACT_HANDOFF_INVALID; got=CONTRACT_HANDOFF_INVALID
+selftest-25-rubric-missing-sample-bad,python3 tools/wave2/verify_contract_check.py --check tools/wave2/fixtures/neg-rubric-missing-sample-bad.json,PASS,expected=CONTRACT_REQUIRED_MISSING; got=CONTRACT_REQUIRED_MISSING
+selftest-26-numeric-no-tolerance,python3 tools/wave2/verify_contract_check.py --check tools/wave2/fixtures/neg-numeric-no-tolerance.json,PASS,expected=CONTRACT_TOLERANCE_MISSING; got=CONTRACT_TOLERANCE_MISSING
+selftest-27-judge-channel-without-judge,python3 tools/wave2/verify_contract_check.py --check tools/wave2/fixtures/neg-judge-channel-without-judge.json,PASS,"expected=CONTRACT_JUDGE_RUBRIC_MISSING; got=CONTRACT_JUDGE_RUBRIC_MISSING,CONTRACT_MODE_INCONSISTENT"
+selftest-28-example-bundle,python3 tools/wave2/verify_contract_check.py --check schemas/verification-contract.example.json,PASS,expected=valid; got=valid
