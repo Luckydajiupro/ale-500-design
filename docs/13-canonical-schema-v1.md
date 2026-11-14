@@ -1,146 +1,136 @@
 # 13 Canonical Schema 与 ALE-data 包合同 v1
 
-这份文件把第一波的字段研究收束为可评审的 Canonical Task Source v1 与平台包合同草案。它的用途是给平台表单、数据库、组包器和工程交接一个共同的字段基线，同时把尚未通过技术验证的部分明确标为候选。文件不修改 `task-data-v1.1` 的官方字节，也不把平台新增的 `PACKAGE.json` 说成官方已有契约。
+这份文件定义 ALE 500 第二波 A 线的第一版规范任务源字段、官方任务身份映射、平台包 overlay 与候选哈希规则。它服务平台组包、专家表单、审核记录和工程交接的共同数据形状。它不把尚未通过 PoC 的哈希或包布局写成冻结合同。
 
-## 13.1 结论
+## 13.1 结论与边界
 
-v1 只冻结五组核心字段，共 41 个必填叶子：`identity`、`materials`、`deliverables`、`success_criteria`、`environment`。`scenario`、`operations`、`review`、`provenance`、`handoff`、`verification`、`package` 七组为扩展块，字段定义可评审，但必填条件和枚举在首批试点校准前不冻结。
+第一版只冻结五组核心字段，共 41 个必填叶子。身份、资料、交付物、成功标准和环境这五组进入 v1；场景、步骤、审核、来源、交接、验证描述和包元数据仍按草案管理。字段注册表共有 112 个字段，冻结范围小于注册表，避免在官方案例证据不足时锁死全部形状。
 
-`schemas/canonical-task-source.schema.json` 是这五组核心的机器可读定义，`docs/data/wave2-field-registry.csv` 是 112 条字段的完整登记表。两者不是同一层：Schema 管结构与必填，注册表管来源、可见性、平台落点、包落点和官方证据。
+平台包是官方 `task-data-v1.1` variant 布局之上的 overlay，不是官方包的原生格式。官方 122 个任务没有包级 `PACKAGE.json`，只有零散的 `reference_manifest.json`、`stage1_manifest.json`、`output_contract.json`、`answer_key.json` 等任务自定文件。平台新增的 `PACKAGE.json` 必须说明自己是 overlay，并保留官方 `source_task_id` 与 `source_variant`。
 
-平台包是官方 variant 的 overlay。官方路径是 `<domain>/<task>/<variant>/{input,software,reference}`，variant 可以是 `base`，也可以是命名值。平台在 122 条官方任务上新增版本层和元数据层，不重写官方内容文件。
+哈希合同目前是候选 `candidate-v1`。P12 PoC 通过前，文档、数据库和入库回执只能把它标成候选。`package_hash` 的推荐存放位置是数据库与入库回执，不写回被哈希的包内文件。`native_hash` 可以随包分发，用于同源重建比对。
 
-## 13.2 五组核心字段
+## 13.2 字段模型
 
-| 块 | 作用 | 必填叶子 | 主要约束 |
+字段注册表在 `docs/data/wave2-field-registry.csv`，共 112 行。五个核心块如下。
+
+| 块 | 目的 | v1 状态 | 主要字段 |
 | --- | --- | --- | --- |
-| `identity` | 任务身份、批次、负责人 | 8 | `task_id` 为 `<domain_code>/<task_slug>`；`version` 由平台生成；`language` 决定 `title_en` 是否条件必填 |
-| `materials` | 专家提交的资料清单 | 9 | 每项有 `material_id`、`kind`、`role`、`path`、`sha256`、`bytes`、`license`、`pii_level`、`used_by` |
-| `deliverables` | 被评 Agent 要交的产物 | 7 | 路径必须是 base 相对 POSIX；格式与扩展名一致；每个交付物至少被一个步骤产出 |
-| `success_criteria` | 评分维度、权重、阈值、证据 | 8 | 至少一条 `professional_judgment`，至少一条 `critical=true`；不接受“合理”“基本正确”这类阈值 |
-| `environment` | 运行意图 | 9 | `os`、`gui_required`、`gpu.required`、`network.mode`、资源、`nested_virt`；`unknown` 不得定低风险 |
+| identity | 任务是谁、属于哪个域、来自哪里 | 冻结 | task_id、task_version、domain_code、subdomain_code、title、summary、language、source_task_id、source_variant |
+| materials | 专家提交哪些资料、许可与哈希 | 冻结 | materials[].path、role、sha256、bytes、license、pii、source |
+| deliverables | 被评 Agent 要交什么 | 冻结 | deliverables[].path、kind、description、required |
+| success_criteria | 什么算成功、怎样给分 | 冻结 | criteria[].id、weight、verification_mode、oracle_required、tolerance、hard_gates |
+| environment | 运行环境意图 | 冻结 | os、gui、network、software、external_services、gpu |
 
-`materials.role` 只有 `input`、`reference`、`template` 三值。`reference` 是被评 Agent 不可见的评分依据；`template` 是允许 Agent 读取的起点文件；`input` 是任务输入。官方包里的 `software/` 不进入 `materials`，由 `environment.software` 和包的 `files[].role=software` 承载。
+未冻结的块包括 `scenario`、`operations`、`review`、`provenance`、`handoff`、`verification`、`package`。它们已有字段定义和示例，但允许在首批 30 条生产中调整枚举和必填条件。
 
-`success_criteria.check_method` 四值与验证合同对接：`auto_script` 和 `artifact_diff` 落到 `deterministic` 或 `hybrid`；`llm_judge` 落到 `judge`；`human_rubric` 落到 `human_review`。字段本身不决定最终评分器，评分器由工程侧交接合同实现。
+`schemas/canonical-task-source.schema.json` 是机器可读形状。它要求五个核心块存在，并校验 41 个必填叶子。数组块 `materials`、`operations`、`deliverables`、`success_criteria` 使用数组定义，不要求固定长度。
 
-## 13.3 扩展块与发布条件
+字段来源分三类。`expert` 表示专家在任务源中填写；`platform` 表示平台从快照、批次或审核记录派生；`derived` 表示组包或校验时计算。`identity.task_version` 与 `identity.owner_expert_id` 由平台写入，专家不可改。
 
-`verification` 记录验证意图，不记录可执行评分器。必填四项：`contract_kind`、`mode`、`artifacts`、`oracle_required`。`artifacts[]` 每项至少有 `role`、`path`、`visibility`；`visibility` 为 `agent_visible`、`evaluator_only`、`platform_only` 三值。参考答案、rubric、judge 配置、参考渲染、正反样例只能是后两者。
+## 13.3 任务身份与版本
 
-`package` 记录平台 overlay 的包级字段，包括 `schema_version`、`ale_data_version`、`entrypoints`、`files[]`、`native_hash`、`built_by`、`built_at`、`counted_in_500`、`scope_exception`。`package_hash` 只作为候选字段出现在 Schema 中，不写进被它覆盖的字节。
+规范任务身份用 `<domain_code>/<task_slug>`。`domain_code` 取 13 个官方域加 `unknown`；`task_slug` 使用小写字母、数字、下划线和连字符。官方原始 `task_id` 可能带 `finance/`、`machine_learning/`、`business_finance/` 等各类前缀，因此平台保留 `source_task_id` 原值，不把它当规范主键。
 
-发布到 ALE-data 前，扩展块按合同逐项升级为必填：`scenario` 和 `operations` 用于内容审核，`review` 用于审核签字，`provenance` 用于来源与相似性检查，`handoff` 用于工程转换，`verification` 用于评分交接，`package` 用于组包。升级规则写在平台校验器，不写死在专家表单的初始必填里。
+`source_variant` 保留官方 variant 名。官方 122 个任务中 100 个 variant 名为 `base`，22 个是命名 variant，例如 `tsla_fy2023`、`variant_1`、`137`、`ptbxl_2263`。平台新任务统一使用 `base`，官方导入任务保留原 variant，不强行改名为 `base`。
 
-## 13.4 身份与版本
+`task_version` 从 1 开始，每次专家提交形成不可变版本。草稿修改不增加版本；提交、审核退回后的再次提交增加版本。冻结快照绑定 `task_id + task_version`。包目录使用 `<task_id>/<task_version>/`，不与官方 `<task>/<variant>/` 混用。
 
-Canonical `task_id` 由平台生成，格式为 `<domain_code>/<task_slug>`。官方导入时保留三个原值：`source_task_id`、`source_variant`、`source_revision`。这样做是因为官方 `task_id` 前缀不统一，存在 `finance/...`、`business_finance/...`、`machine_learning/...` 等多种写法，不能直接当平台主键。
+官方 `published_tasks.json` 有 122 条，119 个任务目录名与发布清单一致。三个 variant 名不一致：`other/mota_exploration`、`visual_media/uv_reproduction`、`visual_media/skeletal_animation_reproduction`。导入时以目录名为准，把发布清单差异写入 `import_notes`，不修改官方文件。
 
-版本规则：
+## 13.4 官方 variant 兼容矩阵
 
-- `version` 从 1 开始，提交后不可改内容；专家修改产生新版本，旧版本保留。
-- 冻结快照绑定 `task_id + version`，组包器只接受冻结快照。
-- 同版本重建必须得到同一 `native_hash`；`package_hash` 的稳定性由 13.6 的候选规则约束。
-- 官方导入任务保留 `source_variant`，不强行改成 `base`；平台包目录的版本层与官方 variant 层分开表达。
+兼容矩阵在 `docs/data/wave2-official-compat.csv`，逐任务记录 `has_base`、`has_software`、`has_reference`、`import_mode`、`identity_rule`、`blockers` 和 `test_case`。导入模式五值如下。
 
-22 个官方任务使用命名 variant，100 个使用 `base`。命名 variant 包括 `tsla_fy2023`、`odoo_compact`、`variant_1`、`137`、`table1`、`crane_flyingsky` 等。导入矩阵见 `docs/data/wave2-official-compat.csv`，每行给出 `source_variant`、`has_base`、`has_software`、`has_reference`、`import_mode`、`blockers` 和 `test_case`。
-
-## 13.5 官方兼容矩阵
-
-122 条官方任务按目录形态分为五类导入模式：
-
-| 模式 | 条件 | 处理 |
+| import_mode | 条件 | 处理 |
 | --- | --- | --- |
-| `direct_base` | variant 为 `base`，input、software、reference 齐全 | 直接映射版本层，补平台边车 |
-| `staged_base` | variant 为 `base`，缺 brief、software 或 reference | 先补入口或工程说明，再补边车 |
-| `direct_named` | 命名 variant，三件套齐全 | 保留 `source_variant`，按 variant 路径导入 |
-| `staged_named` | 命名 variant，缺入口或软件 | 保留 variant，补平台入口与说明 |
-| `external_ref` | 单包超过 1 GiB 或镜像过大 | 只存引用与哈希，不复制大资产 |
+| direct_base | 有 base、有 input、有 reference、无阻塞 | 直接按官方 variant 导入，补 overlay 元数据 |
+| staged_base | 有 base，但缺 software 或 reference | 先进入暂存区，补边车或人工确认后再入库 |
+| direct_named | 命名 variant，内容完整 | 保留 source_variant，按命名 variant 导入 |
+| staged_named | 命名 variant，缺文件或有阻塞 | 暂存，人工确认 variant 身份与缺件 |
+| external_ref | 单包超过 5 GiB 或有不可搬运资产 | 只登记 external_ref，不复制大资产 |
 
-兼容矩阵的阻塞码有 `NO_SOFTWARE`、`NO_BRIEF`、`NO_REFERENCE`、`LARGE_ASSET`、`SYMLINK_RUNTIME_ENV`。16 条任务没有 `software/`，2 条任务没有 `reference/`，这些都不是平台可以自动补齐的内容，必须由工程侧在导入前给出处理决定。2 条无 reference 的任务是 `engineering/cailian_road_highway_alignment_2` 与 `engineering/inner_support_elevation_optimization`，只能走人工评审或补参考。
+阻塞码包括 `NO_SOFTWARE`、`NO_BRIEF`、`NO_REFERENCE`、`LARGE_ASSET`、`SYMLINK_RUNTIME_ENV`。16 个任务没有 `software/`，2 个 engineering 任务没有 `reference/`，`cailian_road_highway_alignment_2` 和 `inner_support_elevation_optimization` 属于后者。`software/` 为空是合法状态，L1 只校验声明存在的角色路径。
 
-三个官方任务的 variant 名与 `published_tasks.json` 不一致：`other/mota_exploration`、`visual_media/uv_reproduction`、`visual_media/skeletal_animation_reproduction`。导入时以目录实际 variant 为准，同时记录发布清单的原值，不能静默取一个。
+官方入口文档至少八种文件名，`task_prompt.md` 14 次、`README.md` 12 次、`task_brief.md` 11 次、`TASK_PROMPT.md` 8 次、`problem_spec.md` 7 次。overlay 的 `entrypoints.brief` 必须指向实际文件，不假设统一文件名。
 
-## 13.6 包布局
+## 13.5 平台包 overlay
 
-候选布局：
+推荐布局如下。`base/` 只放官方内容角色，`PACKAGE.json` 与四个边车放在版本层，默认对 Agent 不可见。
 
 ```text
-packages/<domain_code>/<task_slug>/<version>/
+packages/<domain_code>/<task_slug>/<task_version>/
+  base/
+    input/
+    software/
+    reference/
   PACKAGE.json
   package_manifest.json
   materials.json
   provenance.json
   handoff.json
-  base/
-    input/
-    software/
-    reference/
+  validation_report.json
+  SHA256SUMS
 ```
 
-`base/` 内只放官方内容或新任务内容，不放平台元数据。`PACKAGE.json` 与四个边车放版本层。这样做的理由有三条：被评 Agent 只挂载 `base/` 的可见部分；哈希覆盖范围与可见范围分开；官方 variant 的 `base/` 名称不再与平台包根混淆。
+`PACKAGE.json` 的候选 schema 在 `schemas/ale-package.schema.json`。它要求 `schema_version`、`ale_data_version`、`task_id`、`task_version`、域与子域、标题与摘要、入口、交付物、oracle、验证、环境意图、沙箱、许可、PII、来源、文件清单、哈希和包身份。`files[]` 每项带 `path`、`sha256`、`bytes`、`mode`、`role`、`visibility`。`mode` 保留四位八进制，执行位不丢。
 
-如果第二波 PoC 证明版本层布局不能兼容现有挂载器，备选是把 `PACKAGE.json` 放 `base/` 但在运行时排除。这个备选必须通过 13.7 的可见性测试，不能只靠约定。默认方案仍是版本层。
+`oracle.required=false` 是合法状态，用于无唯一参考解、rubric 或视觉参考族。此时必须有 `approved_without_reference=true` 与 `approval_ref`。官方两个无 reference 的 engineering 任务属于这一类，不能因为缺 reference 直接判为不合格。
 
-`files[]` 只列 `base/` 内容文件，每项有 `path`、`sha256`、`bytes`、`mode`、`role`。`mode` 保留四位八进制，`software/run.sh` 的可执行位必须保留。`PACKAGE.json` 自身不进 `files[]`。`package_manifest.json` 记录文件数与总字节，`materials.json` 记录资料许可与 PII，`provenance.json` 记录来源与相似性检查，`handoff.json` 记录工程交接状态。
+`license` 采用 `type + status + scope_exception`。`type` 六值 public_domain、cc_by、cc_by_nc、proprietary、internal、synthetic；`status` 三态 cleared、pending、restricted。`pending` 不得入库为可计数包；`restricted` 可入库但 `counted_in_500=false` 并带 `scope_exception`。官方资料没有统一许可字段，导入时必须补来源与许可证据。
 
-## 13.7 Agent 可见性与隔离
+`PACKAGE.json` 若留在 `base/` 内，需要 L4 agent 视图测试。测试必须确认 Agent 看不到 reference 内容、答案键、评分依据、`PACKAGE.json` 的 reference 清单和敏感元数据。测试未通过时，包不得进入 `frozen`。
 
-被评 Agent 只能读取 `input/` 与声明为 `agent_visible` 的模板。以下内容不可见：
+## 13.6 候选哈希与 PoC
 
-- `reference/` 下的答案、rubric、fixture、参考渲染、正反样例。
-- `PACKAGE.json` 中的 `files[]` reference 路径、`oracle` 细节、`verification.artifacts` 的 evaluator 工件。
-- `materials.json` 的许可备注、PII 细节、来源 URL 中带签名或凭证的部分。
-- `handoff.json` 的工程备注与内部风险。
+`tools/wave2/hash_poc.py` 用标准库实现候选规则，结果在 `docs/data/wave2-hash-poc-results.csv`，7 项全部通过。规则分三层。
 
-平台保留完整清单、角色、哈希和验证描述，导出时按可见性裁剪。L4 校验增加 agent 视图测试：用只读挂载构造 Agent 可见树，若出现 `reference/` 内容、答案键、评分脚本或 `PACKAGE.json` 的 evaluator 字段，报 `PKG_AGENT_VIEW_LEAK` 阻断。
+`native_hash` 覆盖 `base/` 内容文件的规范清单，每项含 `path`、`bytes`、`mode`、`role`、`sha256`。按路径排序后做规范 JSON 哈希。排除 `PACKAGE.json`、`validation_report.json`、`SHA256SUMS` 和任何哈希字段。
 
-`PACKAGE.json` 放版本层是默认隔离手段；放 `base/` 时必须证明挂载器不会把整个 `base/` 暴露给 Agent。这个证明是 P12 的一部分，不是文档承诺。
+`package_hash` 覆盖 `native_hash`、`PACKAGE.json` 的稳定投影、四个边车的哈希。稳定投影只取 schema 版本、ALE-data 版本、身份、域与子域、入口、交付物、oracle、验证、许可、PII、来源等语义字段，排除 `built_at`、`built_by`、`package_hash`、`hashes`。边车内容也不能写构建时钟，否则边车哈希会漂移。
 
-## 13.8 哈希候选与 PoC
+入库回执哈希覆盖 `package_hash`、`validation_report` 的哈希、接收时间和接收人。它只写数据库，不写回包内。这样包哈希、校验报告和入库记录形成三段可复算证据链，任何一段被改写都能被发现。
 
-`tools/wave2/hash_poc.py` 用标准库构造一个临时包，连续构建两次并检查七项。当前结果全部通过，明细在 `docs/data/wave2-hash-poc-results.csv`。
+PoC 的七项检查是：native-stable、package-stable、mode-kept、self-reference、content-sensitive、content-sensitive-native、sidecar-clock。self-reference 测试把 `package_hash` 写回包内再重算，摘要会变；sidecar-clock 测试把构建时钟写进边车，摘要也会变。两项都证明当前候选不能把哈希值或时钟写进被哈希字节。
 
-候选定义：
+## 13.7 Agent 可见性
 
-- `native_hash` 覆盖 `base/` 内容文件的规范清单，按 `path` 排序，每项含 `path`、`bytes`、`mode`、`role`、`sha256`。不覆盖 `PACKAGE.json`、`validation_report.json`、`SHA256SUMS`。
-- `package_hash` 覆盖 `native_hash`、`PACKAGE.json` 的稳定字段投影、四个边车的哈希。稳定字段投影排除 `built_at`、`built_by`、`package_hash`、`hashes`。`validation_report.json` 不进哈希。
-- 入库回执哈希覆盖 `package_hash`、校验报告哈希、接收时间、接收人，只写数据库，不写包内文件。
+Agent 可见的只有 `base/input/` 中声明的输入和 `base/software/` 中声明的软件入口。`base/reference/` 在 solver 停止后才挂载，评分依据、答案键、rubric、judge 配置和 reference render 都不能进入 Agent 视图。
 
-PoC 证明了三件事。第一，`native_hash` 在两次不同构建时钟下相同，改一个字节就变化。第二，`package_hash` 在排除动态字段后稳定，改 `verification.mode` 就变化。第三，如果把 `package_hash` 写回被哈希的字节，第二次计算会得到不同摘要，自引用成立。另一个测试显示，边车里放构建时钟也会让 `package_hash` 漂移。
+`PACKAGE.json` 默认不进入 Agent 视图。它即使不含答案，也会暴露 reference 文件名、oracle 类型、评分维度和许可信息。若运行框架必须把包目录整体挂载，L4 测试要证明 `PACKAGE.json` 与 `reference/` 被排除，或把 `PACKAGE.json` 移到版本层。
 
-因此当前只把哈希称为候选。`PACKAGE.json` 不写 `package_hash`；哈希存数据库和入库回执。`built_at` 与 `built_by` 不进入稳定投影。边车字节不得包含构建时钟，或时钟必须由冻结快照派生。P12 通过前，平台不得对外宣称哈希合同已冻结。
+`package_manifest.json` 与 `materials.json` 同样按 platform 可见处理。`handoff.json` 可以带审核结论摘要，但不带专家个人身份、内部评分和 Agent 原始回答。审计记录留在数据库。
 
-## 13.9 校验与测试
+## 13.8 校验与测试
 
-`schemas/ale-package.schema.json` 是 `PACKAGE.json` 的草案结构。它要求 `files[]`、`hashes.native_hash`、`license`、`pii`、`provenance`、`oracle`、`verification` 等字段，并禁止绝对路径。它不是最终合同，字段仍可能随 P12 调整。
+`schemas/canonical-task-source.schema.json` 校验任务源结构。`schemas/ale-package.schema.json` 校验包 overlay。`tools/wave2/hash_poc.py` 校验哈希候选。A 线还没有实现完整的包校验器，P12 需要把 PoC 接入组包临时目录和入库回执。
 
-导入矩阵的测试用例按阻塞码分组：`IMP-BASE`、`IMP-NAMED`、`IMP-NOBRIEF`、`IMP-NOSOFT`、`IMP-NOREF`、`IMP-LARGE`、`IMP-SYMLINK`。每个用例至少检查一条真实官方路径，导入器不得只跑合成样例。
+正反测试至少覆盖：官方 base 导入、官方命名 variant 导入、无 software、无 reference、大资产 external_ref、绝对路径、路径穿越、reference 泄漏、哈希自引用、边车时钟、PACKAGE.json 版本层与 base 层两种布局。
 
-PoC 还缺三项：真实挂载器的 Agent 视图测试、122 条全量导入回归、官方包与平台包的双向重建。前两项放到 P12 和 P13，第三项依赖工程侧确认运行包格式。
+## 13.9 未决事项
 
-## 13.10 未决问题
+1. 五组核心 41 个必填叶子是否在首批 30 条前冻结，仍需负责人确认。
+2. `PACKAGE.json` 放版本层、base 层还是独立不可见目录，由 P12 与安全测试决定。
+3. `package_hash` 是否只存数据库与回执，需组包器和入库器共同确认。
+4. 官方 22 个命名 variant 的 overlay 命名规则，需与工程侧导入器对齐。
+5. 官方 2 个无 reference 任务的 `oracle.required=false` 审批路径，需领域负责人签字。
+6. 许可元数据在官方包中没有位置，导出后可能丢失，需在 overlay 与 `materials.json` 双写。
+7. 大资产 external_ref 的 5 GiB 阈值与负责人批准流程，需平台与工程共同定。
 
-- 五组核心 41 个必填叶子是否在首批试点前冻结，仍需负责人确认。
-- `PACKAGE.json` 放版本层还是 `base/`，由 P12 的挂载测试决定。
-- `package_hash` 是否只存数据库，还是允许写进入库回执文件，需与审计链一起定。
-- 官方导入的 `source_variant` 是否进入 ALE-data 包元数据，还是只留平台数据库。
-- 16 条无 software、2 条无 reference 的官方任务是否进入 500 条之外的回归集。
-- 许可元数据在官方包没有独立位置，导出后可能丢失；平台边车能否被合作方接受还未验证。
-- `contract.kind` 与 `verification.mode` 的组合是否存在无法表达的官方案例，需 B 线验证器给出反例。
+## 13.10 证据与复现
 
-## 13.11 证据与复现
-
-字段来源：`docs/10-expert-annotation-spec-v0.md` 的十块与 94 字段、`docs/12-wave1-integration.md` 的 Canonical 表、`docs/data/wave1-canonical-task-source.csv` 的 112 行。
-
-官方结构证据：`inputs/frozen/03_ale-data/archive/selected-members.jsonl` 的 79,494 条路径、`archive/release-v1.1.json` 的 122 条任务与 79,494 个成员、`stages/s0-baseline/04_task_inventory.csv` 的 122 行库存。
+字段注册表见 `docs/data/wave2-field-registry.csv`。官方兼容矩阵见 `docs/data/wave2-official-compat.csv`。机器可读形状见 `schemas/canonical-task-source.schema.json` 与 `schemas/ale-package.schema.json`。哈希结果见 `docs/data/wave2-hash-poc-results.csv`。
 
 复现命令：
 
 ```bash
 python3 tools/wave2/hash_poc.py
-python3 -c "import json; json.load(open('schemas/canonical-task-source.schema.json')); json.load(open('schemas/ale-package.schema.json'))"
-python3 tools/check_docs.py
+python3 -m json.tool schemas/canonical-task-source.schema.json
+python3 -m json.tool schemas/ale-package.schema.json
 ```
 
-版本记录：v1 初稿，2026-11-14。哈希与包布局为候选，等待 P12。
+本文件的数字来自冻结官方数据树与上述脚本输出。官方 122 个任务、100 个 base、22 个命名 variant、106 个 software、120 个 reference、79,065 个文件是文件事实。五组核心字段与哈希候选是设计决定，仍可在第二波 PoC 后修订。
+
+## 13.11 版本记录
+
+v1 草案，2026-11-14。首版冻结五组核心字段，新增官方 variant 兼容矩阵、包 overlay 草案、候选哈希与 7 项 PoC。未冻结 `PACKAGE.json` 布局、`package_hash` 存放位置和完整包校验器。

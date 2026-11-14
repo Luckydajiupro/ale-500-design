@@ -1,212 +1,190 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://ale.local/schemas/ale-package-1.2-draft.json",
-  "title": "ALE platform package overlay 1.2 draft",
-  "description": "Draft PACKAGE.json contract. It wraps an official task-data-v1.1 variant without changing its input, software or reference bytes. Hash rules are candidates until P12 passes.",
+  "$id": "https://ale-500.local/schemas/ale-package.schema.json",
+  "title": "ALE-data platform package overlay (draft, ale-pkg-1.2)",
+  "description": "Candidate overlay for a platform-built ALE-data package. The official task-data-v1.1 tree has no package-level manifest; this schema describes the platform sidecar only.",
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "schema_version",
-    "ale_data_version",
-    "task_id",
-    "task_version",
-    "domain_code",
-    "subdomain_code",
-    "entrypoints",
-    "deliverables",
-    "oracle",
-    "verification",
-    "environment_intent",
-    "sandbox",
-    "license",
-    "pii",
-    "provenance",
-    "files",
-    "hashes",
-    "built_by",
-    "built_at"
+    "schema_version", "ale_data_version", "task_id", "task_version",
+    "domain_code", "subdomain_code", "title", "summary", "language",
+    "entrypoints", "deliverables", "oracle", "verification",
+    "environment_intent", "sandbox", "license", "pii", "provenance",
+    "files", "hashes", "package", "built_by", "built_at"
   ],
   "properties": {
-    "schema_version": {"const": "ale-pkg-1.2"},
+    "schema_version": {"const": "ale-pkg-1.2", "description": "Candidate version. Not frozen before P12."},
     "ale_data_version": {"const": "task-data-v1.1"},
-    "task_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*/[A-Za-z0-9][A-Za-z0-9._-]*$"},
+    "task_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*/[a-z0-9][a-z0-9_./-]*$"},
     "task_version": {"type": "integer", "minimum": 1},
-    "domain_code": {"type": "string", "minLength": 1},
+    "source_task_id": {"type": "string"},
+    "source_variant": {"type": "string"},
+    "domain_code": {"$ref": "#/$defs/domain"},
     "subdomain_code": {"type": "string", "minLength": 1},
-    "title": {"type": "string", "minLength": 1},
-    "summary": {"type": "string"},
-    "language": {"enum": ["en", "zh", "bilingual"]},
-    "source": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "kind": {"enum": ["official_import", "new_task"]},
-        "source_task_id": {"type": "string"},
-        "source_variant": {"type": "string"},
-        "source_revision": {"type": "string"}
-      },
-      "required": ["kind"]
-    },
+    "title": {"type": "string", "minLength": 1, "maxLength": 200},
+    "summary": {"type": "string", "minLength": 1},
+    "language": {"enum": ["en", "zh"]},
     "entrypoints": {
       "type": "object",
       "additionalProperties": false,
+      "required": ["brief"],
       "properties": {
-        "brief": {"type": "string", "pattern": "^[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"},
-        "contract": {"type": "string", "pattern": "^[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"},
-        "answer_key": {"type": "string", "pattern": "^[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"},
-        "document_manifest": {"type": "string", "pattern": "^[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"}
-      },
-      "required": ["brief"]
+        "brief": {"$ref": "#/$defs/agentPath"},
+        "contract": {"$ref": "#/$defs/agentPath"},
+        "instruction": {"$ref": "#/$defs/agentPath"}
+      }
     },
     "deliverables": {
-      "type": "array",
-      "minItems": 1,
+      "type": "array", "minItems": 1,
       "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": ["path", "format", "mandatory"],
+        "type": "object", "additionalProperties": false,
+        "required": ["path", "kind", "description"],
         "properties": {
-          "path": {"type": "string", "pattern": "^[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"},
-          "format": {"type": "string", "minLength": 1},
-          "mandatory": {"type": "boolean"},
-          "description": {"type": "string"}
+          "path": {"type": "string", "minLength": 1},
+          "kind": {"enum": ["file", "directory", "workbook", "document", "image", "archive", "code"]},
+          "description": {"type": "string"},
+          "required": {"type": "boolean", "default": true}
         }
       }
     },
     "oracle": {
-      "type": "object",
-      "additionalProperties": false,
+      "type": "object", "additionalProperties": false,
       "required": ["required", "kind"],
       "properties": {
         "required": {"type": "boolean"},
-        "kind": {"enum": ["independent_oracle", "recomputed_oracle", "equivalence_class", "rubric_only", "visual_reference_family", "none"]},
-        "paths": {"type": "array", "items": {"type": "string"}},
-        "tolerance": {"type": "object"},
-        "notes": {"type": "string"}
+        "kind": {"enum": ["independent_oracle", "recomputed_oracle", "equivalence_class", "none", "rubric_only", "visual_reference_family"]},
+        "paths": {"type": "array", "items": {"$ref": "#/$defs/packagePath"}},
+        "rationale": {"type": "string"},
+        "approved_without_reference": {"type": "boolean"},
+        "approval_ref": {"type": "string"}
       }
     },
     "verification": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["contract_kind", "mode", "artifacts"],
+      "type": "object", "additionalProperties": false,
+      "required": ["mode", "artifacts"],
       "properties": {
-        "contract_kind": {"enum": ["numeric_cases", "tabular_columns", "document_qa", "artifact_diff", "code_artifact", "unknown"]},
         "mode": {"enum": ["deterministic", "rubric", "judge", "hybrid", "human_review"]},
+        "contract_ref": {"type": "string"},
         "artifacts": {
-          "type": "array",
-          "minItems": 1,
+          "type": "array", "minItems": 1,
           "items": {
-            "type": "object",
-            "additionalProperties": false,
+            "type": "object", "additionalProperties": false,
             "required": ["role", "path", "visibility"],
             "properties": {
-              "role": {"type": "string", "minLength": 1},
-              "path": {"type": "string", "pattern": "^[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"},
+              "role": {"enum": ["oracle", "rubric", "judge_config", "fixture", "reference_render", "answer_key", "output_contract", "verifier", "sample_good", "sample_bad"]},
+              "path": {"$ref": "#/$defs/packagePath"},
               "visibility": {"enum": ["agent_visible", "evaluator_only", "platform_only"]},
-              "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
-              "description": {"type": "string"}
+              "in_package_hash": {"type": "boolean"}
             }
-          }
-        },
-        "judge": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "questions": {"type": "array", "items": {"type": "string"}},
-            "pass_threshold": {"type": "number", "minimum": 0, "maximum": 1},
-            "calibration_ref": {"type": "string"}
           }
         }
       }
     },
     "environment_intent": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["os", "gui_required", "gpu_required", "network_mode"],
+      "type": "object", "additionalProperties": false,
+      "required": ["os", "gui", "network"],
       "properties": {
         "os": {"enum": ["linux", "windows", "macos", "any"]},
-        "os_version": {"type": "string"},
-        "gui_required": {"enum": ["yes", "no", "unknown"]},
-        "gpu_required": {"type": "boolean"},
-        "network_mode": {"enum": ["none", "staged_local", "online_required", "public_ref"]},
+        "gui": {"type": "boolean"},
+        "network": {"enum": ["none", "allowlist", "public"]},
+        "software": {"type": "array", "items": {"type": "string"}},
+        "gpu": {"type": "boolean", "default": false},
         "external_services": {"type": "array", "items": {"type": "string"}},
-        "software": {"type": "array", "items": {"type": "object"}},
-        "resources": {"type": "object"},
         "notes": {"type": "string"}
       }
     },
     "sandbox": {
-      "type": "object",
-      "additionalProperties": false,
+      "type": "object", "additionalProperties": false,
       "required": ["input_root", "output_root"],
       "properties": {
-        "input_root": {"type": "string", "pattern": "^[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"},
-        "output_root": {"type": "string", "pattern": "^[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"},
-        "notes": {"type": "string"}
+        "input_root": {"$ref": "#/$defs/packagePath"},
+        "output_root": {"$ref": "#/$defs/packagePath"},
+        "timeout_sec": {"type": "integer", "minimum": 1}
       }
     },
     "license": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["type", "redistribution"],
+      "type": "object", "additionalProperties": false,
+      "required": ["type", "status"],
       "properties": {
-        "type": {"enum": ["public_domain", "cc_by", "proprietary", "internal", "synthetic", "unknown"]},
-        "redistribution": {"type": "boolean"},
+        "type": {"enum": ["public_domain", "cc_by", "cc_by_nc", "proprietary", "internal", "synthetic"]},
+        "status": {"enum": ["cleared", "pending", "restricted"]},
         "url": {"type": "string"},
-        "notes": {"type": "string"}
+        "scope_exception": {"type": "string"}
       }
     },
     "pii": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["level"],
+      "type": "object", "additionalProperties": false,
+      "required": ["level", "reviewed"],
       "properties": {
         "level": {"enum": ["none", "low", "medium", "high"]},
-        "deidentification": {"type": "string"},
-        "irb_protocol_id": {"type": "string"}
+        "reviewed": {"type": "boolean"},
+        "deidentified": {"type": "boolean"},
+        "notes": {"type": "string"}
       }
     },
     "provenance": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["author_type", "sources"],
+      "type": "object", "additionalProperties": false,
+      "required": ["source", "captured_at", "owner_expert_id"],
       "properties": {
-        "author_type": {"enum": ["human", "agent_assisted"]},
-        "sources": {"type": "array", "items": {"type": "object"}},
-        "agent_runs": {"type": "array", "items": {"type": "object"}},
-        "synthetic_disclosure": {"type": "string"},
-        "revision_history": {"type": "array", "items": {"type": "object"}}
+        "source": {"type": "string", "minLength": 1},
+        "source_url": {"type": "string"},
+        "captured_at": {"type": "string", "format": "date-time"},
+        "owner_expert_id": {"type": "string"},
+        "license_evidence": {"type": "string"},
+        "batch_id": {"type": "string"}
       }
     },
     "files": {
-      "type": "array",
-      "minItems": 1,
+      "type": "array", "minItems": 1,
       "items": {
-        "type": "object",
-        "additionalProperties": false,
+        "type": "object", "additionalProperties": false,
         "required": ["path", "sha256", "bytes", "mode", "role"],
         "properties": {
-          "path": {"type": "string", "pattern": "^[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"},
+          "path": {"$ref": "#/$defs/packagePath"},
           "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
           "bytes": {"type": "integer", "minimum": 0},
           "mode": {"type": "string", "pattern": "^0[0-7]{3}$"},
-          "role": {"enum": ["input", "software", "reference", "template", "document"]}
+          "role": {"enum": ["input", "software", "reference", "document"]},
+          "visibility": {"enum": ["agent_visible", "evaluator_only", "platform_only"]}
         }
       }
     },
     "hashes": {
-      "type": "object",
-      "additionalProperties": false,
+      "type": "object", "additionalProperties": false,
       "required": ["native_hash"],
       "properties": {
         "native_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
-        "package_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$", "description": "Candidate only; store in DB or receipt, not in hashed bytes."}
+        "package_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$", "description": "Candidate only. Stored in the database or ingest receipt, not written into the hashed bytes."},
+        "hash_contract": {"enum": ["candidate-v1"], "default": "candidate-v1"}
+      }
+    },
+    "package": {
+      "type": "object", "additionalProperties": false,
+      "required": ["layout", "built_from_snapshot"],
+      "properties": {
+        "layout": {"enum": ["version_base", "version_sidecar", "official_variant"]},
+        "package_root": {"type": "string"},
+        "built_from_snapshot": {"type": "string", "pattern": "^[a-f0-9]{40,64}$"},
+        "agents_see_package_json": {"type": "boolean", "default": false},
+        "sidecars": {"type": "array", "items": {"enum": ["package_manifest.json", "materials.json", "provenance.json", "handoff.json", "supersedes.json"]}}
       }
     },
     "built_by": {"type": "string", "minLength": 1},
     "built_at": {"type": "string", "format": "date-time"},
-    "counted_in_500": {"type": "boolean"},
-    "scope_exception": {"type": "string"},
-    "validation_report_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+    "counted_in_500": {"type": "boolean", "default": false},
+    "scope_exception": {"type": "string"}
+  },
+  "$defs": {
+    "domain": {
+      "enum": ["business_finance", "computing_math", "education_info", "engineering", "health_medicine", "legal", "life_sciences", "other", "physical_sciences", "psychology_neuro", "social_sciences", "transport_safety", "visual_media", "agriculture_env", "unknown"]
+    },
+    "packagePath": {
+      "type": "string", "minLength": 1,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))[^\\\\]+$"
+    },
+    "agentPath": {
+      "type": "string", "minLength": 1,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))[^\\\\]+$"
+    }
   }
 }
