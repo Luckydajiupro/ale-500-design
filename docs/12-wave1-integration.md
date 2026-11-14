@@ -9,10 +9,10 @@
 | 线 | 交付 | 规模 | 提交 |
 |---|---|---|---|
 | A 官方案例 | `docs/09-official-task-cases.md`、`docs/data/wave1-case-evidence.csv`、`docs/data/wave1-case-matrix.csv` | 397 行、42 条证据、6 个案例 | `ad02993`，主会话修正 `3841bb5` |
-| B 专家规范 | `docs/10-expert-annotation-spec-v0.md`、`docs/data/wave1-task-source-fields.csv`、`wave1-submission-checklist.csv`、`wave1-review-rubric.csv` | 617 行、94 个字段、44 项清单、36 项 rubric | `483878e`，主会话修正 `877203f` |
-| C 平台产品 | `docs/11-platform-product-design.md`、`docs/data/wave1-functional-map.csv`、`wave1-page-inventory.csv`、`wave1-agent-touchpoints.csv` | 523 行、91 项功能、25 个页面、10 个 Agent 介入点 | `3694834`，主会话修正 `5404125` |
+| B 专家规范 | `docs/10-expert-annotation-spec-v0.md`、`docs/data/wave1-task-source-fields.csv`、`wave1-submission-checklist.csv`、`wave1-review-rubric.csv` | 599 行、94 个字段、44 项清单、36 项 rubric | `483878e`，主会话修正 `877203f` |
+| C 平台产品 | `docs/11-platform-product-design.md`、`docs/data/wave1-functional-map.csv`、`wave1-page-inventory.csv`、`wave1-agent-touchpoints.csv` | 527 行、91 项功能、25 个页面、10 个 Agent 介入点 | `3694834`，主会话修正 `5404125` |
 
-本轮整合新增四份数据文件和本文件。`docs/data/wave1-canonical-task-source.csv` 是统一字段表，112 行，94 个来自专家规范的字段加 18 个平台派生字段。`wave1-package-contract-crosswalk.csv` 是官方包与平台包的字段对照，44 行。`wave1-contract-conflicts.csv` 是 16 条冲突及处置建议。`wave1-verification-map.csv` 是 8 种验证模式。`wave1-poc-backlog.csv` 是 11 个 PoC。`wave1-open-decisions.csv` 是 11 项待裁决。
+本轮整合新增六份数据文件和本文件。`docs/data/wave1-canonical-task-source.csv` 是统一字段表，112 行，94 个来自专家规范的字段加 18 个平台派生字段。`wave1-package-contract-crosswalk.csv` 是官方包与平台包的字段对照，44 行。`wave1-contract-conflicts.csv` 是 17 条冲突及处置建议。`wave1-verification-map.csv` 是 8 种验证模式。`wave1-poc-backlog.csv` 是 12 个 PoC。`wave1-open-decisions.csv` 是 11 项待裁决。
 
 五条主要结论。
 
@@ -67,8 +67,9 @@ oracle 经常不独立。C1 的参考工作簿与提交者原件字节相同；C
 
 `docs/10-expert-annotation-spec-v0.md` 已经回答专家实际要做什么。
 
-- 项目说明：目标、交付物、不做什么、分层工时、按条计费、付款节点、两轮返修、第三轮小时费、保密、支持、退出。
+- 项目说明：目标、交付物、不做什么、分层参考工时、任务组织投入、两轮返修、保密、支持、退出；商务与合同事项已移出专家手册。
 - 合格任务：六条最低定义、三个官方包作复杂度标尺、10 种不合格形态、一句话判据。
+- 商务内容已从专家手册移出；`docs/07-expert-supply.md` 的费用与工时表原样保留，作为内部预算与产能资料，不改数字，只加用途边界。
 - 任务源十块：身份、场景、资料、步骤、交付物、成功标准、环境、审核、来源、交接。94 个字段，68 个必填、17 个条件必填、9 个可选。
 - 流程：方向分配、选题、资料准备、起草、自检、提交、专业审核、返修、冻结九段。
 - 资料与授权：六类资料、三类角色、最低资料集、公开/合成/客户材料边界、许可清单、PII 四级、SHA-256、合成件标注。
@@ -97,7 +98,7 @@ GUI、视觉、语义任务的 Judge 校准与人工复核比例没有基线。C
 
 大文件、容器镜像、二进制产物的对象存储配额和导出策略没有定。C3 的 8.66 GB 镜像和生命科学的 11.8 GB 包都超过当前 5 GiB 阻断线。
 
-英文任务说明的统一术语表和文体指南没有定。“专业判断”评分的一致性没有历史数据。返修次数、时限和费用在合同中的表述还没有与法务对齐。
+英文任务说明的统一术语表和文体指南没有定。“专业判断”评分的一致性没有历史数据。返修次数和时限在合同中的表述还没有与法务对齐。
 
 ## 3. 平台完整功能地图与主要用户流程
 
@@ -198,7 +199,7 @@ Canonical Task Source 保留十块，不新造第十一块。字段名沿用 B �
 
 官方 `task-data-v1.1` 是 `<domain>/<task>/<variant>/{input,software,reference}`。variant 可以是 `base`，也可以是 `tsla_fy2023`、`137`、`variant_1` 这类命名值。没有版本层，没有包级 `PACKAGE.json`，没有统一哈希。
 
-平台包是 `<domain_code>/<task_slug>/<task_version>/base/{PACKAGE.json,input/,software/,reference/}`，外加 `package_manifest.json`、`materials.json`、`provenance.json`、`handoff.json` 四个版本级边车。`validation_report.json` 不进哈希。
+平台包的候选布局是 `<domain_code>/<task_slug>/<task_version>/base/{PACKAGE.json,input/,software/,reference/}`，外加 `package_manifest.json`、`materials.json`、`provenance.json`、`handoff.json` 四个版本级边车。`PACKAGE.json` 最终放 `base/`、版本层还是独立不可见目录，由 P01 决定；`validation_report.json` 不进哈希。
 
 这两者不是同一种东西。平台包是官方目录的内容基线加一层平台元数据，不能声称“与官方原生布局一致”。22 个命名 variant 不能强行改成 `base`；导入时保留 `source_variant`，导出时按平台版本层组织。
 
@@ -217,7 +218,7 @@ Canonical Task Source 保留十块，不新造第十一块。字段名沿用 B �
 
 ### 5.3 冲突与处置
 
-`docs/data/wave1-contract-conflicts.csv` 列了 16 条冲突。最重要的六条。
+`docs/data/wave1-contract-conflicts.csv` 列了 17 条冲突。最重要的七条。
 
 C01 官方无版本层，平台有 `version/base/`。处置是保留官方 variant，平台新增版本层，文档改称 overlay。
 
@@ -231,6 +232,8 @@ C07 两个 engineering 任务没有 reference。处置是允许 `oracle.required
 
 C15 官方验证器不在 ALE-data 包。处置是平台包只承载数据与验证描述，验证器由工程在运行包实现并登记哈希，平台不跑任务、不判分。
 
+C17 是哈希自引用与动态字段。处置见 5.5：在 P12 通过前只作候选，不写进被覆盖文件，`built_at`/`built_by` 排除或归一化。
+
 ### 5.4 官方包的三类承载
 
 平台字段要落到三类承载，不能假设一个文件全包。
@@ -243,11 +246,17 @@ C15 官方验证器不在 ALE-data 包。处置是平台包只承载数据与验
 
 ### 5.5 哈希与不可变
 
-`native_hash` 覆盖 `base/` 内容文件，排除 `PACKAGE.json`。`package_hash` 覆盖 `base/` 全部文件、`PACKAGE.json`、四个版本级边车，排除 `validation_report.json`。同源重建的 `native_hash` 与 `package_hash` 必须一致。
+当前设计稿把哈希写成已定规则，这个状态不成立。哈希合同只是候选，必须经过第二波 P12 才能冻结。至少有三处未验证。
+
+第一，自引用。若 `package_hash` 覆盖 `PACKAGE.json` 或四个边车，而哈希值又写在其中任何一个文件里，就等于让文件哈希到自身。先算后写、写后再算都不产生稳定结果。候选做法是把 `package_hash` 只存在平台 `packages`、`ingest_records` 与入库回执中，包内只保留 `native_hash` 和 `files[]`；或者用规范投影排除哈希字段，再做两次重算。哪条可行由 P12 决定。
+
+第二，动态字段。`built_at`、`built_by` 若进入被哈希字节，同一冻结快照换一次构建时间就会得到不同哈希，同源重建不再确定。候选做法是把这两个字段放在哈希范围外，或从冻结快照、批次和任务版本派生，不取墙钟时间。
+
+第三，分层。候选定义分三层。`native_hash` 只覆盖 `base/` 内容文件的规范清单，按路径排序，每项含 `path`、`bytes`、四位八进制 `mode`、`role`、`sha256`，排除 `PACKAGE.json`、任何哈希字段和 `validation_report.json`。`package_hash` 覆盖 `native_hash`、`PACKAGE.json` 的规范投影和四个边车，排除 `package_hash` 自身、`SHA256SUMS` 与 `validation_report.json`。入库回执哈希是第三层，覆盖 `package_hash`、校验报告哈希、接收时间与接收人，只写数据库，不写回包。第三层带时间，不要求跨次复现，只负责把包哈希、校验报告和入库动作连成证据链。
 
 `files[]` 只列 `base/` 内容文件，不列 `PACKAGE.json`；每项带 `path`、`sha256`、`bytes`、四位八进制 `mode`、非空 `role`。软件文件保留可执行位。
 
-冻结快照不可变。组包只读快照，不读工作区。入库记录与包哈希不符时不算入库。
+冻结快照不可变。组包只读快照，不读工作区。入库记录与包哈希不符时不算入库。上述算法在 P12 通过前只能称候选，不能称已冻结。
 
 ## 6. 专业审核、自动校验、工程转换的边界
 
@@ -278,7 +287,7 @@ C15 官方验证器不在 ALE-data 包。处置是平台包只承载数据与验
 - 十块任务源与 94 个字段的内容模型。B 线逐字段定义，A 线六个案例给出真实形态，C 线给出页面与状态。
 - 五种 `contract.kind` 与六案例的映射。A 线的 42 条证据足以支撑字段与验证描述。
 - 平台包是官方内容基线的 overlay。官方 122 条、100 个 base、22 个命名 variant、0 个包级 `PACKAGE.json` 是文件事实。
-- `PACKAGE.json` 的必填字段、`files[]` 角色、四边车、`native_hash` 与 `package_hash` 的分工。docs/08 已有 47/47 自检的检查器设计。
+- `PACKAGE.json` 的必填字段、`files[]` 角色与四边车已有草案；`native_hash`、`package_hash` 与入库回执哈希的分层还未技术验证，不能当作已冻结合同。
 - 任务状态机与入库状态机。C 线把 9 个主状态、2 个旁路、4 个入库状态写全。
 - 资料四层、许可类型、PII 四级、上传分片与隔离。
 - 组包八步、L1 到 L5、5 GiB/1 GiB/12 GiB 阈值。
@@ -290,7 +299,7 @@ C15 官方验证器不在 ALE-data 包。处置是平台包只承载数据与验
 
 ## 8. 哪些技术假设需要 PoC
 
-`docs/data/wave1-poc-backlog.csv` 列了 11 个 PoC。按阻塞程度排序。
+`docs/data/wave1-poc-backlog.csv` 列了 12 个 PoC。按阻塞程度排序。
 
 P01 是 `PACKAGE.json` 的位置与可见性。它决定答案是否泄漏、`package_hash` 覆盖什么、L4 怎么测。最小测试是一个含 reference 的包在两种布局下的 agent 视图与哈希一致性。
 
@@ -313,6 +322,8 @@ P09 是审计链离线校验。它决定合作方抽查能否不依赖平台环�
 P10 是官方 122 条回归导入的计数隔离。它决定官方任务不会误计入 500。
 
 P11 是 Windows 36 条、GUI 40 条、online-required 6 条的环境声明与降级。它决定 P1 是否要支持这些形态。
+
+P12 是哈希自引用、`built_at`/`built_by` 动态字段与入库回执哈希。它决定包哈希能否稳定复算、证据链是否闭合。最小测试是同一冻结快照两次重建、一次篡改检测，以及哈希值是否出现在它覆盖的文件里。
 
 ## 9. 进入技术选型、架构、数据库与 API 设计的输入
 
@@ -356,7 +367,7 @@ Package 与 TaskVersion 一对多，`package_hash` 唯一。IngestRecord 与 Pac
 
 建议按三个波次。
 
-第一波，先做合同与验证描述。Canonical Schema、`PACKAGE.json` 字段、`verification.mode` 与 `artifacts[]`、官方导入适配器、六案例回归。对应 P01、P02、P03。没有这三个，后面的表单、组包、评分都会返工。
+第一波，先做合同与验证描述。Canonical Schema、`PACKAGE.json` 字段、`verification.mode` 与 `artifacts[]`、官方导入适配器、六案例回归、哈希自引用验证。对应 P01、P02、P03、P12。没有这四个，后面的表单、组包、评分都会返工。
 
 第二波，做专家工作台与包流水线。专家表单、资料上传与许可/PII、自检报告、评审队列、冻结快照、组包八步、L1 到 L5、幂等入库、审计。对应 P05、P07、P08、P09。这一波可以并行拆成“前端工作台”“后端任务源与资料”“组包与入库”三个子模块。
 
@@ -376,11 +387,13 @@ D03 是平台包与官方包的命名关系。建议明确为 overlay，保留 `
 
 D04 是无唯一参考解的任务是否允许。建议允许 `human_rubric`，条件是批准、双评、样例外与反例。
 
-D05 是法律 42 条的 `scope_exception` 是否计入 500、是否需要合作方书面接受。建议计入配额但 `counted_in_500` 由回执决定，书面确认前不对外宣称验收。
+D05 是合作方是否书面接受法律 42 条的 `scope_exception`。内部配额口径已经批准，这里的未决项只是外部确认；`counted_in_500` 仍由验收回执决定，书面接受前不对外宣称验收。
 
 D06 是客户材料能否在试点后进入生产。建议允许，但必须有书面授权、脱敏方案、存储期限、删除承诺、法务确认五项；缺一项拒收。
 
-其余五项是 Agent 成本与自动采纳、Windows/GUI/大资产范围、运行框架选型时点、`handoff.json` 审核摘要、官方导入边车策略。它们影响详细设计顺序，但不阻塞第一波合同工作。
+D07 是 Agent 单条成本上限与自动采纳政策。D08 是 Windows、GUI、大资产是否进入 P1 包与运行验证。D10 是 `handoff.json` 是否携带审核结论摘要。D11 是官方导入包是否生成平台适配边车。D12 是哈希自引用、动态字段与入库回执哈希，建议先按 5.5 的候选实现，由 P12 验证后再冻结。
+
+运行框架在首批 30 条 ALE-data 入库后选型，这个时点已经批准，不列入待裁决。平台不承担 Harbor 转换、运行与评分，这条边界也不变。其余五项影响详细设计顺序，但不阻塞第一波合同工作。
 
 ## 12. 本轮不做什么
 
@@ -390,7 +403,7 @@ D06 是客户材料能否在试点后进入生产。建议允许，但必须有�
 
 不启动正式专家生产。三条试点与首批 30 条仍按已批准排期，不因本轮研究提前。
 
-不修改已批准的配额、批次、费用和四道门。
+不修改已批准的配额、批次、内部预算和四道门。
 
 不预先决定 Django、FastAPI、Dify 或 LangGraph。本轮只给框架无关的数据形状、边界与 API 面。
 
@@ -403,3 +416,4 @@ D06 是客户材料能否在试点后进入生产。建议允许，但必须有�
 | 版本 | 日期 | 变更 | 状态 |
 |---|---|---|---|
 | v0 | 2026-11-14 | 第一波三线整合：六案例、专家规范、平台产品、Canonical 字段、ALE-data 对齐、边界、PoC、技术设计输入 | 草案，待项目负责人裁决 |
+| v0.1 | 2026-11-14 | PR #21 修订：哈希合同降为候选、PACKAGE.json 可见性交 P12、清理重复待决、专家手册移出商务内容 | 草案，待 P12 与合并验证 |

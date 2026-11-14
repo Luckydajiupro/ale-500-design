@@ -106,7 +106,7 @@ package,package.ale_data_version,string,yes,platform,platform,,packages / ingest
 package,package.entrypoints,object,yes,platform,platform,,packages / ingest_records,PACKAGE.json,.entrypoints,brief/contract/answer_key 可条件必填
 package,package.files,array<object>,yes,platform,platform,,packages / ingest_records,PACKAGE.json,.files[],path/sha256/bytes/mode/role
 package,package.native_hash,string,yes,platform,platform,,packages / ingest_records,PACKAGE.json,.hashes.native_hash,排除 PACKAGE.json
-package,package.package_hash,string,yes,platform,platform,,packages / ingest_records,PACKAGE.json,.hashes.package_hash,含 PACKAGE.json 与四边车
+package,package.package_hash,string,yes,platform,platform,,packages / ingest_records,packages / ingest_records,.hashes.package_hash,候选；不写进被覆盖文件；P12 验证
 package,package.built_by,string,yes,platform,platform,,packages / ingest_records,PACKAGE.json,.built_by,platform/manual
 package,package.built_at,string,yes,platform,platform,,packages / ingest_records,PACKAGE.json,.built_at,ISO 时间
 package,package.counted_in_500,boolean,yes,platform,platform,,packages / ingest_records,ingest_records,,只由合作方验收回执改写

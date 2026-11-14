@@ -337,16 +337,18 @@ PII 扫描是阻断项：命中未确认不能提交。扫描结果留痕，人�
 
 平台在官方布局之上补六类东西，全部放在边车与版本级文件里，不改 `base/` 内容文件名。
 
-1. **包身份与来源**：`task_id`、`task_version`、`domain_code`、`subdomain_code`、`title`、`summary`、`language`、`built_by`、`built_at`。
+1. **包身份与来源**：`task_id`、`task_version`、`domain_code`、`subdomain_code`、`title`、`summary`、`language`、`built_by`、`built_at`。`built_by` 与 `built_at` 是动态元数据，是否进入哈希范围由 P12 决定；当前候选是把它们排除在内容哈希之外。
 2. **入口映射**：`entrypoints` 声明 brief、contract、answer_key、document_manifest 的实际路径，允许不叫标准名。
 3. **契约分类**：`contract.kind` 五类加"未知进隔离"，附每类的必填键与判定方式。
 4. **许可与隐私**：`license` 三态（cleared、pending、restricted）、`pii` 摘要、`provenance` 来源与收集时间。`restricted` 可入库但不计数，标 `scope_exception`。
 5. **环境意图**：`sandbox`（os、cpus、memory、network、input_root、output_root）与 `environment_intent`，只写意图不写 Dockerfile。
-6. **完整性**：`files[]` 覆盖 `base/` 全部内容文件，版本级 `package_manifest.json`、`materials.json`、`provenance.json`、`handoff.json`、`SHA256SUMS`、`validation_report.json`、`supersedes.json`（仅修订版）。审核、签署、批次、作者不进包，留在平台库。
+6. **完整性与验证描述**：`files[]` 覆盖 `base/` 全部内容文件，版本级 `package_manifest.json`、`materials.json`、`provenance.json`、`handoff.json`、`SHA256SUMS`、`validation_report.json`、`supersedes.json`（仅修订版）；`verification.mode`、`verification.artifacts[]`、oracle 位置与容差必须随包保留。审核、签署、批次、作者不进包，留在平台库。
 
 ### 8.4 组包流程
 
-组包唯一输入是 `frozen` 快照，拒绝任何非冻结版本。八步：读快照与十块；按 `entrypoints` 复制 `input/`、`software/`、`reference/`，不改名，中文 NFC；生成 `PACKAGE.json`；生成四个版本级边车；算 `native_hash`（`base/` 内容，排除 `PACKAGE.json`）与 `package_hash`（含边车）；写临时目录；校验通过后原子移动；同 `task_id + task_version` 已存在且哈希相同则直接返回，哈希不同则拒绝并告警。
+组包唯一输入是 `frozen` 快照，拒绝任何非冻结版本。八步：读快照与十块；按 `entrypoints` 复制 `input/`、`software/`、`reference/`，不改名，中文 NFC；生成 `PACKAGE.json`；生成四个版本级边车；计算候选哈希；写临时目录；校验通过后原子移动；同 `task_id + task_version` 已存在且哈希相同则直接返回，哈希不同则拒绝并告警。
+
+**哈希合同候选。** 当前设计不能称已冻结。`package_hash` 若覆盖 `PACKAGE.json` 或四个边车，而哈希值又写在其中，就会自引用。`built_at`、`built_by` 若进入被哈希字节，同源重建会因构建时间不同而漂移。候选定义分三层。`native_hash` 只覆盖 `base/` 内容文件的规范清单，按路径排序，每项含 `path`、`bytes`、`mode`、`role`、`sha256`，排除 `PACKAGE.json`、任何哈希字段和 `validation_report.json`。`package_hash` 覆盖 `native_hash`、`PACKAGE.json` 的规范投影和四个边车，排除 `package_hash` 自身、`SHA256SUMS` 与 `validation_report.json`。入库回执哈希覆盖 `package_hash`、校验报告哈希、接收时间与接收人，只写 `ingest_records`，不写回包。推荐 P1 把 `package_hash` 存在数据库与回执中，包内只保留 `native_hash` 与 `files[]`；自引用与动态字段的三种处理方案由第二波 P12 比较后决定。
 
 幂等的要求是重跑不改哈希、不产重复包、不重复扣 Agent 成本。失败留临时目录与失败码，不产生半包。单包大于 5 GiB 阻断，大于 1 GiB 警告；确有 12 GiB 级资产时由负责人批准 `external_ref`，不把大文件塞进 git（设计稿陈述，`06` 第 7.1 节与第 7.2 节）。
 
@@ -357,14 +359,14 @@ PII 扫描是阻断项：命中未确认不能提交。扫描结果留痕，人�
 | L1 结构 | 目录、`PACKAGE.json` 可解析、路径安全、入口存在 | `PKG_LAYOUT`、`PKG_PATH_UNSAFE`、`PKG_ENTRYPOINT_MISSING` | 平台管理员 |
 | L2 语义 | 域与子域存在、slug、版本、`contract.kind` | `PKG_DOMAIN_UNKNOWN`、`PKG_VERSION_UNSUPPORTED`、`PKG_CONTRACT_KIND` | 平台管理员 |
 | L3 完整性 | `files[]` 覆盖、哈希复算、manifest 与 documents 一致 | `PKG_HASH_MISMATCH`、`PKG_FILE_UNLISTED` | 组包器或源资料 |
-| L4 安全授权 | 许可、PII、来源、绝对路径、答案泄漏 | `PKG_LICENSE_MISSING`、`PKG_PII_HIGH`、`PKG_ANSWER_LEAK` | 专家或隐私安全 |
+| L4 安全授权 | 许可、PII、来源、绝对路径、答案泄漏、agent 视图 | `PKG_LICENSE_MISSING`、`PKG_PII_HIGH`、`PKG_ANSWER_LEAK`、`PKG_AGENT_VIEW_LEAK` | 专家或隐私安全 |
 | L5 入库一致性 | 同任务同版本冲突、`supersedes`、计数条件 | `PKG_VERSION_CONFLICT`、`PKG_SUPERSEDES_MISSING` | 平台管理员 |
 
-一次返回全部发现，每条含错误码、路径、消息、严重级；阻断任一即拒绝，警告进报告不阻断。L4 的绝对路径检查必须区分"元数据路径字段"与"正文内容"：前者阻断，后者只警告，否则官方历史包无法通过（推断，依据 8.1 的实测）。
+一次返回全部发现，每条含错误码、路径、消息、严重级；阻断任一即拒绝，警告进报告不阻断。L4 的绝对路径检查必须区分"元数据路径字段"与"正文内容"：前者阻断，后者只警告，否则官方历史包无法通过（推断，依据 8.1 的实测）。L4 还必须做一次 agent 视图测试：reference 内容、评分依据、`PACKAGE.json` 里的 reference 文件清单与敏感元数据不得出现在 agent 可见视图；若 `PACKAGE.json` 留在 `base/`，要么对 agent 不可见，要么只暴露白名单字段。
 
 ### 8.6 入库、冲突与修订
 
-入库按 `package_hash` 幂等。写 `received` → 复核包哈希与最新校验报告 → 校验 L5 与版本冲突 → 写任务、版本、资产索引、审核引用 → `published`。同一任务已有 `published` 版本时，新包必须带 `supersedes`。修订先建新包与新版本，成功后再把旧版本标 `superseded`，不做原地覆盖。失败进隔离区，保留原包与报告，不产生部分入库。
+入库按候选 `package_hash` 幂等；哈希合同在 P12 通过前不冻结。写 `received` → 复核包哈希与最新校验报告 → 校验 L5 与版本冲突 → 写任务、版本、资产索引、审核引用 → `published`。同一任务已有 `published` 版本时，新包必须带 `supersedes`。修订先建新包与新版本，成功后再把旧版本标 `superseded`，不做原地覆盖。失败进隔离区，保留原包与报告，不产生部分入库。
 
 入库记录与任务状态分开：包已生成不等于已入库，入库不等于计数。这条分离是阶段 3 出口证据之一（`docs/02-plan.md` 阶段 3 出口七项）。
 
@@ -469,7 +471,7 @@ M1a-Core 是 v0 初始规范，只服务 12-01 受控启动与 T1 观察；v1 �
 
 ### 11.4 已有依据与需要 PoC 的问题
 
-已有充分依据的部分：十块字段结构与校验规则（`02-platform-design.md` 第 7 节）、状态机与旁路（`06` 第 3 节）、派单五步与 SLA（`01` FR-29 到 FR-32）、L1 到 L5 分层（`06` 第 7.2 节）、四层资料隔离（`06` 第 4 节）、审计事件范围（`01` FR-22）。这些可以直接进入实现，不需要再论证。
+已有充分依据的部分：十块字段结构与校验规则（`02-platform-design.md` 第 7 节）、状态机与旁路（`06` 第 3 节）、派单五步与 SLA（`01` FR-29 到 FR-32）、L1、L2、L4、L5 的分层（`06` 第 7.2 节）、四层资料隔离（`06` 第 4 节）、审计事件范围（`01` FR-22）。这些可以直接进入实现，不需要再论证。L3 的哈希算法仍是候选，需 P12 验证。
 
 需要 PoC 的八个问题，只给判据不给选型。
 
@@ -502,13 +504,14 @@ M1a-Core 是 v0 初始规范，只服务 12-01 受控启动与 T1 观察；v1 �
 6. `05-pilot-and-rollout.md` 是 v1 历史稿，文件头自己声明部分作废；其中 `handed_off`、Harbor 映射、往返测试不再适用。
 7. `docs/07-expert-supply.md` 的试点任务名（如 `business_finance/accounting_reconcile_01`）与 `05` 的 P-01 编号是两套指称，指同一批任务。
 8. 122 个官方包里 22 个没有 `base/`，与"`base/` 与官方原生布局一致"的表述冲突：官方并没有单一布局。
+9. `06` 写 `package_hash` 覆盖 `PACKAGE.json` 与边车，但没有说明哈希值写在哪里、`built_at`/`built_by` 是否进入哈希；若哈希写进被覆盖文件会自引用，动态字段会让同源重建漂移。
 
 ### 12.3 需要负责人裁决的事项
 
 | 编号 | 事项 | 建议默认 | 最晚 | 不定的后果 |
 | --- | --- | --- | --- | --- |
 | 1 | 供应方包是否强制改成标准文件名 | 不强制，用 `entrypoints` 映射 | 2026-11-25 | 法律 8 条导入要逐包改名，返工且改哈希 |
-| 2 | `PACKAGE.json` 是否放 `base/` | 允许，`native_hash` 排除它 | 2026-11-25 | 包布局与哈希口径无法冻结 |
+| 2 | `PACKAGE.json` 放 `base/`、版本层还是独立不可见目录 | 默认版本层或独立不可见目录；若留 `base/`，需 L4 agent 视图测试与泄露评审 | 2026-11-25 | 包布局与哈希口径无法冻结 |
 | 3 | 版本字段定名与取值 | 统一为 `schema_version`，取值 `ale-pkg-1.2`，废弃 `package_version` | 2026-11-25 | 校验器无法判定合法包，fixture 与设计稿互不兼容 |
 | 4 | `license` 三态够不够，`restricted` 能否入库不计数 | 三态够用，允许入库但 `counted_in_500=false` 并标 `scope_exception` | 2026-11-25 | 供应方包与受限资料任务无法归类 |
 | 5 | 12 GiB 级资产是否走 `external_ref`，谁批准 | 走 `external_ref`，负责人批准，包内留引用与哈希 | 2026-12-01 | 大资产任务被 5 GiB 阻断规则卡死 |
@@ -521,3 +524,4 @@ M1a-Core 是 v0 初始规范，只服务 12-01 受控启动与 T1 观察；v1 �
 | 12 | 22 个无 `base/` 的官方包如何处理 | 导入层兼容顶层布局，不强行补 `base/` | 2026-12-01 | 回归样本从 122 降到 100，兼容性证据变弱 |
 | 13 | 绝对路径检查的边界 | 只校验元数据路径字段，正文命中记警告 | 2026-12-01 | 合法历史包被 L4 阻断，导入无法完成 |
 | 14 | 界面语言 | 界面中文、任务内容英文，术语表统一 | 2026-12-15 | 专家与评审理解不一致，返修增加 |
+| 15 | `package_hash` 自引用、`built_at`/`built_by` 动态字段、入库回执哈希 | `package_hash` 存数据库与回执，不写被哈希文件；动态字段排除或从快照派生；`native_hash` 只覆盖内容 | 2026-12-01 | 同源重建哈希不稳定，包与入库证据链断开 |
