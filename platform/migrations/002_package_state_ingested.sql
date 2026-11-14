@@ -1,4 +1,5 @@
 PRAGMA foreign_keys = OFF;
+PRAGMA legacy_alter_table = ON;
 
 ALTER TABLE packages RENAME TO packages_old;
 
@@ -23,4 +24,5 @@ DROP TABLE packages_old;
 
 CREATE INDEX IF NOT EXISTS idx_packages_task ON packages(task_id, version_no);
 
+PRAGMA legacy_alter_table = OFF;
 PRAGMA foreign_keys = ON;
