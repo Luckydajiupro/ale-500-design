@@ -1,0 +1,13 @@
+poc_id,question,why_now,minimum_test,pass_criteria,blocks,owner,wave
+P01,PACKAGE.json 放在 base/ 内还是版本层，agent 是否能看到 reference 文件名,C03 直接关系答案泄漏与 package_hash 范围,用 1 个含 reference 的包做一次冻结、组包、agent 视图检查；比较 base 内与版本层两种布局,agent 视图只能看到 input/software 与允许的入口；reference 与 PACKAGE.json 的 reference 清单不可见；同源重建哈希一致,包规范与 L4,platform,第二波
+P02,官方 122 条、22 个命名 variant 能否被导入适配器无损接住,平台必须先兼容官方包，才能做回归与导入,对 6 个案例包和 3 个命名 variant 做路径、instruction 相对路径、reference 可见性往返测试,文件清单与官方 selected-members 一致；instruction 路径不改写；不产生包级 PACKAGE.json 假象,导入器与兼容层,engineering,第二波
+P03,contract.kind 五值加 verification.mode 与 artifacts[] 是否覆盖六案例与 Judge/混合评分,C04/C06 表明现有五值不足,为六案例各写一份 verification 描述，跑结构校验与两次独立评分,六案例 reward 与官方脚本一致或差异可解释；Judge 任务保留原始回答与版本,验证描述与评分适配器,engineering,第二波
+P04,无唯一参考解的任务能否用 human_rubric + 样例合法进入 500,官方 2 个 engineering 任务无 reference；B 规范已允许例外,选 1 个 3D/视觉任务，提交 rubric、1 个合格样例、1 个反例，走双评,两位评审结论一致；反例被稳定判错；无答案泄漏,oracle 策略与审核,reviewer lead,第二波
+P05,8.66 GiB Slicer 镜像、11.8 GiB H5 等大资产能否重建与入库,现有 5 GiB 阻断、12 GiB external_ref 只有设计阈值,选 1 个神经影像包和 1 个生命科学包，测分片上传、哈希、external_ref、下载与重建,包可重建；哈希一致；失败可恢复；存储成本可计量,包体量策略,platform,第二波
+P06,Agent 结构化建议的可用率、采纳率与单条成本是否达到 60/120 元假设,C 与 B 都把 Agent 写成辅助，但没有真实样本,20 条任务源上跑访谈/结构化/预检，记录采纳、误报、漏报、token 与人工时长,自动采纳 0；阻断级漏报 0；单条成本与 p95 延迟可解释,Agent 范围与预算,platform + expert lead,第三波
+P07,PII 与许可规则在真实资料上的误报率是否可接受,L4 是入库硬门，误报会阻塞生产,50 份公开/合成/含 PII 样本，跑规则扫描与人工复核,高危漏报 0；误报有解释与豁免路径；许可不明稳定拒收,资料授权与 L4,platform,第二波
+P08,22 并发、12 GiB 级包、备份与恢复是否撑得住 W1,M1a-R 与 W1 排期直接依赖容量,压测上传、组包、校验、入库四条链路，做一次恢复演练,22 并发无数据竞争；失败可重试；恢复后哈希一致,平台容量,platform,第三波
+P09,审计链能否离线校验并支撑合作方抽查,入库与验收需要可追溯证据,导出一次任务全链审计包，在无平台环境复算哈希与状态迁移,审计包可独立校验；缺件能定位；个人敏感信息不泄露,审计与交接,platform,第三波
+P10,官方 122 条回归导入是否会产生 counted_in_500 误计,官方任务只作回归样本，不计 500,导入 122 条到隔离库，检查 counted_in_500、编号、配额与验收回执,全部 counted_in_500=false；不占 500 编号；可单独清理,库与计数,platform,第三波
+P11,Windows 36 条、GUI 40 条、online-required 6 条在 P1 是否进入包与运行验证,官方分布显示 GUI/Windows 不是边缘情况,选 2 条 Windows GUI、2 条 Linux GUI 做环境声明、启动与截图证据测试,环境声明可执行；无法执行时能降级为 doc_exception 并留证据,环境范围,engineering,第三波
+P12,package_hash 是否覆盖包含自身的文件，built_at/built_by 是否破坏同源重建,哈希合同尚未技术验证，直接影响入库证据链,构造含 reference 的包，分别用哈希存 DB/回执、规范投影排除、两阶段重算三种方案做两次重建与一次篡改检测,同一冻结快照两次重建 package_hash 相同；篡改任一文件可定位；哈希值不出现在其覆盖文件中；built_at/built_by 不影响结果,包合同与入库,platform + engineering,第二波

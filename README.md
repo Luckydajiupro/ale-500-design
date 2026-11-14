@@ -10,7 +10,7 @@
 
 本仓库收三类东西。一类是当前被批准的设计，在 `docs/`。另一类是阶段目录的完整内容，在 `stages/`，用来证明每个阶段的结论。第三类是对外沟通材料，在 `deliverables/`，从设计派生，不是设计源。
 
-284 个文件，约 6.5 MB，克隆下来就是全部内容。
+302 个文件，约 6.5 MB，克隆下来就是全部内容。
 
 克隆下来能读设计，也能复跑两个阶段的出口检查。阶段 0 的 65 条校验和、阶段 1 的 15 项和 16 项校验、阶段 2 工程冒烟检查器与试点出口检查器的自检，都在仓库里跑，不需要额外准备。阶段 2 出口只跑 `pilot_gate.py`，`phase2_gate.py` 的 PASS 不是出口。
 
@@ -71,7 +71,7 @@
 
 `stages/` 现在整目录进仓库。它的作用是让"已关闭"和"已收口"这两句话能被外部复核，不是当时那台机器上的自言自语。
 
-## 八份设计文档
+## 十二份设计文档
 
 | 文件 | 回答什么问题 |
 |---|---|
@@ -83,13 +83,19 @@
 | `docs/06-decisions-and-blockers.md` | 哪些事还悬着、卡住哪个阶段、谁定、最晚什么时候、没定时的默认走法 |
 | `docs/07-expert-supply.md` | 500 条配额怎么分到一级和二级类目、四批 W1 到 W4 怎么排、22 名核心与 104 份合同怎么来、评审怎么自动派单 |
 | `docs/08-pilot-design.md` | 三条试点怎么从人工标注迁到平台辅助标注、平台和 Agent 怎么同步调试、试点怎么判定通过 |
+| `docs/09-official-task-cases.md` | 六个官方任务怎么拆、真实产物和验证器长什么样、对 500 条和数据合同提出什么要求 |
+| `docs/10-expert-annotation-spec-v0.md` | 专家实际做什么、一条合格任务怎么设计、十块任务源与 94 个字段怎么填、怎么自检和送审 |
+| `docs/11-platform-product-design.md` | 平台完整功能地图、用户旅程、页面、Agent 介入点、组包校验入库、P1 与完整产品边界 |
+| `docs/12-wave1-integration.md` | 三条线怎么合、Canonical 字段怎么统一、官方包与平台包怎么对齐、哪些要 PoC、下一波做什么 |
+
+`docs/data/` 放第一波的证据、字段、冲突、验证模式、PoC 与待裁决表，随对应文档一起读。
 
 ## 怎么校验
 
 六条检查在这个仓库里就能跑，每次 PR 自动跑。
 
 ```bash
-python3 tools/check_docs.py                    # 14 份活文档的写作规则
+python3 tools/check_docs.py                    # 18 份活文档的写作规则
 python3 tools/check_numbers.py                 # 文档里的数字与仓库表格一致
 python3 tools/exit/selftest_phase2_gate.py     # 阶段 2 工程冒烟检查器自检
 python3 tools/exit/selftest_pilot_gate.py      # 阶段 2 试点出口检查器自检
